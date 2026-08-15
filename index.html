@@ -120,7 +120,6 @@
     .admin-tab-bar .btn { flex:1; min-width:70px; justify-content:center; font-size:12px; padding:6px 10px; }
     .tx-item { border-bottom:1px solid #1f2937; padding:6px 0; font-size:13px; }
     .deposit-item { border-bottom:1px solid #1f2937; padding:6px 0; font-size:13px; }
-    .chart-container { width:100%; height:200px; background:#0d141e; border-radius:12px; overflow:hidden; position:relative; margin-top:8px; }
     .coin-logo-svg { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; flex-shrink:0; }
     .profile-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .profile-stat { background:#0d141e; border-radius:10px; padding:10px; text-align:center; }
@@ -129,8 +128,16 @@
     .method-demo-info { background:#0d141e; border-radius:10px; padding:10px; margin:6px 0; font-size:12px; border:1px solid #2a3440; }
     .method-demo-info .label { color:#7f92a8; }
     .method-demo-info .value { color:#f0b90b; font-family:monospace; word-break:break-all; }
-    .long-press-area { width:100%; height:60px; display:flex; align-items:center; justify-content:center; color:#1f2937; font-size:12px; user-select:none; cursor:default; border-radius:12px; transition:0.3s; }
+    .long-press-area { width:100%; height:40px; display:flex; align-items:center; justify-content:center; color:#1f2937; font-size:11px; user-select:none; cursor:default; border-radius:12px; transition:0.3s; }
     .long-press-area.active { background:#1f2937; }
+    .withdraw-method-item { display:flex; align-items:center; gap:12px; padding:10px 14px; background:#0d141e; border:1px solid #2a3440; border-radius:12px; cursor:pointer; margin-bottom:6px; transition:0.2s; }
+    .withdraw-method-item:hover { border-color:#f0b90b; }
+    .withdraw-method-item.selected { border-color:#f0b90b; background:#1f2937; }
+    .table-responsive { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th { text-align:left; padding:8px 6px; color:#7f92a8; font-weight:500; border-bottom:1px solid #1f2937; }
+    td { padding:8px 6px; border-bottom:1px solid #1f2937; }
+    tr:hover td { background:#0d141e; }
   </style>
 </head>
 <body>
@@ -152,6 +159,7 @@
       <a data-page="markets"><i class="fas fa-chart-line"></i> Markets</a>
       <a data-page="portfolio"><i class="fas fa-wallet"></i> Portfolio</a>
       <a data-page="deposit"><i class="fas fa-plus-circle"></i> Deposit</a>
+      <a data-page="withdraw"><i class="fas fa-arrow-right"></i> Withdraw</a>
       <a data-page="profile"><i class="fas fa-user"></i> Profile</a>
     </nav>
     <div class="user-mini" id="sidebarUser">
@@ -168,7 +176,7 @@
         <div class="card">
           <div class="stat-grid">
             <div class="stat-item"><div class="stat-label">Total Balance</div><div class="stat-value gold" id="totalBalance">$0.00</div></div>
-            <div class="stat-item"><div class="stat-label">Portfolio Value</div><div class="stat-value" id="portfolioValue">$0.00</div></div>
+            <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value" id="portfolioValue">$0.00</div></div>
             <div class="stat-item"><div class="stat-label">Today's P/L</div><div class="stat-value" id="todayPL">+$0.00</div></div>
             <div class="stat-item"><div class="stat-label">Coins</div><div class="stat-value" id="coinCount">0</div></div>
           </div>
@@ -179,16 +187,13 @@
       <!-- MARKETS -->
       <section class="page" id="page-markets">
         <div class="card"><div class="card-header"><span class="card-title">Live Prices</span></div><div id="marketCoinList"></div></div>
-        <div class="card"><div class="card-header"><span class="card-title">Price Chart</span></div>
-          <div class="chart-container"><canvas id="priceChart"></canvas></div>
-        </div>
       </section>
 
       <!-- PORTFOLIO -->
       <section class="page" id="page-portfolio">
         <div class="card"><div class="stat-grid">
           <div class="stat-item"><div class="stat-label">USD Balance</div><div class="stat-value gold" id="portfolioUsd">$0.00</div></div>
-          <div class="stat-item"><div class="stat-label">Portfolio Value</div><div class="stat-value" id="portfolioTotalValue">$0.00</div></div>
+          <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value" id="portfolioTotalValue">$0.00</div></div>
         </div></div>
         <div class="card"><div class="card-header"><span class="card-title">Holdings</span></div><div id="portfolioHoldings"></div></div>
       </section>
@@ -218,9 +223,43 @@
             </div>
             <input type="hidden" id="selectedMethod" value="" />
           </div>
-          <button class="btn btn-primary btn-block" id="submitDepositBtn"><i class="fas fa-paper-plane"></i> Submit Request</button>
+          <button class="btn btn-primary btn-block" id="submitDepositBtn"><i class="fas fa-paper-plane"></i> Submit Order</button>
         </div>
         <div class="card"><div class="card-header"><span class="card-title">Deposit History</span></div><div id="depositHistoryList"></div></div>
+      </section>
+
+      <!-- WITHDRAW -->
+      <section class="page" id="page-withdraw">
+        <div class="card">
+          <h3 style="margin-bottom:4px;">Withdraw Virtual Credits</h3>
+          <div class="text-muted" style="margin-bottom:12px;font-size:13px;">Request withdrawal — admin approval required</div>
+          <div class="field">
+            <label>Amount (USD)</label>
+            <input type="number" id="withdrawAmount" placeholder="Enter amount" min="1" step="0.01" />
+          </div>
+          <div class="field">
+            <label>Withdrawal Method</label>
+            <div class="withdraw-method-item" data-method="Binance Pay" onclick="selectWithdrawMethod(this)">
+              <i class="fab fa-bitcoin" style="color:#f0b90b;"></i>
+              <div><strong>Binance Pay</strong><div style="font-size:11px;color:#7f92a8;">Payment UID</div></div>
+            </div>
+            <div class="withdraw-method-item" data-method="TRC20" onclick="selectWithdrawMethod(this)">
+              <i class="fas fa-coins" style="color:#22c55e;"></i>
+              <div><strong>TRC20</strong><div style="font-size:11px;color:#7f92a8;">Destination address</div></div>
+            </div>
+            <div class="withdraw-method-item" data-method="BEP20" onclick="selectWithdrawMethod(this)">
+              <i class="fas fa-cube" style="color:#f0b90b;"></i>
+              <div><strong>BEP20</strong><div style="font-size:11px;color:#7f92a8;">Destination address</div></div>
+            </div>
+            <input type="hidden" id="selectedWithdrawMethod" value="" />
+          </div>
+          <div class="field">
+            <label>Destination Identifier</label>
+            <input type="text" id="withdrawDestination" placeholder="Enter destination address/ID" />
+          </div>
+          <button class="btn btn-primary btn-block" id="submitWithdrawBtn"><i class="fas fa-paper-plane"></i> Submit Withdrawal Request</button>
+        </div>
+        <div class="card"><div class="card-header"><span class="card-title">Withdrawal History</span></div><div id="withdrawHistoryList"></div></div>
       </section>
 
       <!-- PROFILE -->
@@ -229,7 +268,7 @@
         <div class="card">
           <div class="profile-stats">
             <div class="profile-stat"><div class="label">Balance</div><div class="value gold" id="profileBalance">$0.00</div></div>
-            <div class="profile-stat"><div class="label">Portfolio</div><div class="value" id="profilePortfolio">$0.00</div></div>
+            <div class="profile-stat"><div class="label">Total Holdings</div><div class="value" id="profilePortfolio">$0.00</div></div>
             <div class="profile-stat"><div class="label">Trades</div><div class="value" id="profileTrades">0</div></div>
             <div class="profile-stat"><div class="label">P/L</div><div class="value" id="profilePL">+$0.00</div></div>
           </div>
@@ -238,7 +277,7 @@
         <div class="card"><div class="card-header"><span class="card-title">Transactions</span></div><div id="profileTransactions"></div></div>
         <!-- Hidden long-press area for admin entry -->
         <div class="card" style="border-color:transparent;background:transparent;padding:0;margin:0;">
-          <div class="long-press-area" id="adminEntryArea"></div>
+          <div class="long-press-area" id="adminEntryArea">⏎</div>
         </div>
         <!-- Admin Panel (hidden by default, shown after auth) -->
         <div class="card" id="adminPanelCard" style="display:none;border-color:#f0b90b;">
@@ -252,10 +291,11 @@
         <div class="admin-tab-bar">
           <button class="btn btn-outline btn-sm" data-admin-tab="overview">Overview</button>
           <button class="btn btn-outline btn-sm" data-admin-tab="deposits">Deposits</button>
+          <button class="btn btn-outline btn-sm" data-admin-tab="withdrawals">Withdrawals</button>
           <button class="btn btn-outline btn-sm" data-admin-tab="users">Users</button>
           <button class="btn btn-outline btn-sm" data-admin-tab="coins">Coins</button>
           <button class="btn btn-outline btn-sm" data-admin-tab="transactions">Transactions</button>
-          <button class="btn btn-outline btn-sm" data-admin-tab="portfolio">Portfolio</button>
+          <button class="btn btn-outline btn-sm" data-admin-tab="settings">Settings</button>
         </div>
         <div id="adminContent"><div class="text-muted">Select a tab</div></div>
       </section>
@@ -267,6 +307,7 @@
       <a data-page="markets"><i class="fas fa-chart-line"></i><span>Markets</span></a>
       <a data-page="portfolio"><i class="fas fa-wallet"></i><span>Portfolio</span></a>
       <a data-page="deposit"><i class="fas fa-plus-circle"></i><span>Deposit</span></a>
+      <a data-page="withdraw"><i class="fas fa-arrow-right"></i><span>Withdraw</span></a>
       <a data-page="profile"><i class="fas fa-user"></i><span>Profile</span></a>
     </nav>
   </div>
@@ -290,7 +331,7 @@
   // ---- Firebase imports ----
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getDatabase, ref, set, push, onValue, get, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, set, push, onValue, get, update, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   // ---- Firebase config ----
   const firebaseConfig = {
@@ -310,27 +351,15 @@
   // ---- state ----
   let currentUser = null;
   let userData = null;
-  let coinsData = {
-    NXR: { price: 12.50, change: 0, symbol: 'NXR', name: 'NEXORA', min: 10, max: 15, auto: true, color: '#f0b90b' },
-    VTX: { price: 7.80, change: 0, symbol: 'VTX', name: 'VELTRIX', min: 6, max: 10, auto: true, color: '#22c55e' },
-    QTA: { price: 25.40, change: 0, symbol: 'QTA', name: 'QUANTARA', min: 20, max: 30, auto: true, color: '#3b82f6' },
-    OVX: { price: 3.20, change: 0, symbol: 'OVX', name: 'ORVEX', min: 2, max: 5, auto: true, color: '#a855f7' },
-    LMR: { price: 18.40, change: 0, symbol: 'LMR', name: 'LUMORA', min: 15, max: 22, auto: true, color: '#ec4899' },
-    ZTA: { price: 42.00, change: 0, symbol: 'ZTA', name: 'ZENTARA', min: 38, max: 48, auto: true, color: '#f59e0b' },
-    AUX: { price: 6.70, change: 0, symbol: 'AUX', name: 'AUREX', min: 5, max: 8, auto: true, color: '#06b6d4' },
-    FLX: { price: 91.00, change: 0, symbol: 'FLX', name: 'FLUXORA', min: 80, max: 100, auto: true, color: '#8b5cf6' }
-  };
+  let coinsData = {};
   let holdings = {};
   let allTransactions = [];
   let allDeposits = [];
+  let allWithdrawals = [];
   let allUsers = {};
   let isAdmin = false;
   let priceInterval = null;
-  let chartData = [];
-  let chartCanvas = null;
-  let chartCtx = null;
   let longPressTimer = null;
-  let longPressActive = false;
 
   // ---- DOM refs ----
   const $ = id => document.getElementById(id);
@@ -352,8 +381,32 @@
   function formatNum(v) { return Number(v).toFixed(4); }
   function generateOrderId() { return 'BCG-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substring(2,6).toUpperCase(); }
   function getCoinLogo(symbol) {
-    const colors = { NXR:'#f0b90b', VTX:'#22c55e', QTA:'#3b82f6', OVX:'#a855f7', LMR:'#ec4899', ZTA:'#f59e0b', AUX:'#06b6d4', FLX:'#8b5cf6' };
+    const colors = {
+      MXR:'#f0b90b', QTR:'#22c55e', VLX:'#3b82f6', AVQ:'#a855f7', ZVT:'#ec4899',
+      NXL:'#f59e0b', ORV:'#06b6d4', KVX:'#8b5cf6', TVR:'#ef4444', LMT:'#14b8a6',
+      VYR:'#f472b6', AXT:'#6366f1', NVX:'#22d3ee', QVX:'#fb923c', ELV:'#a3e635',
+      ZTH:'#d946ef', MRX:'#f43f5e', VLT:'#2dd4bf', OXV:'#facc15', RVT:'#60a5fa',
+      CYV:'#34d399', NX2:'#f0b90b', VMR:'#22c55e', QVA:'#3b82f6', TVX:'#a855f7',
+      AVX:'#ec4899', ZYR:'#f59e0b', MXR:'#f0b90b', QTR:'#22c55e', VLX:'#3b82f6'
+    };
     return `<div class="coin-logo-svg" style="background:${colors[symbol]||'#1f2937'};color:#0b0e14;">${symbol.slice(0,2)}</div>`;
+  }
+
+  // ---- sound ----
+  function playClickSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = 800;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.1);
+    } catch(e) { /* silent */ }
   }
 
   // ---- navigation ----
@@ -366,7 +419,6 @@
     });
     if(page==='admin' && !isAdmin) { toast('Admin access required','error'); return; }
     if(page==='admin' && isAdmin) renderAdminOverview();
-    if(page==='markets') drawChart();
   }
   window.navigate = navigate;
 
@@ -391,11 +443,19 @@
   window.closeModal = closeModal;
   modalOverlay.addEventListener('click', (e)=>{ if(e.target===modalOverlay) closeModal(); });
 
-  // ---- method selector ----
+  // ---- method selectors ----
   window.selectMethod = function(el) {
     document.querySelectorAll('.method-option').forEach(m=>m.classList.remove('selected'));
     el.classList.add('selected');
     document.getElementById('selectedMethod').value = el.dataset.method;
+    playClickSound();
+  };
+
+  window.selectWithdrawMethod = function(el) {
+    document.querySelectorAll('.withdraw-method-item').forEach(m=>m.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('selectedWithdrawMethod').value = el.dataset.method;
+    playClickSound();
   };
 
   // ---- login ----
@@ -426,6 +486,7 @@
       await loadUserData(user);
       await loadCoins();
       await loadDeposits();
+      await loadWithdrawals();
       await loadTransactions();
       await checkAdmin();
       await loadAllUsers();
@@ -448,25 +509,20 @@
     if(snap.exists()) {
       userData = snap.val();
     } else {
-      // NEW USER: Starting balance ZERO
       const newUser = {
         displayName: user.displayName || 'Trader',
         email: user.email,
         photoURL: user.photoURL || '',
         createdAt: serverTimestamp(),
         virtualBalance: 0,
-        holdings: { NXR:0, VTX:0, QTA:0, OVX:0, LMR:0, ZTA:0, AUX:0, FLX:0 },
-        avgBuyPrices: { NXR:0, VTX:0, QTA:0, OVX:0, LMR:0, ZTA:0, AUX:0, FLX:0 }
+        holdings: {},
+        avgBuyPrices: {}
       };
       await set(userRef, newUser);
       userData = newUser;
     }
-    if(!userData.holdings) {
-      userData.holdings = { NXR:0, VTX:0, QTA:0, OVX:0, LMR:0, ZTA:0, AUX:0, FLX:0 };
-    }
-    if(!userData.avgBuyPrices) {
-      userData.avgBuyPrices = { NXR:0, VTX:0, QTA:0, OVX:0, LMR:0, ZTA:0, AUX:0, FLX:0 };
-    }
+    if(!userData.holdings) userData.holdings = {};
+    if(!userData.avgBuyPrices) userData.avgBuyPrices = {};
     holdings = userData.holdings;
     $('sidebarAvatar').src = userData.photoURL || '';
     $('sidebarName').textContent = userData.displayName || 'User';
@@ -484,14 +540,36 @@
       coinsData = snap.val();
     } else {
       const initial = {
-        NXR: { price:12.50, change:0, symbol:'NXR', name:'NEXORA', min:10, max:15, auto:true, color:'#f0b90b' },
-        VTX: { price:7.80, change:0, symbol:'VTX', name:'VELTRIX', min:6, max:10, auto:true, color:'#22c55e' },
-        QTA: { price:25.40, change:0, symbol:'QTA', name:'QUANTARA', min:20, max:30, auto:true, color:'#3b82f6' },
-        OVX: { price:3.20, change:0, symbol:'OVX', name:'ORVEX', min:2, max:5, auto:true, color:'#a855f7' },
-        LMR: { price:18.40, change:0, symbol:'LMR', name:'LUMORA', min:15, max:22, auto:true, color:'#ec4899' },
-        ZTA: { price:42.00, change:0, symbol:'ZTA', name:'ZENTARA', min:38, max:48, auto:true, color:'#f59e0b' },
-        AUX: { price:6.70, change:0, symbol:'AUX', name:'AUREX', min:5, max:8, auto:true, color:'#06b6d4' },
-        FLX: { price:91.00, change:0, symbol:'FLX', name:'FLUXORA', min:80, max:100, auto:true, color:'#8b5cf6' }
+        MXR: { price:13.00, change:0, symbol:'MXR', name:'Maxora', min:10, max:20, auto:true, color:'#f0b90b' },
+        QTR: { price:27.00, change:0, symbol:'QTR', name:'Quantrara', min:22, max:35, auto:true, color:'#22c55e' },
+        VLX: { price:42.00, change:0, symbol:'VLX', name:'Veltrix', min:38, max:50, auto:true, color:'#3b82f6' },
+        AVQ: { price:8.50, change:0, symbol:'AVQ', name:'Avenqor', min:6, max:12, auto:true, color:'#a855f7' },
+        ZVT: { price:65.00, change:0, symbol:'ZVT', name:'Zorvanta', min:55, max:75, auto:true, color:'#ec4899' },
+        NXL: { price:18.00, change:0, symbol:'NXL', name:'Nexalune', min:14, max:22, auto:true, color:'#f59e0b' },
+        ORV: { price:31.00, change:0, symbol:'ORV', name:'Orvion', min:26, max:38, auto:true, color:'#06b6d4' },
+        KVX: { price:9.20, change:0, symbol:'KVX', name:'Kryvexa', min:7, max:12, auto:true, color:'#8b5cf6' },
+        TVR: { price:55.00, change:0, symbol:'TVR', name:'Talveron', min:48, max:62, auto:true, color:'#ef4444' },
+        LMT: { price:24.00, change:0, symbol:'LMT', name:'Lumetra', min:20, max:28, auto:true, color:'#14b8a6' },
+        VYR: { price:47.00, change:0, symbol:'VYR', name:'Veyrona', min:40, max:55, auto:true, color:'#f472b6' },
+        AXT: { price:11.50, change:0, symbol:'AXT', name:'Axentara', min:9, max:14, auto:true, color:'#6366f1' },
+        NVX: { price:73.00, change:0, symbol:'NVX', name:'Novyrex', min:65, max:85, auto:true, color:'#22d3ee' },
+        QVX: { price:15.00, change:0, symbol:'QVX', name:'Quorvex', min:12, max:18, auto:true, color:'#fb923c' },
+        ELV: { price:39.00, change:0, symbol:'ELV', name:'Elvaris', min:34, max:45, auto:true, color:'#a3e635' },
+        ZTH: { price:58.00, change:0, symbol:'ZTH', name:'Zenthor', min:52, max:65, auto:true, color:'#d946ef' },
+        MRX: { price:7.80, change:0, symbol:'MRX', name:'Marovex', min:6, max:10, auto:true, color:'#f43f5e' },
+        VLT: { price:33.00, change:0, symbol:'VLT', name:'Virelta', min:28, max:38, auto:true, color:'#2dd4bf' },
+        OXV: { price:19.00, change:0, symbol:'OXV', name:'Oxyvara', min:16, max:22, auto:true, color:'#facc15' },
+        RVT: { price:44.00, change:0, symbol:'RVT', name:'Raventra', min:38, max:50, auto:true, color:'#60a5fa' },
+        CYV: { price:6.20, change:0, symbol:'CYV', name:'Calyvex', min:5, max:8, auto:true, color:'#34d399' },
+        NX2: { price:25.00, change:0, symbol:'NX2', name:'Nexoria', min:20, max:30, auto:true, color:'#f0b90b' },
+        VMR: { price:36.00, change:0, symbol:'VMR', name:'Velmora', min:30, max:42, auto:true, color:'#22c55e' },
+        QVA: { price:49.00, change:0, symbol:'QVA', name:'Qelvanta', min:42, max:56, auto:true, color:'#3b82f6' },
+        TVX: { price:14.50, change:0, symbol:'TVX', name:'Torvexa', min:12, max:17, auto:true, color:'#a855f7' },
+        AVX: { price:28.00, change:0, symbol:'AVX', name:'Aurevex', min:24, max:32, auto:true, color:'#ec4899' },
+        ZYR: { price:61.00, change:0, symbol:'ZYR', name:'Zyvora', min:55, max:70, auto:true, color:'#f59e0b' },
+        LMR: { price:18.40, change:0, symbol:'LMR', name:'Lumora', min:15, max:22, auto:true, color:'#ec4899' },
+        ZTA: { price:42.00, change:0, symbol:'ZTA', name:'Zentara', min:38, max:48, auto:true, color:'#f59e0b' },
+        FLX: { price:91.00, change:0, symbol:'FLX', name:'Fluxora', min:80, max:100, auto:true, color:'#8b5cf6' }
       };
       await set(coinsRef, initial);
       coinsData = initial;
@@ -507,8 +585,6 @@
     if(updateDb) {
       const coinRef = ref(db, 'coins/'+symbol);
       await update(coinRef, { price: newPrice, change: coin.change || 0 });
-      const histRef = push(ref(db, 'priceHistory/'+symbol));
-      await set(histRef, { price: newPrice, timestamp: serverTimestamp() });
     }
     renderAll();
     toast(`${symbol} price updated to ${formatUSD(newPrice)}`,'success');
@@ -519,6 +595,13 @@
     const depRef = ref(db, 'deposits');
     const snap = await get(depRef);
     allDeposits = snap.exists() ? Object.values(snap.val()) : [];
+  }
+
+  // ---- load withdrawals ----
+  async function loadWithdrawals() {
+    const wdRef = ref(db, 'withdrawals');
+    const snap = await get(wdRef);
+    allWithdrawals = snap.exists() ? Object.values(snap.val()) : [];
   }
 
   // ---- load transactions ----
@@ -553,17 +636,13 @@
   function setupLongPress() {
     const area = document.getElementById('adminEntryArea');
     let pressTimer = null;
-    let startTime = 0;
     
-    const startPress = (e) => {
-      startTime = Date.now();
+    const startPress = () => {
       pressTimer = setTimeout(() => {
-        // 5 seconds completed - check admin status
         if (isAdmin) {
           toast('Admin access already granted', 'success');
           navigate('admin');
         } else {
-          // Try to authenticate as admin
           checkAdmin().then(() => {
             if (isAdmin) {
               toast('Admin access granted!', 'success');
@@ -589,7 +668,7 @@
     area.addEventListener('mouseleave', endPress);
     area.addEventListener('touchstart', (e) => {
       e.preventDefault();
-      startPress(e);
+      startPress();
     });
     area.addEventListener('touchend', endPress);
     area.addEventListener('touchcancel', endPress);
@@ -602,6 +681,7 @@
     renderPortfolio();
     renderProfile();
     renderDepositHistory();
+    renderWithdrawHistory();
     if(isAdmin) {
       const activeTab = document.querySelector('[data-admin-tab].btn-primary');
       if(activeTab) {
@@ -609,12 +689,12 @@
         if(tab==='overview') renderAdminOverview();
         else if(tab==='users') renderAdminUsers();
         else if(tab==='deposits') renderAdminDeposits();
+        else if(tab==='withdrawals') renderAdminWithdrawals();
         else if(tab==='coins') renderAdminCoins();
         else if(tab==='transactions') renderAdminTransactions();
-        else if(tab==='portfolio') renderAdminPortfolio();
+        else if(tab==='settings') renderAdminSettings();
       }
     }
-    drawChart();
   }
 
   function renderHome() {
@@ -736,60 +816,15 @@
     $('depositHistoryList').innerHTML = html || '<div class="text-muted">No deposits</div>';
   }
 
-  // ---- draw chart ----
-  function drawChart() {
-    chartCanvas = document.getElementById('priceChart');
-    if(!chartCanvas) return;
-    chartCtx = chartCanvas.getContext('2d');
-    const rect = chartCanvas.parentElement.getBoundingClientRect();
-    chartCanvas.width = chartCanvas.parentElement.clientWidth || 400;
-    chartCanvas.height = 200;
-    const w = chartCanvas.width, h = chartCanvas.height;
-    chartCtx.clearRect(0,0,w,h);
-    
-    // Generate demo candle data
-    const data = [];
-    let price = 25;
-    for(let i=0; i<30; i++) {
-      const change = (Math.random()*2 - 1) * 2;
-      price = Math.max(5, price + change);
-      const open = price - (Math.random()*2);
-      const close = price;
-      const high = Math.max(open, close) + Math.random()*2;
-      const low = Math.min(open, close) - Math.random()*2;
-      data.push({ open, high, low, close });
-    }
-    chartData = data;
-    
-    const maxP = Math.max(...data.map(d=>d.high));
-    const minP = Math.min(...data.map(d=>d.low));
-    const range = maxP - minP || 1;
-    const pad = 20;
-    const xStep = (w - pad*2) / data.length;
-    
-    data.forEach((d, i) => {
-      const x = pad + i * xStep;
-      const yHigh = pad + (1 - (d.high - minP)/range) * (h - pad*2);
-      const yLow = pad + (1 - (d.low - minP)/range) * (h - pad*2);
-      const yOpen = pad + (1 - (d.open - minP)/range) * (h - pad*2);
-      const yClose = pad + (1 - (d.close - minP)/range) * (h - pad*2);
-      const isGreen = d.close >= d.open;
-      
-      chartCtx.fillStyle = isGreen ? '#22c55e' : '#ef4444';
-      chartCtx.strokeStyle = isGreen ? '#22c55e' : '#ef4444';
-      chartCtx.lineWidth = 1;
-      
-      // Wick
-      chartCtx.beginPath();
-      chartCtx.moveTo(x, yHigh);
-      chartCtx.lineTo(x, yLow);
-      chartCtx.stroke();
-      
-      // Body
-      const bodyY = Math.min(yOpen, yClose);
-      const bodyH = Math.max(1, Math.abs(yClose - yOpen));
-      chartCtx.fillRect(x - xStep*0.3, bodyY, xStep*0.6, bodyH);
+  function renderWithdrawHistory() {
+    const userWds = allWithdrawals.filter(d=>d.uid===currentUser?.uid).slice(-10).reverse();
+    let html = '';
+    userWds.forEach(d=>{
+      const status = d.status || 'PENDING';
+      const badge = `badge-${status.toLowerCase()}`;
+      html += `<div class="flex-between deposit-item"><span style="font-size:12px;">${d.withdrawalId||'—'}</span><span>${formatUSD(d.amount)}</span><span class="badge ${badge}">${status}</span><span class="text-muted" style="font-size:11px;">${new Date(d.createdAt||Date.now()).toLocaleDateString()}</span></div>`;
     });
+    $('withdrawHistoryList').innerHTML = html || '<div class="text-muted">No withdrawals</div>';
   }
 
   // ---- deposit amount change handler ----
@@ -888,28 +923,15 @@
     const method = document.getElementById('selectedMethod').value;
     if(!method) return toast('Please select a payment method','error');
     
-    // Show payment details based on method
-    let address = '';
-    if (method === 'Binance Pay') address = '894307667';
-    else if (method === 'TRC20') address = 'TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7';
-    else if (method === 'BEP20') address = '0xdfd1138c7bfc2d15b7400fa43f3ca591679e0efa';
-    
     const orderId = generateOrderId();
     const body = `
       <div class="field"><label>Method</label><div><strong>${method}</strong></div></div>
-      <div class="field"><label>Payment Address</label>
-        <div style="background:#0d141e;border-radius:8px;padding:10px;font-family:monospace;font-size:13px;word-break:break-all;border:1px solid #2a3440;display:flex;justify-content:space-between;align-items:center;">
-          <span>${address}</span>
-          <button class="btn btn-sm btn-outline" onclick="navigator.clipboard.writeText('${address}'); toast('Address copied!','success');">Copy</button>
-        </div>
-      </div>
-      <div class="field"><label>Order ID</label><div><strong>${orderId}</strong></div></div>
       <div class="field"><label>Amount</label><div>${formatUSD(amount)}</div></div>
+      <div class="field"><label>Order ID</label><div><strong>${orderId}</strong></div></div>
       <div class="field"><label>Status</label><div><span class="badge badge-pending">PENDING</span></div></div>
-      <div class="text-muted" style="font-size:12px;text-align:center;margin-top:8px;">Virtual simulator — no real payment is processed</div>
     `;
-    const actions = `<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="confirmDepositRequest">Submit Request</button>`;
-    openModal('Deposit Request', 'Virtual credit request', body, actions);
+    const actions = `<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="confirmDepositRequest">Submit Order</button>`;
+    openModal('Confirm Deposit', 'Virtual credit request', body, actions);
     
     document.getElementById('confirmDepositRequest').addEventListener('click', async ()=>{
       const depRef = push(ref(db, 'deposits'));
@@ -923,7 +945,7 @@
         status: 'PENDING', 
         createdAt: serverTimestamp()
       });
-      toast('Deposit request submitted. Await admin approval.','success');
+      toast('Deposit order submitted. Await admin approval.','success');
       document.getElementById('depositAmount').value = '';
       document.getElementById('methodSelector').style.display = 'none';
       document.querySelectorAll('.method-option').forEach(m=>m.classList.remove('selected'));
@@ -934,24 +956,82 @@
     });
   });
 
+  // ---- withdrawal request ----
+  document.getElementById('submitWithdrawBtn').addEventListener('click', async ()=>{
+    if(!currentUser) return toast('Login required','error');
+    const amount = parseFloat(document.getElementById('withdrawAmount').value);
+    if(!amount || amount<1) return toast('Enter amount (min $1)','error');
+    const method = document.getElementById('selectedWithdrawMethod').value;
+    if(!method) return toast('Please select a withdrawal method','error');
+    const destination = document.getElementById('withdrawDestination').value.trim();
+    if(!destination) return toast('Please enter destination identifier','error');
+    
+    const balance = userData?.virtualBalance || 0;
+    if(amount > balance) return toast('Insufficient balance','error');
+    
+    const withdrawalId = generateOrderId();
+    const body = `
+      <div class="field"><label>Method</label><div><strong>${method}</strong></div></div>
+      <div class="field"><label>Amount</label><div>${formatUSD(amount)}</div></div>
+      <div class="field"><label>Destination</label><div style="font-size:13px;word-break:break-all;">${destination}</div></div>
+      <div class="field"><label>Withdrawal ID</label><div><strong>${withdrawalId}</strong></div></div>
+      <div class="field"><label>Status</label><div><span class="badge badge-pending">PENDING</span></div></div>
+    `;
+    const actions = `<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="confirmWithdrawRequest">Submit Withdrawal</button>`;
+    openModal('Confirm Withdrawal', 'Virtual withdrawal request', body, actions);
+    
+    document.getElementById('confirmWithdrawRequest').addEventListener('click', async ()=>{
+      const wdRef = push(ref(db, 'withdrawals'));
+      await set(wdRef, {
+        withdrawalId, 
+        uid: currentUser.uid, 
+        userName: userData.displayName || 'User',
+        userEmail: userData.email || '',
+        amount, 
+        method,
+        destination,
+        status: 'PENDING', 
+        createdAt: serverTimestamp()
+      });
+      toast('Withdrawal request submitted. Await admin approval.','success');
+      document.getElementById('withdrawAmount').value = '';
+      document.getElementById('withdrawDestination').value = '';
+      document.querySelectorAll('.withdraw-method-item').forEach(m=>m.classList.remove('selected'));
+      document.getElementById('selectedWithdrawMethod').value = '';
+      closeModal();
+      await loadWithdrawals();
+      renderWithdrawHistory();
+    });
+  });
+
   // ---- admin render functions ----
   function renderAdminOverview() {
     const container = document.getElementById('adminContent');
     const totalUsers = Object.keys(allUsers).length || 0;
     const totalBalance = Object.values(allUsers).reduce((s,u)=>s+(u.virtualBalance||0),0);
-    const pending = allDeposits.filter(d=>d.status==='PENDING').length;
-    const approved = allDeposits.filter(d=>d.status==='APPROVED').length;
-    const rejected = allDeposits.filter(d=>d.status==='REJECTED').length;
-    const totalVol = allTransactions.reduce((sum,t)=>sum+(t.amount||0),0);
+    const totalHoldings = Object.values(allUsers).reduce((s,u)=>{
+      const h = u.holdings || {};
+      return s + Object.entries(h).reduce((sum,[sym,qty])=>{ const c=coinsData[sym]; return sum + (c?qty*c.price:0); },0);
+    },0);
+    const totalDeposited = allTransactions.filter(t=>t.type==='DEPOSIT').reduce((s,t)=>s+(t.amount||0),0);
+    const totalWithdrawn = allTransactions.filter(t=>t.type==='WITHDRAWAL').reduce((s,t)=>s+(t.amount||0),0);
+    const pendingDeposits = allDeposits.filter(d=>d.status==='PENDING').length;
+    const pendingWithdrawals = allWithdrawals.filter(d=>d.status==='PENDING').length;
     const totalTrades = allTransactions.filter(t=>t.type==='BUY'||t.type==='SELL').length;
+    const totalTx = allTransactions.length;
+    const totalCoins = Object.keys(coinsData).length;
+    
     let html = `<div class="stat-grid">
       <div class="stat-item"><div class="stat-label">Total Users</div><div class="stat-value">${totalUsers}</div></div>
-      <div class="stat-item"><div class="stat-label">Total Virtual USD</div><div class="stat-value gold">${formatUSD(totalBalance)}</div></div>
-      <div class="stat-item"><div class="stat-label">Pending Deposits</div><div class="stat-value gold">${pending}</div></div>
-      <div class="stat-item"><div class="stat-label">Approved</div><div class="stat-value green">${approved}</div></div>
-      <div class="stat-item"><div class="stat-label">Rejected</div><div class="stat-value red">${rejected}</div></div>
+      <div class="stat-item"><div class="stat-label">Total USD Balance</div><div class="stat-value gold">${formatUSD(totalBalance)}</div></div>
+      <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value">${formatUSD(totalHoldings)}</div></div>
+      <div class="stat-item"><div class="stat-label">Total Deposited</div><div class="stat-value green">${formatUSD(totalDeposited)}</div></div>
+      <div class="stat-item"><div class="stat-label">Total Withdrawn</div><div class="stat-value red">${formatUSD(totalWithdrawn)}</div></div>
+      <div class="stat-item"><div class="stat-label">Pending Deposits</div><div class="stat-value gold">${pendingDeposits}</div></div>
+      <div class="stat-item"><div class="stat-label">Pending Withdrawals</div><div class="stat-value gold">${pendingWithdrawals}</div></div>
       <div class="stat-item"><div class="stat-label">Total Trades</div><div class="stat-value">${totalTrades}</div></div>
-      <div class="stat-item"><div class="stat-label">Total Volume</div><div class="stat-value">${formatUSD(totalVol)}</div></div>
+      <div class="stat-item"><div class="stat-label">Total Transactions</div><div class="stat-value">${totalTx}</div></div>
+      <div class="stat-item"><div class="stat-label">Total Coins</div><div class="stat-value">${totalCoins}</div></div>
     </div>`;
     container.innerHTML = html;
   }
@@ -959,14 +1039,17 @@
   async function renderAdminUsers() {
     const container = document.getElementById('adminContent');
     await loadAllUsers();
-    let html = '<div class="admin-list">';
+    let html = '<div class="table-responsive"><table><thead><tr><th>User</th><th>Email</th><th>UID</th><th>Balance</th><th>Holdings</th><th>Coins</th><th>Deposited</th><th>Withdrawn</th><th>Trades</th></tr></thead><tbody>';
     for(const [uid, data] of Object.entries(allUsers)) {
       const portVal = (data.holdings) ? Object.entries(data.holdings).reduce((sum,[sym,qty])=>{ const c=coinsData[sym]; return sum + (c?qty*c.price:0); },0) : 0;
-      const txCount = allTransactions.filter(t=>t.uid===uid).length;
-      html += `<div class="item"><span class="label">${data.displayName||'User'}</span><span class="value">${data.email||''}</span><span class="value">${formatUSD(data.virtualBalance||0)}</span><span class="value">${formatUSD(portVal)}</span><span class="text-muted">${txCount} txs</span></div>`;
+      const coinCount = Object.keys(data.holdings||{}).filter(k=>data.holdings[k]>0).length;
+      const deposited = allTransactions.filter(t=>t.uid===uid && t.type==='DEPOSIT').reduce((s,t)=>s+(t.amount||0),0);
+      const withdrawn = allTransactions.filter(t=>t.uid===uid && t.type==='WITHDRAWAL').reduce((s,t)=>s+(t.amount||0),0);
+      const trades = allTransactions.filter(t=>t.uid===uid && (t.type==='BUY'||t.type==='SELL')).length;
+      html += `<tr><td>${data.displayName||'User'}</td><td>${data.email||''}</td><td style="font-size:11px;">${uid.slice(0,8)}</td><td>${formatUSD(data.virtualBalance||0)}</td><td>${formatUSD(portVal)}</td><td>${coinCount}</td><td>${formatUSD(deposited)}</td><td>${formatUSD(withdrawn)}</td><td>${trades}</td></tr>`;
     }
-    html += '</div>';
-    container.innerHTML = html || '<div class="text-muted">No users</div>';
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
   }
 
   async function renderAdminDeposits() {
@@ -1027,24 +1110,96 @@
     renderAdminDeposits();
   }
 
+  async function renderAdminWithdrawals() {
+    const container = document.getElementById('adminContent');
+    await loadWithdrawals();
+    let html = '<div class="admin-list">';
+    for(const wd of allWithdrawals.slice().reverse()) {
+      const status = wd.status || 'PENDING';
+      html += `<div class="item flex-between"><span>${wd.withdrawalId||'—'}</span><span>${wd.userName||'User'}</span><span>${formatUSD(wd.amount)}</span><span class="badge badge-${status.toLowerCase()}">${status}</span>
+        ${status==='PENDING' ? `<button class="btn btn-sm btn-success" data-approve-wd="${wd.withdrawalId}">Approve</button><button class="btn btn-sm btn-danger" data-reject-wd="${wd.withdrawalId}">Reject</button>` : ''}
+      </div>`;
+    }
+    html += '</div>';
+    container.innerHTML = html;
+    document.querySelectorAll('[data-approve-wd]').forEach(el=>{
+      el.addEventListener('click', async ()=>{
+        const withdrawalId = el.dataset.approveWd;
+        await processWithdrawal(withdrawalId, 'APPROVED');
+      });
+    });
+    document.querySelectorAll('[data-reject-wd]').forEach(el=>{
+      el.addEventListener('click', async ()=>{
+        const withdrawalId = el.dataset.rejectWd;
+        await processWithdrawal(withdrawalId, 'REJECTED');
+      });
+    });
+  }
+
+  async function processWithdrawal(withdrawalId, newStatus) {
+    const wdRef = ref(db, 'withdrawals');
+    const snap = await get(wdRef);
+    const wds = snap.exists() ? snap.val() : {};
+    let foundKey = null;
+    for(const [key, d] of Object.entries(wds)) {
+      if(d.withdrawalId===withdrawalId) { foundKey=key; break; }
+    }
+    if(!foundKey) return toast('Withdrawal not found','error');
+    const wd = wds[foundKey];
+    if(wd.status !== 'PENDING') return toast('Withdrawal already processed','error');
+    await update(ref(db, 'withdrawals/'+foundKey), { status: newStatus, processedAt: serverTimestamp() });
+    if(newStatus === 'APPROVED') {
+      const userRef = ref(db, 'users/'+wd.uid);
+      const userSnap = await get(userRef);
+      if(userSnap.exists()) {
+        const user = userSnap.val();
+        const newBalance = (user.virtualBalance||0) - wd.amount;
+        if(newBalance < 0) return toast('Insufficient balance for withdrawal','error');
+        await update(userRef, { virtualBalance: newBalance });
+        const txRef = push(ref(db, 'transactions'));
+        await set(txRef, { uid: wd.uid, type: 'WITHDRAWAL', amount: wd.amount, coin: 'USD', timestamp: serverTimestamp() });
+        toast(`Withdrawal ${withdrawalId} approved, ${formatUSD(wd.amount)} deducted`,'success');
+      }
+    } else {
+      toast(`Withdrawal ${withdrawalId} rejected`,'error');
+    }
+    await loadWithdrawals();
+    await loadTransactions();
+    renderAll();
+    renderAdminWithdrawals();
+  }
+
   function renderAdminCoins() {
     const container = document.getElementById('adminContent');
     let html = '<div class="admin-list">';
     for(const [sym, coin] of Object.entries(coinsData)) {
       html += `<div class="item flex-between" style="flex-wrap:wrap;gap:6px;">
-        <span><strong>${coin.name}</strong> (${sym}) ${getCoinLogo(sym)}</span>
+        <span>${getCoinLogo(sym)} <strong>${coin.name}</strong> (${sym})</span>
         <span>${formatUSD(coin.price)}</span>
         <span style="font-size:11px;color:#7f92a8;">Min: ${formatUSD(coin.min||0)} Max: ${formatUSD(coin.max||999)}</span>
         <span><input type="number" id="priceInput_${sym}" value="${coin.price}" step="0.01" min="0.01" style="width:70px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:12px;" /></span>
-        <span><input type="number" id="minInput_${sym}" value="${coin.min||0}" step="0.01" min="0" style="width:60px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:11px;" placeholder="min" /></span>
-        <span><input type="number" id="maxInput_${sym}" value="${coin.max||999}" step="0.01" min="0" style="width:60px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:11px;" placeholder="max" /></span>
+        <span><input type="number" id="minInput_${sym}" value="${coin.min||0}" step="0.01" min="0" style="width:55px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:11px;" placeholder="min" /></span>
+        <span><input type="number" id="maxInput_${sym}" value="${coin.max||999}" step="0.01" min="0" style="width:55px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:11px;" placeholder="max" /></span>
         <button class="btn btn-sm btn-outline" data-set-price="${sym}">Set</button>
         <button class="btn btn-sm btn-outline" data-set-range="${sym}">Range</button>
-        <button class="btn btn-sm btn-outline" data-inc-price="${sym}">+5%</button>
-        <button class="btn btn-sm btn-outline" data-dec-price="${sym}">-5%</button>
-        <button class="btn btn-sm ${coin.auto?'btn-success':'btn-outline'}" data-toggle-auto="${sym}">${coin.auto?'Auto ON':'Auto OFF'}</button>
+        <button class="btn btn-sm ${coin.auto?'btn-success':'btn-outline'}" data-toggle-auto="${sym}">${coin.auto?'ON':'OFF'}</button>
+        <button class="btn btn-sm btn-danger" data-delete-coin="${sym}">×</button>
       </div>`;
     }
+    html += `<div class="item" style="border-left-color:#f0b90b;">
+      <button class="btn btn-primary btn-sm" onclick="document.getElementById('addCoinForm').style.display='block'">+ Add Coin</button>
+      <div id="addCoinForm" style="display:none;width:100%;margin-top:10px;">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <input type="text" id="newCoinName" placeholder="Name" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:120px;" />
+          <input type="text" id="newCoinSymbol" placeholder="Symbol" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:80px;" />
+          <input type="number" id="newCoinPrice" placeholder="Price" step="0.01" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:80px;" />
+          <input type="number" id="newCoinMin" placeholder="Min" step="0.01" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:70px;" />
+          <input type="number" id="newCoinMax" placeholder="Max" step="0.01" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:70px;" />
+          <button class="btn btn-sm btn-success" id="confirmAddCoin">Add</button>
+          <button class="btn btn-sm btn-outline" onclick="document.getElementById('addCoinForm').style.display='none'">Cancel</button>
+        </div>
+      </div>
+    </div>`;
     html += '</div>';
     container.innerHTML = html;
     
@@ -1079,26 +1234,6 @@
       });
     });
     
-    document.querySelectorAll('[data-inc-price]').forEach(el=>{
-      el.addEventListener('click', ()=>{
-        const sym = el.dataset.incPrice;
-        const coin = coinsData[sym];
-        if(!coin) return;
-        let newPrice = coin.price * 1.05;
-        if (coin.max && newPrice > coin.max) newPrice = coin.max;
-        updateCoinPrice(sym, newPrice);
-      });
-    });
-    document.querySelectorAll('[data-dec-price]').forEach(el=>{
-      el.addEventListener('click', ()=>{
-        const sym = el.dataset.decPrice;
-        const coin = coinsData[sym];
-        if(!coin) return;
-        let newPrice = coin.price * 0.95;
-        if (coin.min && newPrice < coin.min) newPrice = coin.min;
-        updateCoinPrice(sym, newPrice);
-      });
-    });
     document.querySelectorAll('[data-toggle-auto]').forEach(el=>{
       el.addEventListener('click', async ()=>{
         const sym = el.dataset.toggleAuto;
@@ -1110,6 +1245,37 @@
         renderAdminCoins();
         toast(`${sym} auto movement ${coin.auto?'enabled':'disabled'}`,'success');
       });
+    });
+    
+    document.querySelectorAll('[data-delete-coin]').forEach(el=>{
+      el.addEventListener('click', async ()=>{
+        const sym = el.dataset.deleteCoin;
+        if(!confirm(`Delete ${sym}?`)) return;
+        const coinRef = ref(db, 'coins/'+sym);
+        await set(coinRef, null);
+        delete coinsData[sym];
+        toast(`${sym} deleted`,'success');
+        renderAll();
+        renderAdminCoins();
+      });
+    });
+    
+    document.getElementById('confirmAddCoin')?.addEventListener('click', async ()=>{
+      const name = document.getElementById('newCoinName').value.trim();
+      const symbol = document.getElementById('newCoinSymbol').value.trim().toUpperCase();
+      const price = parseFloat(document.getElementById('newCoinPrice').value);
+      const min = parseFloat(document.getElementById('newCoinMin').value) || 0;
+      const max = parseFloat(document.getElementById('newCoinMax').value) || 999;
+      if(!name || !symbol || !price || price<=0) return toast('Invalid coin data','error');
+      if(coinsData[symbol]) return toast('Symbol already exists','error');
+      const newCoin = { price, change:0, symbol, name, min, max, auto:true, color:'#f0b90b' };
+      const coinRef = ref(db, 'coins/'+symbol);
+      await set(coinRef, newCoin);
+      coinsData[symbol] = newCoin;
+      toast(`Coin ${name} (${symbol}) added`,'success');
+      document.getElementById('addCoinForm').style.display = 'none';
+      renderAll();
+      renderAdminCoins();
     });
   }
 
@@ -1144,16 +1310,68 @@
     }
   }
 
-  async function renderAdminPortfolio() {
+  function renderAdminSettings() {
     const container = document.getElementById('adminContent');
-    await loadAllUsers();
-    let html = '<div class="admin-list"><div class="text-muted" style="margin-bottom:10px;">User Portfolio Overview</div>';
-    for(const [uid, data] of Object.entries(allUsers)) {
-      const portVal = (data.holdings) ? Object.entries(data.holdings).reduce((sum,[sym,qty])=>{ const c=coinsData[sym]; return sum + (c?qty*c.price:0); },0) : 0;
-      html += `<div class="item"><span class="label">${data.displayName||'User'}</span><span class="value">Balance: ${formatUSD(data.virtualBalance||0)}</span><span class="value">Portfolio: ${formatUSD(portVal)}</span></div>`;
-    }
-    html += '</div>';
+    const html = `
+      <div class="card">
+        <h4 style="margin-bottom:12px;">Admin Management</h4>
+        <div class="field">
+          <label>Current Admin UIDs</label>
+          <div id="adminList" style="background:#0d141e;border-radius:8px;padding:10px;margin-bottom:8px;max-height:150px;overflow-y:auto;"></div>
+        </div>
+        <div class="field">
+          <label>Add Admin UID</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="newAdminUid" placeholder="Enter user UID" style="flex:1;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:8px 12px;color:#e8edf5;" />
+            <button class="btn btn-primary btn-sm" id="addAdminBtn">Add</button>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-size:12px;color:#7f92a8;">
+          Note: Only users with admin UID can access the admin dashboard.
+          To get a user's UID, check the Profile page or Firebase Authentication.
+        </div>
+      </div>
+    `;
     container.innerHTML = html;
+    
+    // Load current admins
+    const adminRef = ref(db, 'settings/admins');
+    get(adminRef).then(snap => {
+      const admins = snap.exists() ? snap.val() : [];
+      const list = document.getElementById('adminList');
+      if(list) {
+        list.innerHTML = admins.length ? admins.map(uid => 
+          `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #1f2937;">
+            <span style="font-family:monospace;font-size:12px;">${uid}</span>
+            <button class="btn btn-sm btn-danger" data-remove-admin="${uid}">Remove</button>
+          </div>`
+        ).join('') : '<div class="text-muted">No admins configured</div>';
+        
+        document.querySelectorAll('[data-remove-admin]').forEach(el=>{
+          el.addEventListener('click', async ()=>{
+            const uid = el.dataset.removeAdmin;
+            const current = admins.filter(u => u !== uid);
+            await set(adminRef, current);
+            toast('Admin removed','success');
+            renderAdminSettings();
+          });
+        });
+      }
+    });
+    
+    document.getElementById('addAdminBtn')?.addEventListener('click', async ()=>{
+      const uid = document.getElementById('newAdminUid').value.trim();
+      if(!uid) return toast('Enter a UID','error');
+      const adminRef = ref(db, 'settings/admins');
+      const snap = await get(adminRef);
+      const admins = snap.exists() ? snap.val() : [];
+      if(admins.includes(uid)) return toast('Admin already exists','error');
+      admins.push(uid);
+      await set(adminRef, admins);
+      toast('Admin added','success');
+      document.getElementById('newAdminUid').value = '';
+      renderAdminSettings();
+    });
   }
 
   // ---- admin tabs ----
@@ -1165,9 +1383,10 @@
       if(tab==='overview') renderAdminOverview();
       else if(tab==='users') renderAdminUsers();
       else if(tab==='deposits') renderAdminDeposits();
+      else if(tab==='withdrawals') renderAdminWithdrawals();
       else if(tab==='coins') renderAdminCoins();
       else if(tab==='transactions') renderAdminTransactions();
-      else if(tab==='portfolio') renderAdminPortfolio();
+      else if(tab==='settings') renderAdminSettings();
     });
   });
   document.querySelector('[data-admin-tab="overview"]')?.classList.add('btn-primary');
@@ -1179,10 +1398,10 @@
       for(const sym of Object.keys(coinsData)) {
         const coin = coinsData[sym];
         if(!coin.auto) continue;
-        const change = (Math.random()*2 - 1) * 0.8;
+        const change = (Math.random()*2 - 1) * 0.6;
         let newPrice = coin.price * (1 + change/100);
-        if(coin.min && newPrice < coin.min) newPrice = coin.min + Math.random() * 0.5;
-        if(coin.max && newPrice > coin.max) newPrice = coin.max - Math.random() * 0.5;
+        if(coin.min && newPrice < coin.min) newPrice = coin.min + Math.random() * 0.3;
+        if(coin.max && newPrice > coin.max) newPrice = coin.max - Math.random() * 0.3;
         if(newPrice > 0.01) {
           coin.price = newPrice;
           coin.change = Math.min(10, Math.max(-10, (coin.change||0) + change*0.1));
@@ -1191,14 +1410,15 @@
         }
       }
       renderAll();
-    }, 8000);
+    }, 10000);
   }
 
   // ---- init ----
   setupLongPress();
   console.log('✅ Binance Coin Get · Simulator loaded');
   console.log('ℹ️ New users start with $0.00 balance');
-  console.log('ℹ️ Admin approval required for deposits');
+  console.log('ℹ️ 30 virtual coins available');
+  console.log('ℹ️ Admin approval required for deposits and withdrawals');
   console.log('ℹ️ Long-press the empty area below transactions for 5 seconds to access admin');
 </script>
 </body>
