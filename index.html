@@ -980,7 +980,7 @@
         }
 
         /* ============================================================
-           AUTHENTICATED PLATFORM — FULL
+           AUTHENTICATED PLATFORM — ORIGINAL
            ============================================================ */
         .platform {
             display: none;
@@ -991,7 +991,7 @@
             display: block;
         }
 
-        /* Platform Navbar */
+        /* Platform Navbar — Original */
         .platform-nav {
             position: sticky;
             top: 0;
@@ -1158,7 +1158,7 @@
             }
         }
 
-        /* Platform Content */
+        /* Platform Content — Original */
         .platform-content {
             padding: 24px 32px;
             max-width: 1400px;
@@ -1170,177 +1170,180 @@
             }
         }
 
-        /* Platform Stats */
-        .plat-stats {
+        /* Dashboard Stats — Original */
+        .dash-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 12px;
             margin-bottom: 24px;
         }
-        .plat-stat {
+        .dash-stat {
             background: var(--bg-card);
             border: 1px solid var(--border-light);
             border-radius: var(--radius);
             padding: 14px 18px;
         }
-        .plat-stat .label {
+        .dash-stat .label {
             font-size: 11px;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.04em;
         }
-        .plat-stat .value {
+        .dash-stat .value {
             font-size: 22px;
             font-weight: 600;
             margin-top: 2px;
         }
-        .plat-stat .value.gold {
+        .dash-stat .value.gold {
             color: var(--gold);
         }
-        .plat-stat .value.green {
+        .dash-stat .value.green {
             color: var(--green);
         }
-        .plat-stat .value.red {
+        .dash-stat .value.red {
             color: var(--red);
         }
 
-        /* Platform Market Table */
-        .plat-table {
+        /* Original Three Tokens */
+        .tokens-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .token-card {
             background: var(--bg-card);
             border: 1px solid var(--border-light);
             border-radius: var(--radius-lg);
-            overflow: hidden;
+            padding: 20px;
+            transition: var(--transition);
         }
-        .plat-table .header {
-            padding: 14px 20px;
-            border-bottom: 1px solid var(--border-subtle);
+        .token-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-2px);
+        }
+        .token-card .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
+            margin-bottom: 12px;
         }
-        .plat-table .header .title {
-            font-weight: 500;
-            font-size: 15px;
+        .token-card .token-name {
+            font-size: 16px;
+            font-weight: 600;
         }
-        .plat-table .filters {
+        .token-card .token-symbol {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .token-card .token-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-        }
-        .plat-table .filters button {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: var(--font);
-        }
-        .plat-table .filters button:hover {
-            color: var(--text-primary);
-            background: var(--bg-secondary);
-        }
-        .plat-table .filters button.active {
-            color: var(--gold);
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
             background: var(--gold-dim);
+            color: var(--gold);
         }
-        .plat-table table {
-            width: 100%;
-            border-collapse: collapse;
+        .token-card .price {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 4px 0;
+        }
+        .token-card .change {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .token-card .change.up {
+            color: var(--green);
+        }
+        .token-card .change.down {
+            color: var(--red);
+        }
+        .token-card .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .token-card .actions .btn {
+            flex: 1;
+            justify-content: center;
             font-size: 13px;
-        }
-        .plat-table th {
-            text-align: left;
-            padding: 10px 20px;
-            color: var(--text-muted);
-            font-weight: 500;
-            border-bottom: 1px solid var(--border-subtle);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-        .plat-table td {
-            padding: 10px 20px;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        .plat-table tr:hover td {
-            background: var(--bg-secondary);
-        }
-        .plat-table .btn-trade {
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
-            border: none;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .plat-table .btn-trade.buy {
-            background: var(--green);
-            color: var(--text-inverse);
-        }
-        .plat-table .btn-trade.buy:hover {
-            background: #16a34a;
-        }
-        .plat-table .btn-trade.sell {
-            background: var(--red);
-            color: #fff;
-        }
-        .plat-table .btn-trade.sell:hover {
-            background: #dc2626;
+            padding: 8px 12px;
         }
 
         @media(max-width:768px) {
-            .plat-table {
-                overflow-x: auto;
+            .tokens-grid {
+                grid-template-columns: 1fr 1fr;
             }
-            .plat-table table {
-                font-size: 12px;
-                min-width: 600px;
-            }
-            .plat-table th,
-            .plat-table td {
-                padding: 8px 14px;
+        }
+        @media(max-width:480px) {
+            .tokens-grid {
+                grid-template-columns: 1fr;
             }
         }
 
-        /* Platform Tabs */
-        .plat-tabs {
-            display: flex;
-            gap: 4px;
-            border-bottom: 1px solid var(--border-subtle);
-            margin-bottom: 20px;
+        /* Original Sections */
+        .section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
         }
-        .plat-tabs button {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: var(--font);
-            border-bottom: 2px solid transparent;
+        .section-card .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
         }
-        .plat-tabs button:hover {
-            color: var(--text-primary);
-        }
-        .plat-tabs button.active {
+        .section-card .section-title i {
             color: var(--gold);
-            border-bottom-color: var(--gold);
+            margin-right: 8px;
         }
 
-        /* Platform Panel */
-        .plat-panel {
-            display: none;
+        .section-card .field {
+            margin-bottom: 14px;
         }
-        .plat-panel.active {
+        .section-card .field label {
             display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .section-card .field input {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            font-family: var(--font);
+            transition: var(--transition);
+        }
+        .section-card .field input:focus {
+            border-color: var(--gold);
+        }
+        .section-card .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 14px;
+        }
+        .section-card .info-row .label {
+            color: var(--text-muted);
+        }
+        .section-card .info-row .value {
+            color: var(--text-primary);
+            font-weight: 500;
         }
 
         /* ============================================================
@@ -1868,7 +1871,7 @@
     </div>
 
     <!-- ============================================================
-    AUTHENTICATED PLATFORM
+    AUTHENTICATED PLATFORM — ORIGINAL
     ============================================================ -->
     <div class="platform" id="platformApp">
 
@@ -1879,20 +1882,21 @@
                     <span class="mark">BINANCE</span>COIN <span style="font-weight:400;color:var(--text-muted);">GET</span>
                 </a>
                 <ul class="nav-links" id="platNavLinks">
-                    <li><button class="active" data-tab="markets">Markets</button></li>
-                    <li><button data-tab="assets">Assets</button></li>
-                    <li><button data-tab="orders">Orders</button></li>
+                    <li><button class="active" data-tab="dashboard">Dashboard</button></li>
+                    <li><button data-tab="tokens">Tokens</button></li>
                     <li><button data-tab="deposit">Deposit</button></li>
                     <li><button data-tab="withdraw">Withdraw</button></li>
-                    <li><button data-tab="insights">AI Insights</button></li>
+                    <li><button data-tab="recommend">Recommend</button></li>
+                    <li><button data-tab="profile">Profile</button></li>
                 </ul>
                 <div class="nav-right">
                     <div class="user-menu">
                         <div class="avatar" id="userAvatar">T</div>
                         <div class="dropdown">
                             <a href="#" data-tab="profile"><i class="fas fa-user"></i> Profile</a>
-                            <a href="#" data-tab="assets"><i class="fas fa-wallet"></i> Assets</a>
-                            <a href="#" data-tab="orders"><i class="fas fa-list"></i> Orders</a>
+                            <a href="#" data-tab="tokens"><i class="fas fa-coins"></i> Tokens</a>
+                            <a href="#" data-tab="deposit"><i class="fas fa-plus-circle"></i> Deposit</a>
+                            <a href="#" data-tab="withdraw"><i class="fas fa-arrow-right"></i> Withdraw</a>
                             <div class="divider"></div>
                             <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
                         </div>
@@ -1907,171 +1911,111 @@
         <!-- Platform Content -->
         <div class="platform-content">
 
-            <!-- Stats -->
-            <div class="plat-stats" id="platStats"></div>
+            <!-- Dashboard Stats -->
+            <div class="dash-stats" id="dashStats"></div>
 
             <!-- Tabs -->
-            <div class="plat-tabs" id="platTabs">
-                <button class="active" data-tab="markets">Markets</button>
-                <button data-tab="assets">Assets</button>
-                <button data-tab="orders">Orders</button>
-                <button data-tab="deposit">Deposit</button>
-                <button data-tab="withdraw">Withdraw</button>
-                <button data-tab="insights">AI Insights</button>
-                <button data-tab="profile">Profile</button>
+            <div class="plat-tabs" id="platTabs" style="display:flex;gap:4px;border-bottom:1px solid var(--border-subtle);margin-bottom:20px;">
+                <button class="active" data-tab="dashboard" style="background:none;border:none;color:var(--text-muted);padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;transition:var(--transition);font-family:var(--font);border-bottom:2px solid transparent;">Dashboard</button>
+                <button data-tab="tokens" style="background:none;border:none;color:var(--text-muted);padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;transition:var(--transition);font-family:var(--font);border-bottom:2px solid transparent;">Tokens</button>
+                <button data-tab="deposit" style="background:none;border:none;color:var(--text-muted);padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;transition:var(--transition);font-family:var(--font);border-bottom:2px solid transparent;">Deposit</button>
+                <button data-tab="withdraw" style="background:none;border:none;color:var(--text-muted);padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;transition:var(--transition);font-family:var(--font);border-bottom:2px solid transparent;">Withdraw</button>
+                <button data-tab="recommend" style="background:none;border:none;color:var(--text-muted);padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;transition:var(--transition);font-family:var(--font);border-bottom:2px solid transparent;">Recommend</button>
+                <button data-tab="profile" style="background:none;border:none;color:var(--text-muted);padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;transition:var(--transition);font-family:var(--font);border-bottom:2px solid transparent;">Profile</button>
             </div>
 
-            <!-- Markets Panel -->
-            <div class="plat-panel active" id="panel-markets">
-                <div class="plat-table">
-                    <div class="header">
-                        <span class="title"><i class="fas fa-chart-line"></i> Market</span>
-                        <div class="filters" id="marketFilters">
-                            <button class="active" data-filter="all">All</button>
-                            <button data-filter="gainers">Gainers</button>
-                            <button data-filter="losers">Losers</button>
-                        </div>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr><th>Asset</th><th>Price</th><th>24h</th><th>High</th><th>Low</th><th>Volume</th><th>Action</th></tr>
-                        </thead>
-                        <tbody id="marketTableBody"></tbody>
-                    </table>
+            <!-- Dashboard Panel -->
+            <div class="plat-panel active" id="panel-dashboard">
+                <div class="section-card">
+                    <div class="section-title"><i class="fas fa-chart-pie"></i> Portfolio Overview</div>
+                    <div class="info-row"><span class="label">Virtual Balance</span><span class="value text-gold" id="dashBalance">$10,000.00</span></div>
+                    <div class="info-row"><span class="label">Portfolio Value</span><span class="value" id="dashPortfolio">$10,000.00</span></div>
+                    <div class="info-row"><span class="label">Total Trades</span><span class="value" id="dashTrades">0</span></div>
+                    <div class="info-row"><span class="label">Today's P/L</span><span class="value text-green" id="dashPL">+$0.00</span></div>
+                </div>
+                <div class="section-card">
+                    <div class="section-title"><i class="fas fa-clock"></i> Recent Activity</div>
+                    <div id="recentActivity" style="color:var(--text-muted);font-size:14px;">No recent activity</div>
                 </div>
             </div>
 
-            <!-- Assets Panel -->
-            <div class="plat-panel" id="panel-assets">
-                <div class="plat-table">
-                    <div class="header">
-                        <span class="title"><i class="fas fa-wallet"></i> Your Assets</span>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr><th>Asset</th><th>Quantity</th><th>Avg Price</th><th>Current</th><th>Value</th><th>P/L</th><th>P/L %</th></tr>
-                        </thead>
-                        <tbody id="assetsBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Orders Panel -->
-            <div class="plat-panel" id="panel-orders">
-                <div class="plat-table">
-                    <div class="header">
-                        <span class="title"><i class="fas fa-list"></i> Order History</span>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr><th>Asset</th><th>Type</th><th>Quantity</th><th>Price</th><th>Total</th><th>Status</th><th>Date</th></tr>
-                        </thead>
-                        <tbody id="ordersBody"></tbody>
-                    </table>
-                </div>
+            <!-- Tokens Panel -->
+            <div class="plat-panel" id="panel-tokens">
+                <div class="tokens-grid" id="tokensGrid"></div>
             </div>
 
             <!-- Deposit Panel -->
             <div class="plat-panel" id="panel-deposit">
-                <div class="plat-table">
-                    <div class="header">
-                        <span class="title"><i class="fas fa-plus-circle"></i> Virtual Deposit</span>
+                <div class="section-card">
+                    <div class="section-title"><i class="fas fa-plus-circle"></i> Virtual Deposit</div>
+                    <div class="info-row"><span class="label">Current Balance</span><span class="value text-gold" id="depositBalance">$10,000.00</span></div>
+                    <div class="field">
+                        <label>Deposit Amount (USD)</label>
+                        <input type="number" id="depositAmount" placeholder="Enter amount" min="1" step="1" value="100" />
                     </div>
-                    <div style="padding:20px;">
-                        <div class="field">
-                            <label>Current Virtual Balance</label>
-                            <div class="info-value text-gold" id="depositBalance">$10,000.00</div>
-                        </div>
-                        <div class="field">
-                            <label>Deposit Amount (USD)</label>
-                            <input type="number" id="depositAmount" placeholder="Enter amount" min="1" step="1" value="100" />
-                        </div>
-                        <button class="btn btn-primary" id="depositBtn">Process Virtual Deposit</button>
-                        <div style="margin-top:16px;font-size:12px;color:var(--text-muted);">This is a virtual deposit simulation. No real funds are processed.</div>
-                        <div style="margin-top:16px;">
-                            <h4 style="font-weight:500;font-size:14px;margin-bottom:8px;">Deposit History</h4>
-                            <div id="depositHistory"></div>
-                        </div>
+                    <button class="btn btn-primary" id="depositBtn">Process Virtual Deposit</button>
+                    <div style="margin-top:12px;font-size:12px;color:var(--text-muted);">This is a virtual deposit simulation. No real funds are processed.</div>
+                    <div style="margin-top:16px;">
+                        <h4 style="font-weight:500;font-size:14px;margin-bottom:8px;">Deposit History</h4>
+                        <div id="depositHistory"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Withdraw Panel -->
             <div class="plat-panel" id="panel-withdraw">
-                <div class="plat-table">
-                    <div class="header">
-                        <span class="title"><i class="fas fa-arrow-right"></i> Virtual Withdrawal</span>
+                <div class="section-card">
+                    <div class="section-title"><i class="fas fa-arrow-right"></i> Virtual Withdrawal</div>
+                    <div class="info-row"><span class="label">Available Balance</span><span class="value text-gold" id="withdrawBalance">$10,000.00</span></div>
+                    <div class="field">
+                        <label>Withdrawal Amount (USD)</label>
+                        <input type="number" id="withdrawAmount" placeholder="Enter amount" min="1" step="1" value="50" />
                     </div>
-                    <div style="padding:20px;">
-                        <div class="field">
-                            <label>Available Balance</label>
-                            <div class="info-value text-gold" id="withdrawBalance">$10,000.00</div>
-                        </div>
-                        <div class="field">
-                            <label>Withdrawal Amount (USD)</label>
-                            <input type="number" id="withdrawAmount" placeholder="Enter amount" min="1" step="1" value="50" />
-                        </div>
-                        <div class="field">
-                            <label>Destination (demo)</label>
-                            <input type="text" id="withdrawDestination" placeholder="Enter destination address" value="0x..." />
-                        </div>
-                        <button class="btn btn-danger" id="withdrawBtn">Process Virtual Withdrawal</button>
-                        <div style="margin-top:16px;font-size:12px;color:var(--text-muted);">This is a virtual withdrawal simulation. No real funds are processed.</div>
-                        <div style="margin-top:16px;">
-                            <h4 style="font-weight:500;font-size:14px;margin-bottom:8px;">Withdrawal History</h4>
-                            <div id="withdrawHistory"></div>
-                        </div>
+                    <div class="field">
+                        <label>Destination (demo)</label>
+                        <input type="text" id="withdrawDestination" placeholder="Enter destination address" value="0x..." />
+                    </div>
+                    <button class="btn btn-danger" id="withdrawBtn">Process Virtual Withdrawal</button>
+                    <div style="margin-top:12px;font-size:12px;color:var(--text-muted);">This is a virtual withdrawal simulation. No real funds are processed.</div>
+                    <div style="margin-top:16px;">
+                        <h4 style="font-weight:500;font-size:14px;margin-bottom:8px;">Withdrawal History</h4>
+                        <div id="withdrawHistory"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- AI Insights Panel -->
-            <div class="plat-panel" id="panel-insights">
-                <div class="plat-table">
-                    <div class="header">
-                        <span class="title"><i class="fas fa-brain"></i> AI Market Intelligence</span>
+            <!-- Recommend Panel -->
+            <div class="plat-panel" id="panel-recommend">
+                <div class="section-card">
+                    <div class="section-title"><i class="fas fa-share-alt"></i> Refer & Earn</div>
+                    <div style="padding:12px;background:var(--bg-secondary);border-radius:var(--radius);margin-bottom:16px;">
+                        <div style="font-size:14px;margin-bottom:4px;">Your Referral Code</div>
+                        <div style="font-size:20px;font-weight:700;color:var(--gold);letter-spacing:2px;" id="referralCode">BCG-2026-XYZ</div>
                     </div>
-                    <div style="padding:20px;">
-                        <div class="ai-panel" style="border:none;padding:0;">
-                            <div class="grid" id="platAIGrid"></div>
-                        </div>
-                        <div style="margin-top:20px;">
-                            <h4 style="font-weight:500;font-size:14px;margin-bottom:8px;">AI Assistant</h4>
-                            <div class="chat-container" id="platChat">
-                                <div class="msg ai">👋 Hello! I'm your Trading AI. Ask me about your portfolio, market conditions, or trading strategies.</div>
-                                <div id="platChatMessages"></div>
-                                <div class="chat-input-row">
-                                    <input type="text" id="platChatInput" placeholder="Ask a question..." />
-                                    <button id="platChatSend"><i class="fas fa-paper-plane"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="info-row"><span class="label">Total Referrals</span><span class="value" id="totalReferrals">0</span></div>
+                    <div class="info-row"><span class="label">Referral Earnings</span><span class="value text-gold" id="referralEarnings">$0.00</span></div>
+                    <button class="btn btn-secondary" onclick="toast('Referral link copied!','success')"><i class="fas fa-copy"></i> Copy Referral Link</button>
+                    <div style="margin-top:12px;font-size:13px;color:var(--text-muted);">Share your referral code and earn virtual rewards when friends join.</div>
                 </div>
             </div>
 
             <!-- Profile Panel -->
             <div class="plat-panel" id="panel-profile">
-                <div class="plat-table">
-                    <div class="header">
-                        <span class="title"><i class="fas fa-user"></i> Profile</span>
-                    </div>
-                    <div style="padding:24px;">
-                        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
-                            <div class="avatar" style="width:56px;height:56px;font-size:24px;background:var(--gold-dim);color:var(--gold);" id="profileAvatar">T</div>
-                            <div>
-                                <h3 style="font-size:18px;" id="profileName">Trader</h3>
-                                <div style="color:var(--text-secondary);font-size:14px;" id="profileEmail">trader@example.com</div>
-                                <div style="color:var(--text-muted);font-size:12px;margin-top:2px;">Member since 2026</div>
-                            </div>
-                        </div>
-                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
-                            <div class="plat-stat"><div class="label">Status</div><div class="value text-green" style="font-size:16px;">Active</div></div>
-                            <div class="plat-stat"><div class="label">Virtual Balance</div><div class="value gold" style="font-size:16px;" id="profileBalance">$10,000</div></div>
-                            <div class="plat-stat"><div class="label">Total Trades</div><div class="value" style="font-size:16px;" id="profileTrades">0</div></div>
-                            <div class="plat-stat"><div class="label">Account Type</div><div class="value" style="font-size:16px;">Virtual</div></div>
+                <div class="section-card">
+                    <div class="section-title"><i class="fas fa-user"></i> Profile</div>
+                    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+                        <div class="avatar" style="width:56px;height:56px;font-size:24px;background:var(--gold-dim);color:var(--gold);" id="profileAvatar">T</div>
+                        <div>
+                            <h3 style="font-size:18px;" id="profileName">Trader</h3>
+                            <div style="color:var(--text-secondary);font-size:14px;" id="profileEmail">trader@example.com</div>
+                            <div style="color:var(--text-muted);font-size:12px;margin-top:2px;">Member since 2026</div>
                         </div>
                     </div>
+                    <div class="info-row"><span class="label">Account Status</span><span class="value text-green">Active</span></div>
+                    <div class="info-row"><span class="label">Virtual Balance</span><span class="value text-gold" id="profileBalance">$10,000.00</span></div>
+                    <div class="info-row"><span class="label">Total Trades</span><span class="value" id="profileTrades">0</span></div>
+                    <div class="info-row"><span class="label">Account Type</span><span class="value">Virtual</span></div>
+                    <button class="btn btn-secondary" style="margin-top:12px;" id="logoutProfileBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </div>
             </div>
 
@@ -2114,60 +2058,18 @@
         let transactions = [];
         let deposits = [];
         let withdrawals = [];
-        let currentFilter = 'all';
 
         // ============================================================
-        // MARKET DATA SERVICE
+        // TOKEN DATA — ORIGINAL THREE TOKENS
         // ============================================================
-        const marketService = {
-            assets: [
-                { id: 'btc', symbol: 'BTC', name: 'Bitcoin', price: 43250, change24h: 2.4, high: 43800, low: 42800,
-                    volume: '28.5B', color: '#f7931a' },
-                { id: 'eth', symbol: 'ETH', name: 'Ethereum', price: 2250, change24h: 1.8, high: 2280, low: 2220,
-                    volume: '15.2B', color: '#627eea' },
-                { id: 'bnb', symbol: 'BNB', name: 'BNB', price: 315, change24h: -0.5, high: 318, low: 312,
-                volume: '1.8B', color: '#f0b90b' },
-                { id: 'sol', symbol: 'SOL', name: 'Solana', price: 98, change24h: 5.2, high: 100, low: 95, volume: '3.2B',
-                    color: '#9945ff' },
-                { id: 'xrp', symbol: 'XRP', name: 'XRP', price: 0.62, change24h: -1.2, high: 0.63, low: 0.61,
-                    volume: '2.1B', color: '#00aae4' },
-                { id: 'doge', symbol: 'DOGE', name: 'Dogecoin', price: 0.082, change24h: 3.7, high: 0.084, low: 0.080,
-                    volume: '0.8B', color: '#c2a633' },
-                { id: 'ada', symbol: 'ADA', name: 'Cardano', price: 0.48, change24h: 0.3, high: 0.49, low: 0.47,
-                    volume: '0.9B', color: '#0033ad' },
-                { id: 'avax', symbol: 'AVAX', name: 'Avalanche', price: 38, change24h: 4.1, high: 39, low: 37,
-                    volume: '1.2B', color: '#e84142' },
-                { id: 'link', symbol: 'LINK', name: 'Chainlink', price: 14.5, change24h: -2.3, high: 14.8, low: 14.2,
-                    volume: '0.6B', color: '#375bd2' },
-                { id: 'dot', symbol: 'DOT', name: 'Polkadot', price: 7.2, change24h: 1.1, high: 7.3, low: 7.1,
-                    volume: '0.5B', color: '#e6007a' }
-            ],
-
-            getAssets() { return this.assets; },
-            getAsset(id) { return this.assets.find(a => a.id === id); },
-
-            getMarketStats() {
-                const avgChange = this.assets.reduce((s, a) => s + a.change24h, 0) / this.assets.length;
-                const totalVolume = this.assets.reduce((s, a) => s + parseFloat(a.volume), 0);
-                const volatility = Math.abs(avgChange) > 3 ? 'High' : Math.abs(avgChange) > 1 ? 'Medium' : 'Low';
-                return {
-                    sentiment: avgChange > 1 ? 'Bullish' : avgChange < -1 ? 'Bearish' : 'Neutral',
-                    volume: totalVolume,
-                    volatility
-                };
-            },
-
-            getAIInsights() {
-                const stats = this.getMarketStats();
-                return {
-                    trend: stats.sentiment,
-                    volatility: stats.volatility,
-                    momentum: stats.sentiment === 'Bullish' ? 'Positive' : stats.sentiment === 'Bearish' ? 'Negative' :
-                        'Neutral',
-                    summary: `The market is currently showing ${stats.sentiment.toLowerCase()} momentum with ${stats.volatility.toLowerCase()} volatility. ${stats.sentiment === 'Bullish' ? 'Market conditions suggest positive short-term movement.' : stats.sentiment === 'Bearish' ? 'Market conditions suggest caution.' : 'Market conditions are neutral.'}`
-                };
-            }
-        };
+        const tokens = [
+            { id: 'maxora', symbol: 'MXR', name: 'Maxora', price: 12.50, change: 2.4, color: '#f0b90b',
+            logo: 'M' },
+            { id: 'quantrara', symbol: 'QTR', name: 'Quantrara', price: 7.80, change: -1.2, color: '#3b82f6',
+            logo: 'Q' },
+            { id: 'veltrix', symbol: 'VTX', name: 'Veltrix', price: 25.40, change: 5.7, color: '#22c55e',
+            logo: 'V' }
+        ];
 
         // ============================================================
         // DOM HELPERS
@@ -2283,32 +2185,38 @@
         // ============================================================
         function renderPublicMarket() {
             const grid = document.getElementById('publicMarketGrid');
-            const assets = marketService.getAssets().slice(0, 6);
-            grid.innerHTML = assets.map(a => `
+            const publicTokens = tokens.map(t => ({ symbol: t.symbol, name: t.name, price: t.price, change24h: t.change }));
+            grid.innerHTML = publicTokens.map(t => `
                     <div class="market-item">
                         <div class="top">
-                            <span class="symbol">${a.symbol}</span>
-                            <span class="name">${a.name}</span>
+                            <span class="symbol">${t.symbol}</span>
+                            <span class="name">${t.name}</span>
                         </div>
-                        <div class="price">${formatUSD(a.price)}</div>
-                        <div class="change ${a.change24h >= 0 ? 'up' : 'down'}">${a.change24h >= 0 ? '+' : ''}${a.change24h.toFixed(2)}%</div>
+                        <div class="price">${formatUSD(t.price)}</div>
+                        <div class="change ${t.change24h >= 0 ? 'up' : 'down'}">${t.change24h >= 0 ? '+' : ''}${t.change24h.toFixed(2)}%</div>
                     </div>
                 `).join('');
 
-            const stats = marketService.getMarketStats();
-            document.getElementById('publicSentiment').textContent = stats.sentiment;
-            document.getElementById('publicVolume').textContent = formatUSD(stats.volume);
-            document.getElementById('publicVolatility').textContent = stats.volatility;
+            const avgChange = tokens.reduce((s, t) => s + t.change, 0) / tokens.length;
+            const totalVolume = tokens.reduce((s, t) => s + (t.price * 1000), 0);
+            const volatility = Math.abs(avgChange) > 3 ? 'High' : Math.abs(avgChange) > 1 ? 'Medium' : 'Low';
+            document.getElementById('publicSentiment').textContent = avgChange > 1 ? 'Bullish' : avgChange < -1 ? 'Bearish' :
+                'Neutral';
+            document.getElementById('publicVolume').textContent = formatUSD(totalVolume);
+            document.getElementById('publicVolatility').textContent = volatility;
         }
 
         function renderPublicAI() {
-            const insights = marketService.getAIInsights();
+            const avgChange = tokens.reduce((s, t) => s + t.change, 0) / tokens.length;
+            const trend = avgChange > 1 ? 'Bullish' : avgChange < -1 ? 'Bearish' : 'Neutral';
+            const volatility = Math.abs(avgChange) > 3 ? 'High' : Math.abs(avgChange) > 1 ? 'Medium' : 'Low';
+            const momentum = trend === 'Bullish' ? 'Positive' : trend === 'Bearish' ? 'Negative' : 'Neutral';
             const grid = document.getElementById('publicAIGrid');
             grid.innerHTML = `
-                    <div class="item"><div class="label">Market Trend</div><div class="value ${insights.trend === 'Bullish' ? 'text-green' : insights.trend === 'Bearish' ? 'text-red' : ''}">${insights.trend}</div></div>
-                    <div class="item"><div class="label">Volatility</div><div class="value">${insights.volatility}</div></div>
-                    <div class="item"><div class="label">Momentum</div><div class="value ${insights.momentum === 'Positive' ? 'text-green' : insights.momentum === 'Negative' ? 'text-red' : ''}">${insights.momentum}</div></div>
-                    <div class="item full"><div class="label">AI Summary</div><div class="value value-sm">${insights.summary}</div></div>
+                    <div class="item"><div class="label">Market Trend</div><div class="value ${trend === 'Bullish' ? 'text-green' : trend === 'Bearish' ? 'text-red' : ''}">${trend}</div></div>
+                    <div class="item"><div class="label">Volatility</div><div class="value">${volatility}</div></div>
+                    <div class="item"><div class="label">Momentum</div><div class="value ${momentum === 'Positive' ? 'text-green' : momentum === 'Negative' ? 'text-red' : ''}">${momentum}</div></div>
+                    <div class="item full"><div class="label">AI Summary</div><div class="value value-sm">The market is currently showing ${trend.toLowerCase()} momentum with ${volatility.toLowerCase()} volatility.</div></div>
                 `;
         }
 
@@ -2318,14 +2226,14 @@
             const messages = document.getElementById('publicChatMessages');
 
             const responses = {
-                'volatility': 'Volatility measures price variation. High volatility means larger price swings, while low volatility indicates more stable prices.',
-                'risk': 'Risk management involves strategies to minimize potential losses. In virtual trading, you can practice risk management without real financial consequences.',
-                'portfolio': 'Your portfolio is a collection of your virtual holdings. It shows the current value of your positions and overall performance.',
-                'market': 'The market operates 24/7 and is influenced by global events, technology developments, and investor sentiment.',
-                'trade': 'A trade is an exchange of assets. In virtual trading, you buy and sell simulated assets to practice your strategy.',
-                'diversification': 'Diversification spreads investments across different assets to reduce overall portfolio risk.',
-                'strategy': 'A trading strategy is a plan for entering and exiting positions. Virtual trading allows you to test strategies risk-free.',
-                'default': 'I can help explain trading concepts, market analysis, portfolio management, or specific strategies. What would you like to know?'
+                'volatility': 'Volatility measures price variation. High volatility means larger price swings.',
+                'risk': 'Risk management involves strategies to minimize potential losses.',
+                'portfolio': 'Your portfolio shows your virtual holdings and their current value.',
+                'market': 'The market operates 24/7 and is influenced by global events.',
+                'trade': 'A trade is an exchange of assets. Virtual trading allows risk-free practice.',
+                'diversification': 'Diversification spreads investments across different assets.',
+                'strategy': 'Virtual trading allows you to test strategies risk-free.',
+                'default': 'I can help with market analysis, portfolio management, or trading concepts.'
             };
 
             function getResponse(q) {
@@ -2358,7 +2266,7 @@
         }
 
         // ============================================================
-        // PLATFORM RENDER
+        // PLATFORM RENDER — ORIGINAL
         // ============================================================
         function renderPlatformStats() {
             const balance = userData.virtualBalance || 0;
@@ -2366,13 +2274,13 @@
             const total = balance + portVal;
             const trades = transactions.length;
 
-            document.getElementById('platStats').innerHTML = `
-                    <div class="plat-stat"><div class="label">Virtual Balance</div><div class="value gold">${formatUSD(balance)}</div></div>
-                    <div class="plat-stat"><div class="label">Portfolio Value</div><div class="value">${formatUSD(portVal)}</div></div>
-                    <div class="plat-stat"><div class="label">Total Portfolio</div><div class="value gold">${formatUSD(total)}</div></div>
-                    <div class="plat-stat"><div class="label">Total Trades</div><div class="value">${trades}</div></div>
-                    <div class="plat-stat"><div class="label">Today's P/L</div><div class="value ${portVal >= 0 ? 'green' : 'red'}">${portVal >= 0 ? '+' : ''}${formatUSD(portVal * 0.02)}</div></div>
-                    <div class="plat-stat"><div class="label">Invested</div><div class="value">${formatUSD(portVal * 0.8)}</div></div>
+            document.getElementById('dashStats').innerHTML = `
+                    <div class="dash-stat"><div class="label">Virtual Balance</div><div class="value gold">${formatUSD(balance)}</div></div>
+                    <div class="dash-stat"><div class="label">Portfolio Value</div><div class="value">${formatUSD(portVal)}</div></div>
+                    <div class="dash-stat"><div class="label">Total Portfolio</div><div class="value gold">${formatUSD(total)}</div></div>
+                    <div class="dash-stat"><div class="label">Total Trades</div><div class="value">${trades}</div></div>
+                    <div class="dash-stat"><div class="label">Today's P/L</div><div class="value ${portVal >= 0 ? 'green' : 'red'}">${portVal >= 0 ? '+' : ''}${formatUSD(portVal * 0.02)}</div></div>
+                    <div class="dash-stat"><div class="label">Invested</div><div class="value">${formatUSD(portVal * 0.8)}</div></div>
                 `;
 
             // Update profile
@@ -2380,76 +2288,37 @@
             document.getElementById('profileTrades').textContent = trades;
             document.getElementById('depositBalance').textContent = formatUSD(balance);
             document.getElementById('withdrawBalance').textContent = formatUSD(balance);
+            document.getElementById('dashBalance').textContent = formatUSD(balance);
+            document.getElementById('dashPortfolio').textContent = formatUSD(portVal);
+            document.getElementById('dashTrades').textContent = trades;
+            const pl = portVal * 0.02;
+            document.getElementById('dashPL').textContent = (pl >= 0 ? '+' : '') + formatUSD(pl);
+            document.getElementById('dashPL').className = 'value ' + (pl >= 0 ? 'text-green' : 'text-red');
         }
 
-        function renderMarketTable(filter) {
-            const tbody = document.getElementById('marketTableBody');
-            let assets = [...marketService.getAssets()];
-            if (filter === 'gainers') {
-                assets = assets.filter(a => a.change24h > 0).sort((a, b) => b.change24h - a.change24h);
-            } else if (filter === 'losers') {
-                assets = assets.filter(a => a.change24h < 0).sort((a, b) => a.change24h - b.change24h);
-            }
-
-            tbody.innerHTML = assets.map(a => `
-                    <tr>
-                        <td><span style="font-weight:600;">${a.symbol}</span> <span style="color:var(--text-muted);font-size:12px;">${a.name}</span></td>
-                        <td>${formatUSD(a.price)}</td>
-                        <td class="${a.change24h >= 0 ? 'text-green' : 'text-red'}">${a.change24h >= 0 ? '+' : ''}${a.change24h.toFixed(2)}%</td>
-                        <td>${formatUSD(a.high)}</td>
-                        <td>${formatUSD(a.low)}</td>
-                        <td>${a.volume}</td>
-                        <td>
-                            <button class="btn-trade buy" onclick="openTradeModal('${a.id}','buy')">Buy</button>
-                            <button class="btn-trade sell" onclick="openTradeModal('${a.id}','sell')">Sell</button>
-                        </td>
-                    </tr>
-                `).join('');
-        }
-
-        function renderAssets() {
-            const tbody = document.getElementById('assetsBody');
-            const entries = Object.entries(holdings).filter(([_, qty]) => qty > 0);
-            if (entries.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted" style="padding:20px;">No assets held. Start trading!</td></tr>`;
-            } else {
-                tbody.innerHTML = entries.map(([symbol, qty]) => {
-                    const asset = marketService.getAssets().find(a => a.symbol === symbol);
-                    if (!asset) return '';
-                    const avgBuy = userData.avgBuyPrices?.[symbol] || asset.price;
-                    const value = qty * asset.price;
-                    const pl = value - (qty * avgBuy);
-                    const plp = avgBuy > 0 ? (pl / (qty * avgBuy)) * 100 : 0;
-                    return `<tr>
-                            <td>${asset.name} (${asset.symbol})</td>
-                            <td>${qty.toFixed(4)}</td>
-                            <td>${formatUSD(avgBuy)}</td>
-                            <td>${formatUSD(asset.price)}</td>
-                            <td>${formatUSD(value)}</td>
-                            <td class="${pl >= 0 ? 'text-green' : 'text-red'}">${pl >= 0 ? '+' : ''}${formatUSD(pl)}</td>
-                            <td class="${pl >= 0 ? 'text-green' : 'text-red'}">${plp >= 0 ? '+' : ''}${plp.toFixed(2)}%</td>
-                        </tr>`;
-                }).join('');
-            }
-        }
-
-        function renderOrders() {
-            const tbody = document.getElementById('ordersBody');
-            if (transactions.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted" style="padding:20px;">No orders yet.</td></tr>`;
-            } else {
-                tbody.innerHTML = transactions.slice().reverse().slice(0, 20).map(t => `
-                        <tr>
-                            <td>${t.asset}</td>
-                            <td><span class="${t.type === 'BUY' ? 'text-green' : 'text-red'}">${t.type}</span></td>
-                            <td>${t.quantity.toFixed(4)}</td>
-                            <td>${formatUSD(t.price)}</td>
-                            <td>${formatUSD(t.total)}</td>
-                            <td><span class="text-green">${t.status || 'Completed'}</span></td>
-                            <td style="font-size:12px;color:var(--text-muted);">${t.date}</td>
-                        </tr>
-                    `).join('');
-            }
+        function renderTokens() {
+            const grid = document.getElementById('tokensGrid');
+            grid.innerHTML = tokens.map(t => {
+                const owned = holdings[t.symbol] || 0;
+                return `
+                        <div class="token-card">
+                            <div class="header">
+                                <div>
+                                    <div class="token-name">${t.name}</div>
+                                    <div class="token-symbol">${t.symbol}</div>
+                                </div>
+                                <div class="token-logo" style="background:${t.color}20;color:${t.color};">${t.logo}</div>
+                            </div>
+                            <div class="price">${formatUSD(t.price)}</div>
+                            <div class="change ${t.change >= 0 ? 'up' : 'down'}">${t.change >= 0 ? '+' : ''}${t.change.toFixed(2)}%</div>
+                            <div style="font-size:12px;color:var(--text-muted);margin:4px 0;">Owned: ${owned.toFixed(4)}</div>
+                            <div class="actions">
+                                <button class="btn btn-success btn-sm" onclick="openTradeModal('${t.id}','buy')">Buy</button>
+                                <button class="btn btn-danger btn-sm" onclick="openTradeModal('${t.id}','sell')">Sell</button>
+                            </div>
+                        </div>
+                    `;
+            }).join('');
         }
 
         function renderDepositHistory() {
@@ -2482,67 +2351,11 @@
             }
         }
 
-        function renderPlatformAI() {
-            const insights = marketService.getAIInsights();
-            const grid = document.getElementById('platAIGrid');
-            grid.innerHTML = `
-                    <div class="item"><div class="label">Market Trend</div><div class="value ${insights.trend === 'Bullish' ? 'text-green' : insights.trend === 'Bearish' ? 'text-red' : ''}">${insights.trend}</div></div>
-                    <div class="item"><div class="label">Volatility</div><div class="value">${insights.volatility}</div></div>
-                    <div class="item"><div class="label">Momentum</div><div class="value ${insights.momentum === 'Positive' ? 'text-green' : insights.momentum === 'Negative' ? 'text-red' : ''}">${insights.momentum}</div></div>
-                    <div class="item full"><div class="label">AI Summary</div><div class="value value-sm">${insights.summary}</div></div>
-                `;
-        }
-
-        function setupPlatformChat() {
-            const input = document.getElementById('platChatInput');
-            const sendBtn = document.getElementById('platChatSend');
-            const messages = document.getElementById('platChatMessages');
-
-            const responses = {
-                'volatility': 'Volatility measures price variation. High volatility means larger price swings.',
-                'risk': 'Risk management involves strategies to minimize potential losses.',
-                'portfolio': `Your portfolio is worth ${formatUSD(calcPortfolioValue())} with ${Object.keys(holdings).filter(k => holdings[k] > 0).length} assets.`,
-                'market': 'The crypto market operates 24/7 and is influenced by global events and investor sentiment.',
-                'trade': 'A trade is an exchange of assets. You have ${transactions.length} virtual trades.',
-                'diversification': 'Diversification spreads investments across different assets to reduce risk.',
-                'strategy': 'Virtual trading allows you to test strategies risk-free.',
-                'default': 'I can help with market analysis, portfolio management, or trading concepts.'
-            };
-
-            function getResponse(q) {
-                const question = q.toLowerCase();
-                if (question.includes('volatility')) return responses.volatility;
-                if (question.includes('risk')) return responses.risk;
-                if (question.includes('portfolio')) return responses.portfolio;
-                if (question.includes('market')) return responses.market;
-                if (question.includes('trade')) return responses.trade;
-                if (question.includes('diversification')) return responses.diversification;
-                if (question.includes('strategy')) return responses.strategy;
-                return responses.default;
-            }
-
-            function sendMessage() {
-                const text = input.value.trim();
-                if (!text) return;
-                messages.innerHTML += `<div class="msg user">${text}</div>`;
-                input.value = '';
-                setTimeout(() => {
-                    const response = getResponse(text);
-                    messages.innerHTML += `<div class="msg ai">${response}</div>`;
-                    const container = document.getElementById('platChat');
-                    container.scrollTop = container.scrollHeight;
-                }, 400);
-            }
-
-            sendBtn.addEventListener('click', sendMessage);
-            input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
-        }
-
         function calcPortfolioValue() {
             let val = 0;
             for (const [symbol, qty] of Object.entries(holdings)) {
-                const asset = marketService.getAssets().find(a => a.symbol === symbol);
-                if (asset) val += qty * asset.price;
+                const token = tokens.find(t => t.symbol === symbol);
+                if (token) val += qty * token.price;
             }
             return val;
         }
@@ -2550,19 +2363,19 @@
         // ============================================================
         // TRADE MODAL
         // ============================================================
-        window.openTradeModal = function(assetId, side) {
-            const asset = marketService.getAsset(assetId);
-            if (!asset) return;
+        window.openTradeModal = function(tokenId, side) {
+            const token = tokens.find(t => t.id === tokenId);
+            if (!token) return;
             if (!isLoggedIn) {
                 toast('Please sign in to trade', 'error');
                 return;
             }
 
             const balance = userData.virtualBalance || 0;
-            const qty = side === 'sell' ? (holdings[asset.symbol] || 0) : 0;
+            const qty = side === 'sell' ? (holdings[token.symbol] || 0) : 0;
 
-            document.getElementById('modalTitle').textContent = `${side === 'buy' ? 'Buy' : 'Sell'} ${asset.name} (${asset.symbol})`;
-            document.getElementById('modalSub').textContent = `Current price: ${formatUSD(asset.price)}`;
+            document.getElementById('modalTitle').textContent = `${side === 'buy' ? 'Buy' : 'Sell'} ${token.name} (${token.symbol})`;
+            document.getElementById('modalSub').textContent = `Current price: ${formatUSD(token.price)}`;
 
             document.getElementById('modalBody').innerHTML = `
                     <div class="field"><label>Available ${side === 'buy' ? 'Balance' : 'Quantity'}</label>
@@ -2589,9 +2402,9 @@
             amountInput.addEventListener('input', () => {
                 const val = parseFloat(amountInput.value) || 0;
                 if (side === 'buy') {
-                    estimateDisplay.textContent = (val / asset.price).toFixed(4);
+                    estimateDisplay.textContent = (val / token.price).toFixed(4);
                 } else {
-                    estimateDisplay.textContent = formatUSD(val * asset.price);
+                    estimateDisplay.textContent = formatUSD(val * token.price);
                 }
             });
             amountInput.dispatchEvent(new Event('input'));
@@ -2603,55 +2416,55 @@
                 if (side === 'buy') {
                     const totalCost = val;
                     if (totalCost > balance) return toast('Insufficient virtual balance', 'error');
-                    const qtyBought = val / asset.price;
+                    const qtyBought = val / token.price;
 
                     const newBalance = balance - totalCost;
                     const newHoldings = { ...holdings };
-                    newHoldings[asset.symbol] = (newHoldings[asset.symbol] || 0) + qtyBought;
-                    const avg = userData.avgBuyPrices?.[asset.symbol] || 0;
-                    const totalCostAvg = (holdings[asset.symbol] || 0) * avg + totalCost;
-                    const newAvg = totalCostAvg / newHoldings[asset.symbol];
+                    newHoldings[token.symbol] = (newHoldings[token.symbol] || 0) + qtyBought;
+                    const avg = userData.avgBuyPrices?.[token.symbol] || 0;
+                    const totalCostAvg = (holdings[token.symbol] || 0) * avg + totalCost;
+                    const newAvg = totalCostAvg / newHoldings[token.symbol];
 
                     userData.virtualBalance = newBalance;
                     holdings = newHoldings;
                     if (!userData.avgBuyPrices) userData.avgBuyPrices = {};
-                    userData.avgBuyPrices[asset.symbol] = newAvg;
+                    userData.avgBuyPrices[token.symbol] = newAvg;
 
                     transactions.push({
-                        asset: asset.symbol,
+                        asset: token.symbol,
                         type: 'BUY',
                         quantity: qtyBought,
-                        price: asset.price,
+                        price: token.price,
                         total: totalCost,
                         date: new Date().toLocaleDateString(),
                         status: 'Completed'
                     });
 
-                    toast(`Bought ${qtyBought.toFixed(4)} ${asset.symbol} for ${formatUSD(totalCost)}`, 'success');
+                    toast(`Bought ${qtyBought.toFixed(4)} ${token.symbol} for ${formatUSD(totalCost)}`, 'success');
                 } else {
                     const qtySell = val;
-                    const owned = holdings[asset.symbol] || 0;
+                    const owned = holdings[token.symbol] || 0;
                     if (qtySell > owned) return toast('Insufficient holdings', 'error');
-                    const totalValue = qtySell * asset.price;
+                    const totalValue = qtySell * token.price;
 
                     const newBalance = balance + totalValue;
                     const newHoldings = { ...holdings };
-                    newHoldings[asset.symbol] = (newHoldings[asset.symbol] || 0) - qtySell;
+                    newHoldings[token.symbol] = (newHoldings[token.symbol] || 0) - qtySell;
 
                     userData.virtualBalance = newBalance;
                     holdings = newHoldings;
 
                     transactions.push({
-                        asset: asset.symbol,
+                        asset: token.symbol,
                         type: 'SELL',
                         quantity: qtySell,
-                        price: asset.price,
+                        price: token.price,
                         total: totalValue,
                         date: new Date().toLocaleDateString(),
                         status: 'Completed'
                     });
 
-                    toast(`Sold ${qtySell.toFixed(4)} ${asset.symbol} for ${formatUSD(totalValue)}`, 'success');
+                    toast(`Sold ${qtySell.toFixed(4)} ${token.symbol} for ${formatUSD(totalValue)}`, 'success');
                 }
 
                 closeTradeModal();
@@ -2670,7 +2483,7 @@
         function switchPlatformTab(tab) {
             document.querySelectorAll('.plat-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.plat-tabs button, .platform-nav .nav-links button').forEach(b => b.classList.remove(
-            'active'));
+                'active'));
 
             const panel = document.getElementById('panel-' + tab);
             if (panel) panel.classList.add('active');
@@ -2678,26 +2491,35 @@
             document.querySelectorAll(`.plat-tabs button[data-tab="${tab}"], .platform-nav .nav-links button[data-tab="${tab}"]`)
                 .forEach(b => b.classList.add('active'));
 
-            // Close mobile nav
             document.getElementById('platNavLinks').classList.remove('open');
 
-            if (tab === 'markets') renderMarketTable(currentFilter);
-            else if (tab === 'assets') renderAssets();
-            else if (tab === 'orders') renderOrders();
+            if (tab === 'tokens') renderTokens();
             else if (tab === 'deposit') renderDepositHistory();
             else if (tab === 'withdraw') renderWithdrawHistory();
-            else if (tab === 'insights') renderPlatformAI();
+            else if (tab === 'recommend') { /* already rendered */ }
             else if (tab === 'profile') { /* already rendered */ }
+            else if (tab === 'dashboard') renderPlatformStats();
         }
 
         function renderAllPlatform() {
             renderPlatformStats();
-            renderMarketTable(currentFilter);
-            renderAssets();
-            renderOrders();
+            renderTokens();
             renderDepositHistory();
             renderWithdrawHistory();
-            renderPlatformAI();
+            // Update recent activity
+            const activity = document.getElementById('recentActivity');
+            if (transactions.length === 0) {
+                activity.innerHTML = '<div style="color:var(--text-muted);font-size:14px;">No recent activity</div>';
+            } else {
+                const recent = transactions.slice(-3).reverse();
+                activity.innerHTML = recent.map(t =>
+                    `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-subtle);font-size:13px;">
+                            <span>${t.type} ${t.asset}</span>
+                            <span>${formatUSD(t.total)}</span>
+                            <span style="color:var(--text-muted);font-size:12px;">${t.date}</span>
+                        </div>`
+                ).join('');
+            }
         }
 
         // ============================================================
@@ -2710,7 +2532,6 @@
             document.getElementById('publicPage').style.display = 'none';
             document.getElementById('platformApp').classList.add('active');
             renderAllPlatform();
-            // Update user info
             document.getElementById('userAvatar').textContent = 'T';
             document.getElementById('profileAvatar').textContent = 'T';
             document.getElementById('profileName').textContent = 'Trader';
@@ -2721,7 +2542,6 @@
         function logout() {
             isLoggedIn = false;
             localStorage.removeItem('binancecoin_user');
-            // Reset user data
             userData = { displayName: 'Trader', email: 'trader@example.com', virtualBalance: 10000, holdings: {},
                 avgBuyPrices: {} };
             holdings = {};
@@ -2742,7 +2562,6 @@
         // ============================================================
         // EVENT LISTENERS
         // ============================================================
-        // Login
         document.getElementById('googleLoginBtn').addEventListener('click', login);
         document.getElementById('navLoginBtn').addEventListener('click', () => {
             document.getElementById('login-overlay').classList.add('open');
@@ -2754,10 +2573,9 @@
             document.getElementById('how-it-works').scrollIntoView({ behavior: 'smooth' });
         });
 
-        // Logout
         document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('logoutProfileBtn').addEventListener('click', logout);
 
-        // Platform navigation
         document.querySelectorAll('.plat-tabs button, .platform-nav .nav-links button').forEach(btn => {
             btn.addEventListener('click', () => {
                 const tab = btn.dataset.tab || btn.textContent.toLowerCase().trim();
@@ -2765,17 +2583,6 @@
             });
         });
 
-        // Market filters
-        document.querySelectorAll('#marketFilters button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('#marketFilters button').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentFilter = btn.dataset.filter;
-                renderMarketTable(currentFilter);
-            });
-        });
-
-        // Deposit
         document.getElementById('depositBtn').addEventListener('click', () => {
             const amount = parseFloat(document.getElementById('depositAmount').value);
             if (!amount || amount <= 0) return toast('Enter a valid amount', 'error');
@@ -2785,7 +2592,6 @@
             toast(`Virtual deposit of ${formatUSD(amount)} completed`, 'success');
         });
 
-        // Withdraw
         document.getElementById('withdrawBtn').addEventListener('click', () => {
             const amount = parseFloat(document.getElementById('withdrawAmount').value);
             if (!amount || amount <= 0) return toast('Enter a valid amount', 'error');
@@ -2796,7 +2602,6 @@
             toast(`Virtual withdrawal of ${formatUSD(amount)} completed`, 'success');
         });
 
-        // Mobile toggles
         document.getElementById('mobileToggle').addEventListener('click', () => {
             document.getElementById('navLinks').classList.toggle('open');
         });
@@ -2804,7 +2609,6 @@
             document.getElementById('platNavLinks').classList.toggle('open');
         });
 
-        // Navbar scroll effect
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('mainNav');
             if (window.scrollY > 20) {
@@ -2821,10 +2625,8 @@
         renderPublicMarket();
         renderPublicAI();
         setupPublicChat();
-        setupPlatformChat();
         checkAuth();
 
-        // Refresh chart on resize
         let resizeTimer;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
