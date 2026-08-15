@@ -13,12 +13,12 @@
     ::-webkit-scrollbar-track { background:#1a1f2a; }
     ::-webkit-scrollbar-thumb { background:#2f3b4a; border-radius:8px; }
     #app { display:flex; width:100%; height:100vh; overflow:hidden; }
-    .sidebar { display:none; flex-direction:column; width:200px; background:#11171f; border-right:1px solid #252d3a; padding:24px 12px; height:100vh; position:sticky; top:0; }
+    .sidebar { display:none; flex-direction:column; width:220px; background:#11171f; border-right:1px solid #252d3a; padding:24px 12px; height:100vh; position:sticky; top:0; }
     .sidebar .brand { font-weight:700; font-size:20px; letter-spacing:-0.3px; padding-bottom:28px; color:#f0b90b; }
     .sidebar .brand span { color:#e8edf5; }
-    .sidebar nav { display:flex; flex-direction:column; gap:8px; flex:1; }
-    .sidebar nav a { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; color:#9aa9b9; font-weight:500; font-size:15px; transition:0.2s; cursor:pointer; text-decoration:none; }
-    .sidebar nav a i { width:20px; font-size:18px; }
+    .sidebar nav { display:flex; flex-direction:column; gap:4px; flex:1; }
+    .sidebar nav a { display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:12px; color:#9aa9b9; font-weight:500; font-size:14px; transition:0.2s; cursor:pointer; text-decoration:none; }
+    .sidebar nav a i { width:20px; font-size:17px; }
     .sidebar nav a.active, .sidebar nav a:hover { background:#1f2937; color:#f0b90b; }
     .sidebar .user-mini { margin-top:auto; border-top:1px solid #252d3a; padding-top:16px; display:flex; align-items:center; gap:12px; }
     .sidebar .user-mini img { width:36px; height:36px; border-radius:50%; background:#2f3b4a; }
@@ -29,10 +29,10 @@
     .page.active { display:block; }
     @keyframes fadeIn { from { opacity:0.4; } to { opacity:1; } }
     .bottom-nav { display:flex; position:fixed; bottom:0; left:0; right:0; background:#11171f; border-top:1px solid #252d3a; justify-content:space-around; padding:8px 0 12px; z-index:50; }
-    .bottom-nav a { display:flex; flex-direction:column; align-items:center; color:#9aa9b9; font-size:12px; font-weight:500; gap:4px; text-decoration:none; transition:0.2s; padding:4px 12px; border-radius:8px; }
+    .bottom-nav a { display:flex; flex-direction:column; align-items:center; color:#9aa9b9; font-size:11px; font-weight:500; gap:3px; text-decoration:none; transition:0.2s; padding:4px 8px; border-radius:8px; }
     .bottom-nav a i { font-size:20px; }
     .bottom-nav a.active { color:#f0b90b; }
-    .bottom-nav a span { font-size:11px; }
+    .bottom-nav a span { font-size:10px; }
     .card { background:#131b24; border-radius:16px; padding:18px 16px; border:1px solid #1f2937; margin-bottom:16px; }
     .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
     .card-title { font-weight:600; font-size:15px; color:#b0c4d9; letter-spacing:0.2px; }
@@ -43,43 +43,47 @@
     .stat-value.green { color:#22c55e; }
     .stat-value.red { color:#ef4444; }
     .stat-value.gold { color:#f0b90b; }
-    .coin-row { display:flex; align-items:center; justify-content:space-between; background:#0d141e; border-radius:14px; padding:14px 16px; margin-bottom:10px; border-left:4px solid #f0b90b; }
-    .coin-info { display:flex; flex-direction:column; }
-    .coin-name { font-weight:600; font-size:16px; }
-    .coin-symbol { font-size:13px; color:#7f92a8; }
-    .coin-price { font-weight:700; font-size:18px; }
-    .coin-change { font-size:14px; font-weight:500; margin-left:8px; }
+    .coin-row { display:flex; align-items:center; justify-content:space-between; background:#0d141e; border-radius:14px; padding:12px 14px; margin-bottom:8px; border-left:4px solid #f0b90b; gap:8px; flex-wrap:wrap; }
+    .coin-logo { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; background:#1f2937; color:#f0b90b; flex-shrink:0; }
+    .coin-info { display:flex; flex-direction:column; flex:1; min-width:80px; }
+    .coin-name { font-weight:600; font-size:15px; }
+    .coin-symbol { font-size:12px; color:#7f92a8; }
+    .coin-price { font-weight:700; font-size:17px; }
+    .coin-change { font-size:13px; font-weight:500; margin-left:6px; }
     .coin-change.up { color:#22c55e; }
     .coin-change.down { color:#ef4444; }
-    .coin-actions { display:flex; gap:8px; }
-    .btn { background:#1f2937; border:none; color:#e8edf5; padding:8px 16px; border-radius:40px; font-weight:600; font-size:14px; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:6px; }
+    .coin-actions { display:flex; gap:6px; flex-wrap:wrap; }
+    .btn { background:#1f2937; border:none; color:#e8edf5; padding:7px 14px; border-radius:40px; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:5px; }
     .btn-primary { background:#f0b90b; color:#0b0e14; }
     .btn-primary:hover { background:#d9a70a; }
     .btn-success { background:#22c55e; color:#0b0e14; }
     .btn-danger { background:#ef4444; color:#fff; }
     .btn-outline { background:transparent; border:1px solid #2f3b4a; }
-    .btn-sm { padding:4px 12px; font-size:13px; }
+    .btn-sm { padding:4px 10px; font-size:12px; }
     .btn-block { width:100%; justify-content:center; }
     .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:100; }
     .modal-overlay.open { display:flex; }
-    .modal { background:#131b24; border-radius:24px; max-width:420px; width:90%; padding:24px; border:1px solid #2a3440; max-height:90vh; overflow-y:auto; }
-    .modal h3 { font-size:20px; margin-bottom:8px; }
-    .modal .sub { color:#7f92a8; margin-bottom:16px; }
+    .modal { background:#131b24; border-radius:24px; max-width:440px; width:92%; padding:24px; border:1px solid #2a3440; max-height:92vh; overflow-y:auto; }
+    .modal h3 { font-size:20px; margin-bottom:6px; }
+    .modal .sub { color:#7f92a8; margin-bottom:16px; font-size:14px; }
     .modal .field { margin-bottom:14px; }
-    .modal .field label { display:block; font-weight:500; font-size:14px; margin-bottom:4px; color:#b0c4d9; }
-    .modal .field input, .modal .field select { width:100%; background:#0d141e; border:1px solid #2a3440; border-radius:12px; padding:12px 14px; color:#e8edf5; font-size:15px; outline:none; }
+    .modal .field label { display:block; font-weight:500; font-size:13px; margin-bottom:4px; color:#b0c4d9; }
+    .modal .field input, .modal .field select { width:100%; background:#0d141e; border:1px solid #2a3440; border-radius:12px; padding:10px 14px; color:#e8edf5; font-size:15px; outline:none; }
     .modal .field input:focus { border-color:#f0b90b; }
+    .modal .field .method-option { display:flex; align-items:center; gap:12px; padding:10px 14px; background:#0d141e; border:1px solid #2a3440; border-radius:12px; cursor:pointer; margin-bottom:6px; transition:0.2s; }
+    .modal .field .method-option:hover { border-color:#f0b90b; }
+    .modal .field .method-option.selected { border-color:#f0b90b; background:#1f2937; }
     .modal .actions { display:flex; gap:10px; margin-top:20px; justify-content:flex-end; }
     .modal .actions .btn { flex:1; justify-content:center; }
-    .badge { background:#1f2937; padding:4px 12px; border-radius:40px; font-size:12px; font-weight:600; }
+    .badge { background:#1f2937; padding:3px 10px; border-radius:40px; font-size:11px; font-weight:600; }
     .badge-pending { background:#b45309; color:#fff; }
     .badge-approved { background:#22c55e; color:#0b0e14; }
     .badge-rejected { background:#ef4444; color:#fff; }
-    .admin-list .item { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; background:#0d141e; padding:12px 14px; border-radius:12px; margin-bottom:8px; border-left:2px solid #2f3b4a; }
-    .admin-list .item .label { min-width:100px; font-weight:500; }
+    .admin-list .item { display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; background:#0d141e; padding:10px 12px; border-radius:12px; margin-bottom:6px; border-left:2px solid #2f3b4a; font-size:13px; }
+    .admin-list .item .label { min-width:80px; font-weight:500; }
     .admin-list .item .value { color:#b0c4d9; }
-    .toast-container { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); z-index:200; display:flex; flex-direction:column; gap:8px; align-items:center; }
-    .toast { background:#1f2937; border:1px solid #2f3b4a; border-radius:40px; padding:10px 20px; font-weight:500; font-size:14px; box-shadow:0 8px 20px rgba(0,0,0,0.6); color:#e8edf5; max-width:90%; }
+    .toast-container { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); z-index:200; display:flex; flex-direction:column; gap:6px; align-items:center; }
+    .toast { background:#1f2937; border:1px solid #2f3b4a; border-radius:40px; padding:8px 18px; font-weight:500; font-size:13px; box-shadow:0 8px 20px rgba(0,0,0,0.6); color:#e8edf5; max-width:92%; }
     .toast.success { border-color:#22c55e; color:#22c55e; }
     .toast.error { border-color:#ef4444; color:#ef4444; }
     @media(min-width:768px) {
@@ -90,21 +94,21 @@
     }
     @media(max-width:767px) {
       .stat-grid { grid-template-columns:1fr 1fr; }
-      .coin-row { flex-wrap:wrap; gap:8px; }
+      .coin-row { flex-wrap:wrap; }
     }
     .flex { display:flex; align-items:center; gap:8px; }
     .flex-between { display:flex; justify-content:space-between; align-items:center; }
-    .mt-8 { margin-top:8px; }
-    .mb-8 { margin-bottom:8px; }
     .text-muted { color:#7f92a8; }
     .text-gold { color:#f0b90b; }
     .text-green { color:#22c55e; }
     .text-red { color:#ef4444; }
-    .gap-4 { gap:4px; }
-    .gap-8 { gap:8px; }
     .w-full { width:100%; }
     .text-center { text-align:center; }
     .hidden { display:none !important; }
+    .mt-8 { margin-top:8px; }
+    .mb-8 { margin-bottom:8px; }
+    .gap-4 { gap:4px; }
+    .gap-8 { gap:8px; }
     #login-overlay { position:fixed; inset:0; background:#0b0e14; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:300; }
     #login-overlay .logo { font-size:36px; font-weight:700; color:#f0b90b; }
     #login-overlay .logo span { color:#e8edf5; }
@@ -112,11 +116,20 @@
     #login-overlay .btn-google { background:#1f2937; border:1px solid #2f3b4a; padding:14px 32px; border-radius:60px; font-size:18px; font-weight:600; color:#e8edf5; display:flex; align-items:center; gap:12px; cursor:pointer; transition:0.2s; }
     #login-overlay .btn-google:hover { background:#2f3b4a; }
     #login-overlay .btn-google i { font-size:22px; }
-    .admin-tab-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
-    .admin-tab-bar .btn { flex:1; min-width:80px; justify-content:center; }
-    .holdings-grid { display:grid; grid-template-columns:1fr; gap:8px; }
-    .tx-item { border-bottom:1px solid #1f2937; padding:8px 0; }
-    .deposit-item { border-bottom:1px solid #1f2937; padding:8px 0; }
+    .admin-tab-bar { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+    .admin-tab-bar .btn { flex:1; min-width:70px; justify-content:center; font-size:12px; padding:6px 10px; }
+    .tx-item { border-bottom:1px solid #1f2937; padding:6px 0; font-size:13px; }
+    .deposit-item { border-bottom:1px solid #1f2937; padding:6px 0; font-size:13px; }
+    .chart-container { width:100%; height:200px; background:#0d141e; border-radius:12px; overflow:hidden; position:relative; margin-top:8px; }
+    .coin-logo-svg { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; flex-shrink:0; }
+    .profile-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .profile-stat { background:#0d141e; border-radius:10px; padding:10px; text-align:center; }
+    .profile-stat .label { font-size:11px; color:#7f92a8; }
+    .profile-stat .value { font-size:18px; font-weight:700; margin-top:2px; }
+    .method-demo-info { background:#0d141e; border-radius:10px; padding:10px; margin:6px 0; font-size:12px; border:1px solid #2a3440; }
+    .method-demo-info .label { color:#7f92a8; }
+    .method-demo-info .value { color:#f0b90b; font-family:monospace; word-break:break-all; }
+    .demo-warning { background:#1f2937; border-radius:8px; padding:8px 12px; font-size:11px; color:#f0b90b; text-align:center; border:1px solid #f0b90b33; margin:8px 0; }
   </style>
 </head>
 <body>
@@ -166,6 +179,9 @@
       <!-- MARKETS -->
       <section class="page" id="page-markets">
         <div class="card"><div class="card-header"><span class="card-title">Live Prices</span></div><div id="marketCoinList"></div></div>
+        <div class="card"><div class="card-header"><span class="card-title">Price Chart</span></div>
+          <div class="chart-container"><canvas id="priceChart"></canvas></div>
+        </div>
       </section>
 
       <!-- PORTFOLIO -->
@@ -179,10 +195,29 @@
 
       <!-- DEPOSIT -->
       <section class="page" id="page-deposit">
-        <div class="card"><h3 style="margin-bottom:4px;">Add Virtual Credits</h3><div class="text-muted" style="margin-bottom:16px;">Request credits — admin approval required</div>
-          <div class="field"><label>Amount (USD)</label><input type="number" id="depositAmount" placeholder="100" min="1" step="1" /></div>
-          <div class="field"><label>Method</label>
-            <select id="depositMethod"><option value="Virtual Credit">Virtual Credit</option><option value="Test Credit">Test Credit</option><option value="Promotional Credit">Promotional Credit</option></select>
+        <div class="card">
+          <h3 style="margin-bottom:4px;">Add Virtual Credits</h3>
+          <div class="text-muted" style="margin-bottom:12px;font-size:13px;">Request credits — admin approval required</div>
+          <div class="demo-warning">⚠️ DEMO / NOT A REAL PAYMENT ENDPOINT</div>
+          <div class="field">
+            <label>Amount (USD)</label>
+            <input type="number" id="depositAmount" placeholder="Enter amount" min="1" step="0.01" />
+          </div>
+          <div class="field">
+            <label>Payment Method</label>
+            <div class="method-option" data-method="Binance Pay" onclick="selectMethod(this)">
+              <i class="fab fa-bitcoin" style="color:#f0b90b;"></i>
+              <div><strong>Demo Binance Pay</strong><div style="font-size:11px;color:#7f92a8;">ID: 894307667</div></div>
+            </div>
+            <div class="method-option" data-method="TRC20" onclick="selectMethod(this)">
+              <i class="fas fa-coins" style="color:#22c55e;"></i>
+              <div><strong>Demo TRC20</strong><div style="font-size:11px;color:#7f92a8;">TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7</div></div>
+            </div>
+            <div class="method-option" data-method="BEP20" onclick="selectMethod(this)">
+              <i class="fas fa-cube" style="color:#f0b90b;"></i>
+              <div><strong>Demo BEP20</strong><div style="font-size:11px;color:#7f92a8;">0xdfd1138c7bfc2d15b7400fa43f3ca591679e0efa</div></div>
+            </div>
+            <input type="hidden" id="selectedMethod" value="" />
           </div>
           <button class="btn btn-primary btn-block" id="submitDepositBtn"><i class="fas fa-paper-plane"></i> Submit Request</button>
         </div>
@@ -191,15 +226,21 @@
 
       <!-- PROFILE -->
       <section class="page" id="page-profile">
-        <div class="card"><div class="flex" style="gap:16px;"><img id="profileAvatar" src="" style="width:64px;height:64px;border-radius:50%;background:#2f3b4a;" /><div><div id="profileName" style="font-weight:700;font-size:20px;">—</div><div id="profileEmail" class="text-muted">—</div><div id="profileUid" class="text-muted" style="font-size:12px;">UID: —</div></div></div></div>
-        <div class="card"><div class="stat-grid">
-          <div class="stat-item"><div class="stat-label">Balance</div><div class="stat-value gold" id="profileBalance">$0.00</div></div>
-          <div class="stat-item"><div class="stat-label">Portfolio</div><div class="stat-value" id="profilePortfolio">$0.00</div></div>
-          <div class="stat-item"><div class="stat-label">Trades</div><div class="stat-value" id="profileTrades">0</div></div>
-          <div class="stat-item"><div class="stat-label">P/L</div><div class="stat-value" id="profilePL">+$0.00</div></div>
-        </div></div>
+        <div class="card"><div class="flex" style="gap:16px;"><img id="profileAvatar" src="" style="width:60px;height:60px;border-radius:50%;background:#2f3b4a;" /><div><div id="profileName" style="font-weight:700;font-size:20px;">—</div><div id="profileEmail" class="text-muted" style="font-size:13px;">—</div><div id="profileUid" class="text-muted" style="font-size:11px;">UID: —</div></div></div></div>
+        <div class="card">
+          <div class="profile-stats">
+            <div class="profile-stat"><div class="label">Balance</div><div class="value gold" id="profileBalance">$0.00</div></div>
+            <div class="profile-stat"><div class="label">Portfolio</div><div class="value" id="profilePortfolio">$0.00</div></div>
+            <div class="profile-stat"><div class="label">Trades</div><div class="value" id="profileTrades">0</div></div>
+            <div class="profile-stat"><div class="label">P/L</div><div class="value" id="profilePL">+$0.00</div></div>
+          </div>
+        </div>
         <div class="card"><div class="card-header"><span class="card-title">Holdings</span></div><div id="profileHoldings"></div></div>
         <div class="card"><div class="card-header"><span class="card-title">Transactions</span></div><div id="profileTransactions"></div></div>
+        <div class="card" id="adminPanelCard" style="display:none;border-color:#f0b90b;">
+          <div class="card-header"><span class="card-title" style="color:#f0b90b;"><i class="fas fa-shield-alt"></i> Admin Panel</span></div>
+          <button class="btn btn-primary btn-block" onclick="navigate('admin')"><i class="fas fa-cog"></i> Open Admin Dashboard</button>
+        </div>
       </section>
 
       <!-- ADMIN -->
@@ -207,9 +248,10 @@
         <div class="admin-tab-bar">
           <button class="btn btn-outline btn-sm" data-admin-tab="overview">Overview</button>
           <button class="btn btn-outline btn-sm" data-admin-tab="users">Users</button>
-          <button class="btn btn-outline btn-sm" data-admin-tab="coins">Coins</button>
           <button class="btn btn-outline btn-sm" data-admin-tab="deposits">Deposits</button>
+          <button class="btn btn-outline btn-sm" data-admin-tab="coins">Coins</button>
           <button class="btn btn-outline btn-sm" data-admin-tab="transactions">Transactions</button>
+          <button class="btn btn-outline btn-sm" data-admin-tab="portfolio">Portfolio</button>
         </div>
         <div id="adminContent"><div class="text-muted">Select a tab</div></div>
       </section>
@@ -241,12 +283,12 @@
 
 <!-- FIREBASE + APP -->
 <script type="module">
-  // ---- Firebase imports (v10.12.0) ----
+  // ---- Firebase imports ----
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getDatabase, ref, set, push, onValue, get, update, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getDatabase, ref, set, push, onValue, get, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // ---- Firebase configuration (from your Firebase Console) ----
+  // ---- Firebase config ----
   const firebaseConfig = {
     apiKey: "AIzaSyDWZURvEtRrsYR9_1CuGmvj4QYX7X7BcK4",
     authDomain: "binance-coin-get.firebaseapp.com",
@@ -257,31 +299,37 @@
     measurementId: "G-DEYW3RPMNM"
   };
 
-  // ---- Initialize Firebase ----
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getDatabase(app);
 
-  console.log("Firebase initialized successfully");
-
   // ---- state ----
   let currentUser = null;
   let userData = null;
-  let coinsData = { NXR: { price: 12.50, change: 0, symbol: 'NXR', name: 'NEXORA' }, VTX: { price: 7.80, change: 0, symbol: 'VTX', name: 'VELTRIX' }, QTA: { price: 25.40, change: 0, symbol: 'QTA', name: 'QUANTARA' } };
-  let holdings = { NXR: 0, VTX: 0, QTA: 0 };
+  let coinsData = {
+    NXR: { price: 12.50, change: 0, symbol: 'NXR', name: 'NEXORA', min: 10, max: 15, auto: true, color: '#f0b90b' },
+    VTX: { price: 7.80, change: 0, symbol: 'VTX', name: 'VELTRIX', min: 6, max: 10, auto: true, color: '#22c55e' },
+    QTA: { price: 25.40, change: 0, symbol: 'QTA', name: 'QUANTARA', min: 20, max: 30, auto: true, color: '#3b82f6' },
+    OVX: { price: 3.20, change: 0, symbol: 'OVX', name: 'ORVEX', min: 2, max: 5, auto: true, color: '#a855f7' },
+    LMR: { price: 18.40, change: 0, symbol: 'LMR', name: 'LUMORA', min: 15, max: 22, auto: true, color: '#ec4899' },
+    ZTA: { price: 42.00, change: 0, symbol: 'ZTA', name: 'ZENTARA', min: 38, max: 48, auto: true, color: '#f59e0b' },
+    AUX: { price: 6.70, change: 0, symbol: 'AUX', name: 'AUREX', min: 5, max: 8, auto: true, color: '#06b6d4' },
+    FLX: { price: 91.00, change: 0, symbol: 'FLX', name: 'FLUXORA', min: 80, max: 100, auto: true, color: '#8b5cf6' }
+  };
+  let holdings = {};
   let allTransactions = [];
   let allDeposits = [];
   let allUsers = {};
   let isAdmin = false;
   let priceInterval = null;
-  let userListInterval = null;
+  let chartData = [];
+  let chartCanvas = null;
+  let chartCtx = null;
 
   // ---- DOM refs ----
   const $ = id => document.getElementById(id);
   const loginOverlay = $('login-overlay');
   const googleBtn = $('googleLoginBtn');
-  const sidebar = $('sidebar');
-  const bottomNav = $('bottomNav');
   const toastContainer = $('toastContainer');
   const modalOverlay = $('modalOverlay');
 
@@ -297,6 +345,10 @@
   function formatUSD(v) { return '$'+Number(v).toFixed(2); }
   function formatNum(v) { return Number(v).toFixed(4); }
   function generateOrderId() { return 'BCG-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substring(2,6).toUpperCase(); }
+  function getCoinLogo(symbol) {
+    const colors = { NXR:'#f0b90b', VTX:'#22c55e', QTA:'#3b82f6', OVX:'#a855f7', LMR:'#ec4899', ZTA:'#f59e0b', AUX:'#06b6d4', FLX:'#8b5cf6' };
+    return `<div class="coin-logo-svg" style="background:${colors[symbol]||'#1f2937'};color:#0b0e14;">${symbol.slice(0,2)}</div>`;
+  }
 
   // ---- navigation ----
   function navigate(page) {
@@ -308,7 +360,10 @@
     });
     if(page==='admin' && !isAdmin) { toast('Admin access required','error'); return; }
     if(page==='admin' && isAdmin) renderAdminOverview();
+    if(page==='markets') drawChart();
   }
+  window.navigate = navigate;
+
   document.querySelectorAll('.sidebar nav a, .bottom-nav a').forEach(el=>{
     el.addEventListener('click', (e)=>{
       e.preventDefault();
@@ -327,50 +382,41 @@
     modalOverlay.classList.add('open');
   }
   function closeModal() { modalOverlay.classList.remove('open'); }
+  window.closeModal = closeModal;
   modalOverlay.addEventListener('click', (e)=>{ if(e.target===modalOverlay) closeModal(); });
 
-  // ---- GOOGLE LOGIN (FIXED) ----
+  // ---- method selector ----
+  window.selectMethod = function(el) {
+    document.querySelectorAll('.method-option').forEach(m=>m.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('selectedMethod').value = el.dataset.method;
+  };
+
+  // ---- login ----
   googleBtn.addEventListener('click', async () => {
     try {
-      console.log("Google login button clicked");
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      console.log("Login successful:", result.user);
-      // User will be handled by onAuthStateChanged
+      await signInWithPopup(auth, provider);
     } catch (error) {
-      console.error("Google login error:", error.code, error.message);
-      // User-friendly error messages
+      console.error("Login error:", error.code, error.message);
       let msg = "Login failed. ";
       switch(error.code) {
-        case 'auth/popup-closed-by-user':
-          msg += "Popup was closed before completing login.";
-          break;
-        case 'auth/popup-blocked':
-          msg += "Popup was blocked by your browser. Please allow popups for this site.";
-          break;
-        case 'auth/unauthorized-domain':
-          msg += "This domain is not authorized for Firebase Authentication. Please add it in the Firebase Console.";
-          break;
-        case 'auth/operation-not-allowed':
-          msg += "Google Authentication is not enabled. Please enable it in the Firebase Console.";
-          break;
-        case 'auth/network-request-failed':
-          msg += "Network error. Please check your internet connection.";
-          break;
-        default:
-          msg += error.message;
+        case 'auth/popup-closed-by-user': msg += "Popup was closed."; break;
+        case 'auth/popup-blocked': msg += "Popup blocked. Please allow popups."; break;
+        case 'auth/unauthorized-domain': msg += "Domain not authorized. Add it in Firebase Console."; break;
+        case 'auth/operation-not-allowed': msg += "Google Auth not enabled in Firebase Console."; break;
+        case 'auth/network-request-failed': msg += "Network error. Check connection."; break;
+        default: msg += error.message;
       }
       toast(msg, 'error');
     }
   });
 
-  // ---- AUTH STATE LISTENER (FIXED) ----
+  // ---- auth listener ----
   onAuthStateChanged(auth, async (user) => {
-    console.log("Auth state changed:", user ? "User logged in" : "No user");
     if (user) {
       currentUser = user;
       loginOverlay.style.display = 'none';
-      console.log("User UID:", user.uid);
       await loadUserData(user);
       await loadCoins();
       await loadDeposits();
@@ -379,47 +425,43 @@
       await loadAllUsers();
       renderAll();
       startPriceEngine();
-      startUserListRefresh();
+      if (isAdmin) document.getElementById('adminPanelCard').style.display = 'block';
       toast(`Welcome ${user.displayName || 'Trader'}!`, 'success');
     } else {
       loginOverlay.style.display = 'flex';
       currentUser = null;
       userData = null;
       if(priceInterval) clearInterval(priceInterval);
-      if(userListInterval) clearInterval(userListInterval);
-      // Reset UI
-      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-      document.getElementById('page-home').classList.add('active');
     }
   });
 
-  // ---- load user data (preserves existing balance) ----
+  // ---- load user data ----
   async function loadUserData(user) {
     const userRef = ref(db, 'users/'+user.uid);
     const snap = await get(userRef);
     if(snap.exists()) {
       userData = snap.val();
-      console.log("Existing user data loaded, balance:", userData.virtualBalance);
     } else {
-      // Create new user with default balance
+      // NEW USER: Starting balance ZERO
       const newUser = {
         displayName: user.displayName || 'Trader',
         email: user.email,
         photoURL: user.photoURL || '',
         createdAt: serverTimestamp(),
-        virtualBalance: 10000.00,
-        holdings: { NXR:0, VTX:0, QTA:0 },
-        avgBuyPrices: { NXR:0, VTX:0, QTA:0 }
+        virtualBalance: 0,
+        holdings: { NXR:0, VTX:0, QTA:0, OVX:0, LMR:0, ZTA:0, AUX:0, FLX:0 },
+        avgBuyPrices: { NXR:0, VTX:0, QTA:0, OVX:0, LMR:0, ZTA:0, AUX:0, FLX:0 }
       };
       await set(userRef, newUser);
       userData = newUser;
-      console.log("New user created with balance:", userData.virtualBalance);
     }
-    // Ensure holdings exist
-    if(!userData.holdings) userData.holdings = { NXR:0, VTX:0, QTA:0 };
-    if(!userData.avgBuyPrices) userData.avgBuyPrices = { NXR:0, VTX:0, QTA:0 };
+    if(!userData.holdings) {
+      userData.holdings = { NXR:0, VTX:0, QTA:0, OVX:0, LMR:0, ZTA:0, AUX:0, FLX:0 };
+    }
+    if(!userData.avgBuyPrices) {
+      userData.avgBuyPrices = { NXR:0, VTX:0, QTA:0, OVX:0, LMR:0, ZTA:0, AUX:0, FLX:0 };
+    }
     holdings = userData.holdings;
-    // Update UI
     $('sidebarAvatar').src = userData.photoURL || '';
     $('sidebarName').textContent = userData.displayName || 'User';
     $('profileAvatar').src = userData.photoURL || '';
@@ -428,38 +470,52 @@
     $('profileUid').textContent = 'UID: '+user.uid;
   }
 
-  // ---- coins ----
+  // ---- load coins ----
   async function loadCoins() {
     const coinsRef = ref(db, 'coins');
     const snap = await get(coinsRef);
     if(snap.exists()) {
       coinsData = snap.val();
     } else {
-      const initial = { NXR:{price:12.50,change:0,symbol:'NXR',name:'NEXORA'}, VTX:{price:7.80,change:0,symbol:'VTX',name:'VELTRIX'}, QTA:{price:25.40,change:0,symbol:'QTA',name:'QUANTARA'} };
+      const initial = {
+        NXR: { price:12.50, change:0, symbol:'NXR', name:'NEXORA', min:10, max:15, auto:true, color:'#f0b90b' },
+        VTX: { price:7.80, change:0, symbol:'VTX', name:'VELTRIX', min:6, max:10, auto:true, color:'#22c55e' },
+        QTA: { price:25.40, change:0, symbol:'QTA', name:'QUANTARA', min:20, max:30, auto:true, color:'#3b82f6' },
+        OVX: { price:3.20, change:0, symbol:'OVX', name:'ORVEX', min:2, max:5, auto:true, color:'#a855f7' },
+        LMR: { price:18.40, change:0, symbol:'LMR', name:'LUMORA', min:15, max:22, auto:true, color:'#ec4899' },
+        ZTA: { price:42.00, change:0, symbol:'ZTA', name:'ZENTARA', min:38, max:48, auto:true, color:'#f59e0b' },
+        AUX: { price:6.70, change:0, symbol:'AUX', name:'AUREX', min:5, max:8, auto:true, color:'#06b6d4' },
+        FLX: { price:91.00, change:0, symbol:'FLX', name:'FLUXORA', min:80, max:100, auto:true, color:'#8b5cf6' }
+      };
       await set(coinsRef, initial);
       coinsData = initial;
     }
   }
 
-  async function updateCoinPrice(symbol, newPrice) {
+  async function updateCoinPrice(symbol, newPrice, updateDb=true) {
     if(newPrice < 0.01) return toast('Price too low','error');
-    const coinRef = ref(db, 'coins/'+symbol);
-    await update(coinRef, { price: newPrice, change: coinsData[symbol]?.change || 0 });
-    coinsData[symbol].price = newPrice;
-    const histRef = push(ref(db, 'priceHistory/'+symbol));
-    await set(histRef, { price: newPrice, timestamp: serverTimestamp() });
+    const coin = coinsData[symbol];
+    if(coin.min && newPrice < coin.min) return toast(`Price below minimum ${formatUSD(coin.min)}`,'error');
+    if(coin.max && newPrice > coin.max) return toast(`Price above maximum ${formatUSD(coin.max)}`,'error');
+    coin.price = newPrice;
+    if(updateDb) {
+      const coinRef = ref(db, 'coins/'+symbol);
+      await update(coinRef, { price: newPrice, change: coin.change || 0 });
+      const histRef = push(ref(db, 'priceHistory/'+symbol));
+      await set(histRef, { price: newPrice, timestamp: serverTimestamp() });
+    }
     renderAll();
     toast(`${symbol} price updated to ${formatUSD(newPrice)}`,'success');
   }
 
-  // ---- deposits ----
+  // ---- load deposits ----
   async function loadDeposits() {
     const depRef = ref(db, 'deposits');
     const snap = await get(depRef);
     allDeposits = snap.exists() ? Object.values(snap.val()) : [];
   }
 
-  // ---- transactions ----
+  // ---- load transactions ----
   async function loadTransactions() {
     const txRef = ref(db, 'transactions');
     const snap = await get(txRef);
@@ -474,9 +530,11 @@
     if(admins.includes(currentUser?.uid)) {
       isAdmin = true;
       $('adminNavLink').style.display='flex';
+      document.getElementById('adminPanelCard').style.display = 'block';
     } else {
       isAdmin = false;
       $('adminNavLink').style.display='none';
+      document.getElementById('adminPanelCard').style.display = 'none';
     }
   }
 
@@ -487,11 +545,6 @@
     if(snap.exists()) allUsers = snap.val();
   }
 
-  function startUserListRefresh() {
-    if(userListInterval) clearInterval(userListInterval);
-    userListInterval = setInterval(loadAllUsers, 30000);
-  }
-
   // ---- render all ----
   function renderAll() {
     renderHome();
@@ -499,17 +552,19 @@
     renderPortfolio();
     renderProfile();
     renderDepositHistory();
-    if(isAdmin && document.getElementById('page-admin').classList.contains('active')) {
+    if(isAdmin) {
       const activeTab = document.querySelector('[data-admin-tab].btn-primary');
       if(activeTab) {
         const tab = activeTab.dataset.adminTab;
         if(tab==='overview') renderAdminOverview();
         else if(tab==='users') renderAdminUsers();
-        else if(tab==='coins') renderAdminCoins();
         else if(tab==='deposits') renderAdminDeposits();
+        else if(tab==='coins') renderAdminCoins();
         else if(tab==='transactions') renderAdminTransactions();
+        else if(tab==='portfolio') renderAdminPortfolio();
       }
     }
+    drawChart();
   }
 
   function renderHome() {
@@ -526,9 +581,12 @@
     for(const [sym, coin] of Object.entries(coinsData)) {
       const change = coin.change || 0;
       const cls = change>=0?'up':'down';
-      html += `<div class="coin-row"><div class="coin-info"><div class="coin-name">${coin.name}</div><div class="coin-symbol">${sym}</div></div>
+      html += `<div class="coin-row">
+        ${getCoinLogo(sym)}
+        <div class="coin-info"><div class="coin-name">${coin.name}</div><div class="coin-symbol">${sym}</div></div>
         <div><span class="coin-price">${formatUSD(coin.price)}</span><span class="coin-change ${cls}">${change>=0?'+':''}${change.toFixed(2)}%</span></div>
-        <div class="coin-actions"><button class="btn btn-primary btn-sm" data-buy="${sym}">Buy</button></div></div>`;
+        <div class="coin-actions"><button class="btn btn-primary btn-sm" data-buy="${sym}">Buy</button></div>
+      </div>`;
     }
     $('homeCoinList').innerHTML = html;
     document.querySelectorAll('[data-buy]').forEach(el=>{
@@ -541,9 +599,12 @@
     for(const [sym, coin] of Object.entries(coinsData)) {
       const change = coin.change || 0;
       const cls = change>=0?'up':'down';
-      html += `<div class="coin-row"><div class="coin-info"><div class="coin-name">${coin.name}</div><div class="coin-symbol">${sym}</div></div>
+      html += `<div class="coin-row">
+        ${getCoinLogo(sym)}
+        <div class="coin-info"><div class="coin-name">${coin.name}</div><div class="coin-symbol">${sym}</div></div>
         <div><span class="coin-price">${formatUSD(coin.price)}</span><span class="coin-change ${cls}">${change>=0?'+':''}${change.toFixed(2)}%</span></div>
-        <div class="coin-actions"><button class="btn btn-primary btn-sm" data-buy-market="${sym}">Buy</button></div></div>`;
+        <div class="coin-actions"><button class="btn btn-primary btn-sm" data-buy-market="${sym}">Buy</button></div>
+      </div>`;
     }
     $('marketCoinList').innerHTML = html;
     document.querySelectorAll('[data-buy-market]').forEach(el=>{
@@ -574,9 +635,12 @@
       const avgBuy = userData?.avgBuyPrices?.[sym] || coin.price;
       const pl = value - (qty * avgBuy);
       const plp = avgBuy>0 ? (pl/(qty*avgBuy))*100 : 0;
-      html += `<div class="coin-row"><div><div class="coin-name">${coin.name}</div><div class="coin-symbol">${qty.toFixed(4)} ${sym}</div></div>
+      html += `<div class="coin-row">
+        ${getCoinLogo(sym)}
+        <div><div class="coin-name">${coin.name}</div><div class="coin-symbol">${qty.toFixed(4)} ${sym}</div></div>
         <div><div>${formatUSD(value)}</div><div class="${pl>=0?'text-green':'text-red'}">${pl>=0?'+':''}${formatUSD(pl)} (${plp>=0?'+':''}${plp.toFixed(2)}%)</div></div>
-        <div class="coin-actions"><button class="btn btn-danger btn-sm" data-sell="${sym}">Sell</button></div></div>`;
+        <div class="coin-actions"><button class="btn btn-danger btn-sm" data-sell="${sym}">Sell</button></div>
+      </div>`;
     }
     if(!html) html = '<div class="text-muted">No holdings</div>';
     $('portfolioHoldings').innerHTML = html;
@@ -599,14 +663,14 @@
       if(qty===0) continue;
       const coin = coinsData[sym];
       if(!coin) continue;
-      html += `<div class="flex-between"><span>${sym}</span><span>${qty.toFixed(4)} (${formatUSD(qty*coin.price)})</span></div>`;
+      html += `<div class="flex-between" style="font-size:13px;padding:4px 0;border-bottom:1px solid #1f2937;"><span>${getCoinLogo(sym)} ${sym}</span><span>${qty.toFixed(4)} (${formatUSD(qty*coin.price)})</span></div>`;
     }
     $('profileHoldings').innerHTML = html || '<div class="text-muted">No holdings</div>';
 
     let txHtml = '';
     const userTxs = allTransactions.filter(t=>t.uid===currentUser?.uid).slice(-10).reverse();
     userTxs.forEach(t=>{
-      txHtml += `<div class="flex-between tx-item"><span>${t.type}</span><span>${t.coin||''}</span><span>${formatUSD(t.amount||0)}</span><span class="text-muted">${new Date(t.timestamp||Date.now()).toLocaleDateString()}</span></div>`;
+      txHtml += `<div class="flex-between tx-item"><span>${t.type}</span><span>${t.coin||''}</span><span>${formatUSD(t.amount||0)}</span><span class="text-muted" style="font-size:11px;">${new Date(t.timestamp||Date.now()).toLocaleDateString()}</span></div>`;
     });
     $('profileTransactions').innerHTML = txHtml || '<div class="text-muted">No transactions</div>';
   }
@@ -617,9 +681,65 @@
     userDeps.forEach(d=>{
       const status = d.status || 'PENDING';
       const badge = `badge-${status.toLowerCase()}`;
-      html += `<div class="flex-between deposit-item"><span>${d.orderId||'—'}</span><span>${formatUSD(d.amount)}</span><span class="badge ${badge}">${status}</span><span class="text-muted">${new Date(d.createdAt||Date.now()).toLocaleDateString()}</span></div>`;
+      html += `<div class="flex-between deposit-item"><span style="font-size:12px;">${d.orderId||'—'}</span><span>${formatUSD(d.amount)}</span><span class="badge ${badge}">${status}</span><span class="text-muted" style="font-size:11px;">${new Date(d.createdAt||Date.now()).toLocaleDateString()}</span></div>`;
     });
     $('depositHistoryList').innerHTML = html || '<div class="text-muted">No deposits</div>';
+  }
+
+  // ---- draw chart ----
+  function drawChart() {
+    chartCanvas = document.getElementById('priceChart');
+    if(!chartCanvas) return;
+    chartCtx = chartCanvas.getContext('2d');
+    const rect = chartCanvas.parentElement.getBoundingClientRect();
+    chartCanvas.width = chartCanvas.parentElement.clientWidth || 400;
+    chartCanvas.height = 200;
+    const w = chartCanvas.width, h = chartCanvas.height;
+    chartCtx.clearRect(0,0,w,h);
+    
+    // Generate demo candle data
+    const data = [];
+    let price = 25;
+    for(let i=0; i<30; i++) {
+      const change = (Math.random()*2 - 1) * 2;
+      price = Math.max(5, price + change);
+      const open = price - (Math.random()*2);
+      const close = price;
+      const high = Math.max(open, close) + Math.random()*2;
+      const low = Math.min(open, close) - Math.random()*2;
+      data.push({ open, high, low, close });
+    }
+    chartData = data;
+    
+    const maxP = Math.max(...data.map(d=>d.high));
+    const minP = Math.min(...data.map(d=>d.low));
+    const range = maxP - minP || 1;
+    const pad = 20;
+    const xStep = (w - pad*2) / data.length;
+    
+    data.forEach((d, i) => {
+      const x = pad + i * xStep;
+      const yHigh = pad + (1 - (d.high - minP)/range) * (h - pad*2);
+      const yLow = pad + (1 - (d.low - minP)/range) * (h - pad*2);
+      const yOpen = pad + (1 - (d.open - minP)/range) * (h - pad*2);
+      const yClose = pad + (1 - (d.close - minP)/range) * (h - pad*2);
+      const isGreen = d.close >= d.open;
+      
+      chartCtx.fillStyle = isGreen ? '#22c55e' : '#ef4444';
+      chartCtx.strokeStyle = isGreen ? '#22c55e' : '#ef4444';
+      chartCtx.lineWidth = 1;
+      
+      // Wick
+      chartCtx.beginPath();
+      chartCtx.moveTo(x, yHigh);
+      chartCtx.lineTo(x, yLow);
+      chartCtx.stroke();
+      
+      // Body
+      const bodyY = Math.min(yOpen, yClose);
+      const bodyH = Math.max(1, Math.abs(yClose - yOpen));
+      chartCtx.fillRect(x - xStep*0.3, bodyY, xStep*0.6, bodyH);
+    });
   }
 
   // ---- buy modal ----
@@ -632,9 +752,8 @@
       <div class="field"><label>Available Balance</label><div>${formatUSD(balance)}</div></div>
       <div class="field"><label>Amount (USD)</label><input type="number" id="buyAmount" placeholder="Enter USD" min="0.01" step="0.01" value="10" /></div>
       <div class="field"><label>Quantity</label><div id="buyQuantityDisplay">0.0000</div></div>`;
-    const actions = `<button class="btn btn-outline" id="modalCancel">Cancel</button><button class="btn btn-primary" id="modalConfirmBuy">Buy</button>`;
+    const actions = `<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="modalConfirmBuy">Buy</button>`;
     openModal('Buy '+symbol, 'Virtual trade', body, actions);
-    document.getElementById('modalCancel').addEventListener('click', closeModal);
     const amountInput = document.getElementById('buyAmount');
     const qtyDisplay = document.getElementById('buyQuantityDisplay');
     const updateQty = ()=>{
@@ -653,7 +772,9 @@
       const newBalance = (userData.virtualBalance||0) - amt;
       const newHoldings = {...holdings};
       newHoldings[symbol] = (newHoldings[symbol]||0) + qty;
-      const newAvg = ((holdings[symbol]||0) * (userData.avgBuyPrices?.[symbol]||0) + amt) / (newHoldings[symbol]);
+      const currentAvg = userData.avgBuyPrices?.[symbol] || 0;
+      const totalCost = (holdings[symbol]||0) * currentAvg + amt;
+      const newAvg = totalCost / newHoldings[symbol];
       await update(userRef, { virtualBalance: newBalance, holdings: newHoldings, avgBuyPrices: { ...userData.avgBuyPrices, [symbol]: newAvg } });
       const txRef = push(ref(db, 'transactions'));
       await set(txRef, { uid: currentUser.uid, coin: symbol, type: 'BUY', amount: amt, quantity: qty, price: coin.price, timestamp: serverTimestamp() });
@@ -678,9 +799,8 @@
       <div class="field"><label>Quantity</label><div>${qty.toFixed(4)}</div></div>
       <div class="field"><label>Current Price</label><div>${formatUSD(coin.price)}</div></div>
       <div class="field"><label>Total Value</label><div>${formatUSD(value)}</div></div>`;
-    const actions = `<button class="btn btn-outline" id="modalCancel">Cancel</button><button class="btn btn-danger" id="modalConfirmSell">Sell All</button>`;
+    const actions = `<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-danger" id="modalConfirmSell">Sell All</button>`;
     openModal('Sell '+symbol, 'Confirm sale', body, actions);
-    document.getElementById('modalCancel').addEventListener('click', closeModal);
     document.getElementById('modalConfirmSell').addEventListener('click', async ()=>{
       const balance = userData?.virtualBalance || 0;
       const newBalance = balance + value;
@@ -703,7 +823,8 @@
     if(!currentUser) return toast('Login required','error');
     const amount = parseFloat(document.getElementById('depositAmount').value);
     if(!amount || amount<=0) return toast('Enter valid amount','error');
-    const method = document.getElementById('depositMethod').value;
+    const method = document.getElementById('selectedMethod').value;
+    if(!method) return toast('Please select a payment method','error');
     const orderId = generateOrderId();
     const depRef = push(ref(db, 'deposits'));
     await set(depRef, {
@@ -712,6 +833,8 @@
     });
     toast('Deposit request submitted. Await admin approval.','success');
     document.getElementById('depositAmount').value = '';
+    document.querySelectorAll('.method-option').forEach(m=>m.classList.remove('selected'));
+    document.getElementById('selectedMethod').value = '';
     await loadDeposits();
     renderDepositHistory();
   });
@@ -720,15 +843,19 @@
   function renderAdminOverview() {
     const container = document.getElementById('adminContent');
     const totalUsers = Object.keys(allUsers).length || 0;
+    const totalBalance = Object.values(allUsers).reduce((s,u)=>s+(u.virtualBalance||0),0);
     const pending = allDeposits.filter(d=>d.status==='PENDING').length;
     const approved = allDeposits.filter(d=>d.status==='APPROVED').length;
     const rejected = allDeposits.filter(d=>d.status==='REJECTED').length;
     const totalVol = allTransactions.reduce((sum,t)=>sum+(t.amount||0),0);
+    const totalTrades = allTransactions.filter(t=>t.type==='BUY'||t.type==='SELL').length;
     let html = `<div class="stat-grid">
       <div class="stat-item"><div class="stat-label">Total Users</div><div class="stat-value">${totalUsers}</div></div>
+      <div class="stat-item"><div class="stat-label">Total Virtual USD</div><div class="stat-value gold">${formatUSD(totalBalance)}</div></div>
       <div class="stat-item"><div class="stat-label">Pending Deposits</div><div class="stat-value gold">${pending}</div></div>
       <div class="stat-item"><div class="stat-label">Approved</div><div class="stat-value green">${approved}</div></div>
       <div class="stat-item"><div class="stat-label">Rejected</div><div class="stat-value red">${rejected}</div></div>
+      <div class="stat-item"><div class="stat-label">Total Trades</div><div class="stat-value">${totalTrades}</div></div>
       <div class="stat-item"><div class="stat-label">Total Volume</div><div class="stat-value">${formatUSD(totalVol)}</div></div>
     </div>`;
     container.innerHTML = html;
@@ -745,47 +872,6 @@
     }
     html += '</div>';
     container.innerHTML = html || '<div class="text-muted">No users</div>';
-  }
-
-  function renderAdminCoins() {
-    const container = document.getElementById('adminContent');
-    let html = '<div class="admin-list">';
-    for(const [sym, coin] of Object.entries(coinsData)) {
-      html += `<div class="item flex-between"><span><strong>${coin.name}</strong> (${sym})</span>
-        <span>${formatUSD(coin.price)}</span>
-        <span><input type="number" id="priceInput_${sym}" value="${coin.price}" step="0.01" min="0.01" style="width:90px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 8px;color:#e8edf5;" /></span>
-        <button class="btn btn-sm btn-outline" data-set-price="${sym}">Set</button>
-        <button class="btn btn-sm btn-outline" data-inc-price="${sym}">+5%</button>
-        <button class="btn btn-sm btn-outline" data-dec-price="${sym}">-5%</button>
-      </div>`;
-    }
-    html += '</div>';
-    container.innerHTML = html;
-    document.querySelectorAll('[data-set-price]').forEach(el=>{
-      el.addEventListener('click', ()=>{
-        const sym = el.dataset.setPrice;
-        const input = document.getElementById('priceInput_'+sym);
-        const val = parseFloat(input.value);
-        if(!val || val<=0) return toast('Invalid price','error');
-        updateCoinPrice(sym, val);
-      });
-    });
-    document.querySelectorAll('[data-inc-price]').forEach(el=>{
-      el.addEventListener('click', ()=>{
-        const sym = el.dataset.incPrice;
-        const coin = coinsData[sym];
-        if(!coin) return;
-        updateCoinPrice(sym, coin.price * 1.05);
-      });
-    });
-    document.querySelectorAll('[data-dec-price]').forEach(el=>{
-      el.addEventListener('click', ()=>{
-        const sym = el.dataset.decPrice;
-        const coin = coinsData[sym];
-        if(!coin) return;
-        updateCoinPrice(sym, coin.price * 0.95);
-      });
-    });
   }
 
   async function renderAdminDeposits() {
@@ -846,16 +932,72 @@
     renderAdminDeposits();
   }
 
+  function renderAdminCoins() {
+    const container = document.getElementById('adminContent');
+    let html = '<div class="admin-list">';
+    for(const [sym, coin] of Object.entries(coinsData)) {
+      html += `<div class="item flex-between" style="flex-wrap:wrap;gap:6px;">
+        <span><strong>${coin.name}</strong> (${sym}) ${getCoinLogo(sym)}</span>
+        <span>${formatUSD(coin.price)}</span>
+        <span style="font-size:11px;color:#7f92a8;">Min: ${formatUSD(coin.min||0)} Max: ${formatUSD(coin.max||999)}</span>
+        <span><input type="number" id="priceInput_${sym}" value="${coin.price}" step="0.01" min="0.01" style="width:80px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:12px;" /></span>
+        <button class="btn btn-sm btn-outline" data-set-price="${sym}">Set</button>
+        <button class="btn btn-sm btn-outline" data-inc-price="${sym}">+5%</button>
+        <button class="btn btn-sm btn-outline" data-dec-price="${sym}">-5%</button>
+        <button class="btn btn-sm ${coin.auto?'btn-success':'btn-outline'}" data-toggle-auto="${sym}">${coin.auto?'Auto ON':'Auto OFF'}</button>
+      </div>`;
+    }
+    html += '</div>';
+    container.innerHTML = html;
+    
+    document.querySelectorAll('[data-set-price]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const sym = el.dataset.setPrice;
+        const input = document.getElementById('priceInput_'+sym);
+        const val = parseFloat(input.value);
+        if(!val || val<=0) return toast('Invalid price','error');
+        updateCoinPrice(sym, val);
+      });
+    });
+    document.querySelectorAll('[data-inc-price]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const sym = el.dataset.incPrice;
+        const coin = coinsData[sym];
+        if(!coin) return;
+        updateCoinPrice(sym, coin.price * 1.05);
+      });
+    });
+    document.querySelectorAll('[data-dec-price]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const sym = el.dataset.decPrice;
+        const coin = coinsData[sym];
+        if(!coin) return;
+        updateCoinPrice(sym, coin.price * 0.95);
+      });
+    });
+    document.querySelectorAll('[data-toggle-auto]').forEach(el=>{
+      el.addEventListener('click', async ()=>{
+        const sym = el.dataset.toggleAuto;
+        const coin = coinsData[sym];
+        if(!coin) return;
+        coin.auto = !coin.auto;
+        const coinRef = ref(db, 'coins/'+sym);
+        await update(coinRef, { auto: coin.auto });
+        renderAdminCoins();
+        toast(`${sym} auto movement ${coin.auto?'enabled':'disabled'}`,'success');
+      });
+    });
+  }
+
   async function renderAdminTransactions() {
     const container = document.getElementById('adminContent');
     await loadTransactions();
     let html = '<div class="admin-list">';
-    const searchHtml = `<div style="margin-bottom:12px;"><input type="text" id="txSearch" placeholder="Search by user or coin..." style="background:#0d141e;border:1px solid #2f3b4a;border-radius:12px;padding:10px 14px;color:#e8edf5;width:100%;" /></div>`;
-    let txList = allTransactions.slice().reverse();
+    const searchHtml = `<div style="margin-bottom:10px;"><input type="text" id="txSearch" placeholder="Search by user or coin..." style="background:#0d141e;border:1px solid #2f3b4a;border-radius:10px;padding:8px 12px;color:#e8edf5;width:100%;font-size:13px;" /></div>`;
     html += searchHtml;
     html += '<div id="txList">';
-    for(const tx of txList.slice(0,50)) {
-      html += `<div class="item flex-between"><span>${tx.type}</span><span>${tx.coin||''}</span><span>${formatUSD(tx.amount||0)}</span><span class="text-muted">${new Date(tx.timestamp||Date.now()).toLocaleDateString()}</span></div>`;
+    for(const tx of allTransactions.slice().reverse().slice(0,30)) {
+      html += `<div class="item flex-between"><span>${tx.type}</span><span>${tx.coin||''}</span><span>${formatUSD(tx.amount||0)}</span><span class="text-muted" style="font-size:11px;">${new Date(tx.timestamp||Date.now()).toLocaleDateString()}</span></div>`;
     }
     html += '</div></div>';
     container.innerHTML = html;
@@ -867,15 +1009,27 @@
           (t.coin||'').toLowerCase().includes(q) || 
           (t.uid||'').toLowerCase().includes(q) ||
           (t.type||'').toLowerCase().includes(q)
-        ).slice(0,50);
+        ).slice(0,30);
         const list = document.getElementById('txList');
         if(list) {
           list.innerHTML = filtered.map(t=> 
-            `<div class="item flex-between"><span>${t.type}</span><span>${t.coin||''}</span><span>${formatUSD(t.amount||0)}</span><span class="text-muted">${new Date(t.timestamp||Date.now()).toLocaleDateString()}</span></div>`
+            `<div class="item flex-between"><span>${t.type}</span><span>${t.coin||''}</span><span>${formatUSD(t.amount||0)}</span><span class="text-muted" style="font-size:11px;">${new Date(t.timestamp||Date.now()).toLocaleDateString()}</span></div>`
           ).join('');
         }
       });
     }
+  }
+
+  async function renderAdminPortfolio() {
+    const container = document.getElementById('adminContent');
+    await loadAllUsers();
+    let html = '<div class="admin-list"><div class="text-muted" style="margin-bottom:10px;">User Portfolio Overview</div>';
+    for(const [uid, data] of Object.entries(allUsers)) {
+      const portVal = (data.holdings) ? Object.entries(data.holdings).reduce((sum,[sym,qty])=>{ const c=coinsData[sym]; return sum + (c?qty*c.price:0); },0) : 0;
+      html += `<div class="item"><span class="label">${data.displayName||'User'}</span><span class="value">Balance: ${formatUSD(data.virtualBalance||0)}</span><span class="value">Portfolio: ${formatUSD(portVal)}</span></div>`;
+    }
+    html += '</div>';
+    container.innerHTML = html;
   }
 
   // ---- admin tabs ----
@@ -886,9 +1040,10 @@
       const tab = btn.dataset.adminTab;
       if(tab==='overview') renderAdminOverview();
       else if(tab==='users') renderAdminUsers();
-      else if(tab==='coins') renderAdminCoins();
       else if(tab==='deposits') renderAdminDeposits();
+      else if(tab==='coins') renderAdminCoins();
       else if(tab==='transactions') renderAdminTransactions();
+      else if(tab==='portfolio') renderAdminPortfolio();
     });
   });
   document.querySelector('[data-admin-tab="overview"]')?.classList.add('btn-primary');
@@ -899,8 +1054,11 @@
     priceInterval = setInterval(async ()=>{
       for(const sym of Object.keys(coinsData)) {
         const coin = coinsData[sym];
-        const change = (Math.random()*2 - 1) * 0.6;
-        const newPrice = coin.price * (1 + change/100);
+        if(!coin.auto) continue;
+        const change = (Math.random()*2 - 1) * 0.8;
+        let newPrice = coin.price * (1 + change/100);
+        if(coin.min && newPrice < coin.min) newPrice = coin.min + Math.random() * 0.5;
+        if(coin.max && newPrice > coin.max) newPrice = coin.max - Math.random() * 0.5;
         if(newPrice > 0.01) {
           coin.price = newPrice;
           coin.change = Math.min(10, Math.max(-10, (coin.change||0) + change*0.1));
@@ -909,13 +1067,13 @@
         }
       }
       renderAll();
-    }, 7000);
+    }, 8000);
   }
 
   // ---- init ----
-  console.log('✅ Binance Coin Get · Simulator loaded with Firebase Auth');
-  console.log('ℹ️ Make sure Google Authentication is ENABLED in Firebase Console');
-  console.log('ℹ️ And your domain (localhost or hosted) is ADDED to Authorized Domains');
+  console.log('✅ Binance Coin Get · Simulator loaded');
+  console.log('ℹ️ New users start with $0.00 balance');
+  console.log('ℹ️ Admin approval required for deposits');
 </script>
 </body>
 </html>
