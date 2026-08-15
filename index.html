@@ -1,1425 +1,2024 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-  <title>Binance Coin Get · Simulator</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Inter', sans-serif; background:#0b0e14; color:#e8edf5; height:100vh; overflow:hidden; display:flex; }
-    ::-webkit-scrollbar { width:4px; }
-    ::-webkit-scrollbar-track { background:#1a1f2a; }
-    ::-webkit-scrollbar-thumb { background:#2f3b4a; border-radius:8px; }
-    #app { display:flex; width:100%; height:100vh; overflow:hidden; }
-    .sidebar { display:none; flex-direction:column; width:220px; background:#11171f; border-right:1px solid #252d3a; padding:24px 12px; height:100vh; position:sticky; top:0; }
-    .sidebar .brand { font-weight:700; font-size:20px; letter-spacing:-0.3px; padding-bottom:28px; color:#f0b90b; }
-    .sidebar .brand span { color:#e8edf5; }
-    .sidebar nav { display:flex; flex-direction:column; gap:4px; flex:1; }
-    .sidebar nav a { display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:12px; color:#9aa9b9; font-weight:500; font-size:14px; transition:0.2s; cursor:pointer; text-decoration:none; }
-    .sidebar nav a i { width:20px; font-size:17px; }
-    .sidebar nav a.active, .sidebar nav a:hover { background:#1f2937; color:#f0b90b; }
-    .sidebar .user-mini { margin-top:auto; border-top:1px solid #252d3a; padding-top:16px; display:flex; align-items:center; gap:12px; }
-    .sidebar .user-mini img { width:36px; height:36px; border-radius:50%; background:#2f3b4a; }
-    .sidebar .user-mini .name { font-weight:500; font-size:14px; }
-    .main { flex:1; display:flex; flex-direction:column; height:100vh; overflow:hidden; background:#0b0e14; }
-    .content { flex:1; overflow-y:auto; padding:16px 20px 100px; }
-    .page { display:none; animation:fadeIn 0.2s ease; }
-    .page.active { display:block; }
-    @keyframes fadeIn { from { opacity:0.4; } to { opacity:1; } }
-    .bottom-nav { display:flex; position:fixed; bottom:0; left:0; right:0; background:#11171f; border-top:1px solid #252d3a; justify-content:space-around; padding:8px 0 12px; z-index:50; }
-    .bottom-nav a { display:flex; flex-direction:column; align-items:center; color:#9aa9b9; font-size:11px; font-weight:500; gap:3px; text-decoration:none; transition:0.2s; padding:4px 8px; border-radius:8px; }
-    .bottom-nav a i { font-size:20px; }
-    .bottom-nav a.active { color:#f0b90b; }
-    .bottom-nav a span { font-size:10px; }
-    .card { background:#131b24; border-radius:16px; padding:18px 16px; border:1px solid #1f2937; margin-bottom:16px; }
-    .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-    .card-title { font-weight:600; font-size:15px; color:#b0c4d9; letter-spacing:0.2px; }
-    .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .stat-item { background:#0d141e; border-radius:12px; padding:14px; }
-    .stat-label { font-size:13px; color:#7f92a8; }
-    .stat-value { font-size:22px; font-weight:700; margin-top:4px; }
-    .stat-value.green { color:#22c55e; }
-    .stat-value.red { color:#ef4444; }
-    .stat-value.gold { color:#f0b90b; }
-    .coin-row { display:flex; align-items:center; justify-content:space-between; background:#0d141e; border-radius:14px; padding:12px 14px; margin-bottom:8px; border-left:4px solid #f0b90b; gap:8px; flex-wrap:wrap; }
-    .coin-logo { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; background:#1f2937; color:#f0b90b; flex-shrink:0; }
-    .coin-info { display:flex; flex-direction:column; flex:1; min-width:80px; }
-    .coin-name { font-weight:600; font-size:15px; }
-    .coin-symbol { font-size:12px; color:#7f92a8; }
-    .coin-price { font-weight:700; font-size:17px; }
-    .coin-change { font-size:13px; font-weight:500; margin-left:6px; }
-    .coin-change.up { color:#22c55e; }
-    .coin-change.down { color:#ef4444; }
-    .coin-actions { display:flex; gap:6px; flex-wrap:wrap; }
-    .btn { background:#1f2937; border:none; color:#e8edf5; padding:7px 14px; border-radius:40px; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:5px; }
-    .btn-primary { background:#f0b90b; color:#0b0e14; }
-    .btn-primary:hover { background:#d9a70a; }
-    .btn-success { background:#22c55e; color:#0b0e14; }
-    .btn-danger { background:#ef4444; color:#fff; }
-    .btn-outline { background:transparent; border:1px solid #2f3b4a; }
-    .btn-sm { padding:4px 10px; font-size:12px; }
-    .btn-block { width:100%; justify-content:center; }
-    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:100; }
-    .modal-overlay.open { display:flex; }
-    .modal { background:#131b24; border-radius:24px; max-width:440px; width:92%; padding:24px; border:1px solid #2a3440; max-height:92vh; overflow-y:auto; }
-    .modal h3 { font-size:20px; margin-bottom:6px; }
-    .modal .sub { color:#7f92a8; margin-bottom:16px; font-size:14px; }
-    .modal .field { margin-bottom:14px; }
-    .modal .field label { display:block; font-weight:500; font-size:13px; margin-bottom:4px; color:#b0c4d9; }
-    .modal .field input, .modal .field select { width:100%; background:#0d141e; border:1px solid #2a3440; border-radius:12px; padding:10px 14px; color:#e8edf5; font-size:15px; outline:none; }
-    .modal .field input:focus { border-color:#f0b90b; }
-    .modal .field .method-option { display:flex; align-items:center; gap:12px; padding:10px 14px; background:#0d141e; border:1px solid #2a3440; border-radius:12px; cursor:pointer; margin-bottom:6px; transition:0.2s; }
-    .modal .field .method-option:hover { border-color:#f0b90b; }
-    .modal .field .method-option.selected { border-color:#f0b90b; background:#1f2937; }
-    .modal .actions { display:flex; gap:10px; margin-top:20px; justify-content:flex-end; }
-    .modal .actions .btn { flex:1; justify-content:center; }
-    .badge { background:#1f2937; padding:3px 10px; border-radius:40px; font-size:11px; font-weight:600; }
-    .badge-pending { background:#b45309; color:#fff; }
-    .badge-approved { background:#22c55e; color:#0b0e14; }
-    .badge-rejected { background:#ef4444; color:#fff; }
-    .admin-list .item { display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; background:#0d141e; padding:10px 12px; border-radius:12px; margin-bottom:6px; border-left:2px solid #2f3b4a; font-size:13px; }
-    .admin-list .item .label { min-width:80px; font-weight:500; }
-    .admin-list .item .value { color:#b0c4d9; }
-    .toast-container { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); z-index:200; display:flex; flex-direction:column; gap:6px; align-items:center; }
-    .toast { background:#1f2937; border:1px solid #2f3b4a; border-radius:40px; padding:8px 18px; font-weight:500; font-size:13px; box-shadow:0 8px 20px rgba(0,0,0,0.6); color:#e8edf5; max-width:92%; }
-    .toast.success { border-color:#22c55e; color:#22c55e; }
-    .toast.error { border-color:#ef4444; color:#ef4444; }
-    @media(min-width:768px) {
-      .sidebar { display:flex; }
-      .bottom-nav { display:none; }
-      .content { padding:24px 32px 40px; }
-      .stat-grid { grid-template-columns:repeat(4,1fr); }
-    }
-    @media(max-width:767px) {
-      .stat-grid { grid-template-columns:1fr 1fr; }
-      .coin-row { flex-wrap:wrap; }
-    }
-    .flex { display:flex; align-items:center; gap:8px; }
-    .flex-between { display:flex; justify-content:space-between; align-items:center; }
-    .text-muted { color:#7f92a8; }
-    .text-gold { color:#f0b90b; }
-    .text-green { color:#22c55e; }
-    .text-red { color:#ef4444; }
-    .w-full { width:100%; }
-    .text-center { text-align:center; }
-    .hidden { display:none !important; }
-    .mt-8 { margin-top:8px; }
-    .mb-8 { margin-bottom:8px; }
-    .gap-4 { gap:4px; }
-    .gap-8 { gap:8px; }
-    #login-overlay { position:fixed; inset:0; background:#0b0e14; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:300; }
-    #login-overlay .logo { font-size:36px; font-weight:700; color:#f0b90b; }
-    #login-overlay .logo span { color:#e8edf5; }
-    #login-overlay .sub { color:#7f92a8; margin:8px 0 32px; font-size:16px; }
-    #login-overlay .btn-google { background:#1f2937; border:1px solid #2f3b4a; padding:14px 32px; border-radius:60px; font-size:18px; font-weight:600; color:#e8edf5; display:flex; align-items:center; gap:12px; cursor:pointer; transition:0.2s; }
-    #login-overlay .btn-google:hover { background:#2f3b4a; }
-    #login-overlay .btn-google i { font-size:22px; }
-    .admin-tab-bar { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
-    .admin-tab-bar .btn { flex:1; min-width:70px; justify-content:center; font-size:12px; padding:6px 10px; }
-    .tx-item { border-bottom:1px solid #1f2937; padding:6px 0; font-size:13px; }
-    .deposit-item { border-bottom:1px solid #1f2937; padding:6px 0; font-size:13px; }
-    .coin-logo-svg { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; flex-shrink:0; }
-    .profile-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-    .profile-stat { background:#0d141e; border-radius:10px; padding:10px; text-align:center; }
-    .profile-stat .label { font-size:11px; color:#7f92a8; }
-    .profile-stat .value { font-size:18px; font-weight:700; margin-top:2px; }
-    .method-demo-info { background:#0d141e; border-radius:10px; padding:10px; margin:6px 0; font-size:12px; border:1px solid #2a3440; }
-    .method-demo-info .label { color:#7f92a8; }
-    .method-demo-info .value { color:#f0b90b; font-family:monospace; word-break:break-all; }
-    .long-press-area { width:100%; height:40px; display:flex; align-items:center; justify-content:center; color:#1f2937; font-size:11px; user-select:none; cursor:default; border-radius:12px; transition:0.3s; }
-    .long-press-area.active { background:#1f2937; }
-    .withdraw-method-item { display:flex; align-items:center; gap:12px; padding:10px 14px; background:#0d141e; border:1px solid #2a3440; border-radius:12px; cursor:pointer; margin-bottom:6px; transition:0.2s; }
-    .withdraw-method-item:hover { border-color:#f0b90b; }
-    .withdraw-method-item.selected { border-color:#f0b90b; background:#1f2937; }
-    .table-responsive { overflow-x:auto; }
-    table { width:100%; border-collapse:collapse; font-size:13px; }
-    th { text-align:left; padding:8px 6px; color:#7f92a8; font-weight:500; border-bottom:1px solid #1f2937; }
-    td { padding:8px 6px; border-bottom:1px solid #1f2937; }
-    tr:hover td { background:#0d141e; }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>BINANCECOIN GET · Virtual Trading Platform</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        /* ============================================================
+           CSS VARIABLES & RESET
+           ============================================================ */
+        :root {
+            --bg-primary: #070b10;
+            --bg-secondary: #0d141e;
+            --bg-card: #111a26;
+            --bg-card-hover: #162033;
+            --bg-input: #0a111a;
+            --border-color: #1a2a3a;
+            --border-light: #2a3a4a;
+            --text-primary: #e8edf5;
+            --text-secondary: #8a9aaa;
+            --text-muted: #4a5a6a;
+            --gold: #f0b90b;
+            --gold-dim: rgba(240, 185, 11, 0.15);
+            --green: #22c55e;
+            --green-dim: rgba(34, 197, 94, 0.15);
+            --red: #ef4444;
+            --red-dim: rgba(239, 68, 68, 0.15);
+            --blue: #3b82f6;
+            --shadow: 0 8px 40px rgba(0, 0, 0, 0.7);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        ::selection {
+            background: var(--gold);
+            color: #0b0e14;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold);
+        }
+
+        /* ============================================================
+           TYPOGRAPHY
+           ============================================================ */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        .text-gold {
+            color: var(--gold);
+        }
+        .text-green {
+            color: var(--green);
+        }
+        .text-red {
+            color: var(--red);
+        }
+        .text-muted {
+            color: var(--text-muted);
+        }
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+        .text-center {
+            text-align: center;
+        }
+
+        /* ============================================================
+           CONTAINER
+           ============================================================ */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-family: inherit;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        .btn-primary {
+            background: var(--gold);
+            color: #0b0e14;
+            border-color: var(--gold);
+        }
+        .btn-primary:hover {
+            background: #d9a70a;
+            box-shadow: 0 8px 24px rgba(240, 185, 11, 0.3);
+        }
+        .btn-secondary {
+            background: transparent;
+            border-color: var(--border-light);
+        }
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--gold);
+        }
+        .btn-success {
+            background: var(--green);
+            color: #0b0e14;
+            border-color: var(--green);
+        }
+        .btn-success:hover {
+            background: #16a34a;
+        }
+        .btn-danger {
+            background: var(--red);
+            color: #fff;
+            border-color: var(--red);
+        }
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+        .btn-google {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            padding: 10px 20px;
+        }
+        .btn-google:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--gold);
+        }
+        .btn-google .google-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        /* ============================================================
+           NAVBAR
+           ============================================================ */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(7, 11, 16, 0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0;
+        }
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .navbar .brand {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .navbar .brand .mark {
+            color: var(--gold);
+        }
+        .navbar .brand .text {
+            color: var(--text-primary);
+        }
+        .navbar .brand .badge {
+            font-size: 9px;
+            font-weight: 600;
+            background: var(--gold-dim);
+            color: var(--gold);
+            padding: 2px 8px;
+            border-radius: 40px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .navbar .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            list-style: none;
+        }
+        .navbar .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+        .navbar .nav-links a:hover {
+            color: var(--text-primary);
+        }
+        .navbar .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gold);
+            transform: scaleX(0);
+            transition: var(--transition);
+        }
+        .navbar .nav-links a:hover::after {
+            transform: scaleX(1);
+        }
+        .navbar .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .navbar .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 22px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        /* ============================================================
+           HERO
+           ============================================================ */
+        .hero {
+            padding: 80px 0 60px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        .hero .content .badge {
+            display: inline-block;
+            background: var(--gold-dim);
+            color: var(--gold);
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .hero .content h1 {
+            font-size: 52px;
+            font-weight: 800;
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+        }
+        .hero .content h1 .highlight {
+            color: var(--gold);
+        }
+        .hero .content p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 480px;
+            margin-bottom: 28px;
+            line-height: 1.7;
+        }
+        .hero .content .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .hero .content .label {
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .hero .content .label span {
+            background: var(--gold-dim);
+            color: var(--gold);
+            padding: 2px 12px;
+            border-radius: 40px;
+        }
+        .hero .visual {
+            position: relative;
+            height: 400px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .hero .visual canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .hero .visual .overlay-label {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            background: rgba(7, 11, 16, 0.8);
+            padding: 4px 12px;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+            text-transform: uppercase;
+        }
+
+        /* ============================================================
+           SECTIONS
+           ============================================================ */
+        section {
+            padding: 60px 0;
+        }
+        section .section-header {
+            margin-bottom: 40px;
+        }
+        section .section-header h2 {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        section .section-header p {
+            color: var(--text-secondary);
+            font-size: 16px;
+            max-width: 560px;
+            margin-top: 4px;
+        }
+        .section-alt {
+            background: var(--bg-secondary);
+        }
+
+        /* ============================================================
+           FEATURE GRID
+           ============================================================ */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gold);
+            transform: scaleX(0);
+            transition: var(--transition);
+            transform-origin: left;
+        }
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+        .feature-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        .feature-card .icon {
+            font-size: 28px;
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+        .feature-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .feature-card .data-point {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 16px;
+        }
+        .feature-card .data-point .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .feature-card .data-point .value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* ============================================================
+           MARKET PANEL
+           ============================================================ */
+        .market-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+        .market-panel .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .market-panel .header .title {
+            font-weight: 600;
+            font-size: 18px;
+        }
+        .market-panel .header .status {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+        }
+        .market-item {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .market-item:hover {
+            border-color: var(--gold);
+            transform: translateY(-2px);
+        }
+        .market-item .symbol {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .market-item .price {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 2px 0;
+        }
+        .market-item .change {
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .market-item .change.up {
+            color: var(--green);
+        }
+        .market-item .change.down {
+            color: var(--red);
+        }
+        .market-item .spark {
+            height: 20px;
+            margin-top: 6px;
+            font-size: 18px;
+        }
+        .market-footer {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ============================================================
+           AI PANEL
+           ============================================================ */
+        .ai-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+        .ai-panel .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .ai-panel .insight-item {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 14px;
+            border: 1px solid var(--border-color);
+        }
+        .ai-panel .insight-item .label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .ai-panel .insight-item .value {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+        .ai-panel .insight-item.full {
+            grid-column: span 2;
+        }
+
+        /* ============================================================
+           CHAT
+           ============================================================ */
+        .chat-container {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 16px;
+            max-height: 260px;
+            overflow-y: auto;
+            margin-top: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .chat-container .msg {
+            padding: 8px 14px;
+            margin-bottom: 6px;
+            border-radius: var(--radius);
+            font-size: 14px;
+            line-height: 1.5;
+            max-width: 85%;
+        }
+        .chat-container .msg.user {
+            background: var(--bg-card);
+            text-align: right;
+            border: 1px solid var(--border-color);
+            margin-left: auto;
+        }
+        .chat-container .msg.ai {
+            background: var(--gold-dim);
+            border-left: 3px solid var(--gold);
+            margin-right: auto;
+        }
+        .chat-input-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .chat-input-row input {
+            flex: 1;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 10px 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+        }
+        .chat-input-row input:focus {
+            border-color: var(--gold);
+        }
+        .chat-input-row button {
+            background: var(--gold);
+            border: none;
+            border-radius: 40px;
+            padding: 10px 20px;
+            font-weight: 600;
+            color: #0b0e14;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .chat-input-row button:hover {
+            background: #d9a70a;
+        }
+
+        /* ============================================================
+           DASHBOARD
+           ============================================================ */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .dash-stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 16px;
+        }
+        .dash-stat .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .dash-stat .value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+        .dash-stat .value.gold {
+            color: var(--gold);
+        }
+        .dash-stat .value.green {
+            color: var(--green);
+        }
+        .dash-stat .value.red {
+            color: var(--red);
+        }
+
+        /* ============================================================
+           TABLES
+           ============================================================ */
+        .table-wrap {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .table-wrap .table-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .table-wrap .table-header .title {
+            font-weight: 600;
+        }
+        .table-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .table-wrap th {
+            text-align: left;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .table-wrap td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .table-wrap tr:hover td {
+            background: var(--bg-secondary);
+        }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+        .modal-overlay.open {
+            display: flex;
+        }
+        .modal {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            max-width: 440px;
+            width: 92%;
+            padding: 28px;
+            border: 1px solid var(--border-color);
+            max-height: 92vh;
+            overflow-y: auto;
+        }
+        .modal h3 {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .modal .sub {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .modal .field {
+            margin-bottom: 14px;
+        }
+        .modal .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        .modal .field input {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            font-family: inherit;
+        }
+        .modal .field input:focus {
+            border-color: var(--gold);
+        }
+        .modal .field .info-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .modal .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal .actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* ============================================================
+           LOGIN OVERLAY
+           ============================================================ */
+        #login-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-primary);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+        }
+        #login-overlay.open {
+            display: flex;
+        }
+        #login-overlay .logo {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        #login-overlay .logo .mark {
+            color: var(--gold);
+        }
+        #login-overlay .logo .text {
+            color: var(--text-primary);
+        }
+        #login-overlay h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        #login-overlay .sub {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+        #login-overlay .btn-google {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            padding: 14px 32px;
+            border-radius: 60px;
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        #login-overlay .btn-google:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--gold);
+        }
+        #login-overlay .btn-google .google-icon {
+            width: 20px;
+            height: 20px;
+        }
+        #login-overlay .disclaimer {
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 400;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+        }
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: var(--shadow);
+            color: var(--text-primary);
+            max-width: 92%;
+            animation: slideUp 0.3s ease;
+        }
+        .toast.success {
+            border-color: var(--green);
+            color: var(--green);
+        }
+        .toast.error {
+            border-color: var(--red);
+            color: var(--red);
+        }
+        .toast.info {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================================
+           FOOTER
+           ============================================================ */
+        .footer {
+            border-top: 1px solid var(--border-color);
+            padding: 40px 0 24px;
+            margin-top: 40px;
+        }
+        .footer .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 32px;
+        }
+        .footer .brand {
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .footer .brand .mark {
+            color: var(--gold);
+        }
+        .footer p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        .footer .links {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .footer .links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+        .footer .links a:hover {
+            color: var(--text-primary);
+        }
+        .footer .bottom {
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+            margin-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media(max-width:1024px) {
+            .hero .grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .hero .visual {
+                height: 280px;
+            }
+            .hero .content h1 {
+                font-size: 40px;
+            }
+        }
+        @media(max-width:768px) {
+            .navbar .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                padding: 12px 0;
+                gap: 12px;
+            }
+            .navbar .nav-links.open {
+                display: flex;
+            }
+            .navbar .mobile-toggle {
+                display: block;
+            }
+            .hero {
+                padding: 40px 0;
+            }
+            .hero .content h1 {
+                font-size: 32px;
+            }
+            .hero .content p {
+                font-size: 16px;
+            }
+            .hero .visual {
+                height: 200px;
+            }
+            section {
+                padding: 40px 0;
+            }
+            section .section-header h2 {
+                font-size: 26px;
+            }
+            .dash-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .market-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .table-wrap {
+                overflow-x: auto;
+            }
+            .feature-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .ai-panel .insight-item.full {
+                grid-column: span 1;
+            }
+        }
+        @media(max-width:480px) {
+            .hero .content h1 {
+                font-size: 26px;
+            }
+            .dash-grid {
+                grid-template-columns: 1fr;
+            }
+            .market-grid {
+                grid-template-columns: 1fr;
+            }
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            .navbar .brand {
+                font-size: 16px;
+            }
+            .navbar .brand .badge {
+                display: none;
+            }
+            .modal {
+                padding: 20px;
+            }
+            .hero .visual {
+                height: 160px;
+            }
+        }
+
+        /* ============================================================
+           UTILITIES
+           ============================================================ */
+        .hidden {
+            display: none !important;
+        }
+        .flex {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .gap-4 {
+            gap: 4px;
+        }
+        .gap-8 {
+            gap: 8px;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+        .w-full {
+            width: 100%;
+        }
+        .text-center {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 
-<div id="app">
-  <!-- LOGIN OVERLAY -->
-  <div id="login-overlay">
-    <div class="logo">BINANCE<span>COIN</span> GET</div>
-    <div class="sub">Virtual Trading Simulator</div>
-    <button class="btn-google" id="googleLoginBtn"><i class="fab fa-google"></i> Continue with Google</button>
-    <div style="margin-top:24px; font-size:13px; color:#4a5a6e;">demo · no real funds</div>
-  </div>
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
-    <div class="brand">BINANCE<span>COIN</span></div>
-    <nav>
-      <a class="active" data-page="home"><i class="fas fa-home"></i> Home</a>
-      <a data-page="markets"><i class="fas fa-chart-line"></i> Markets</a>
-      <a data-page="portfolio"><i class="fas fa-wallet"></i> Portfolio</a>
-      <a data-page="deposit"><i class="fas fa-plus-circle"></i> Deposit</a>
-      <a data-page="withdraw"><i class="fas fa-arrow-right"></i> Withdraw</a>
-      <a data-page="profile"><i class="fas fa-user"></i> Profile</a>
-    </nav>
-    <div class="user-mini" id="sidebarUser">
-      <img id="sidebarAvatar" src="" alt="avatar" />
-      <div class="name" id="sidebarName">User</div>
-    </div>
-  </aside>
-
-  <!-- MAIN -->
-  <div class="main">
-    <div class="content" id="mainContent">
-      <!-- HOME -->
-      <section class="page active" id="page-home">
-        <div class="card">
-          <div class="stat-grid">
-            <div class="stat-item"><div class="stat-label">Total Balance</div><div class="stat-value gold" id="totalBalance">$0.00</div></div>
-            <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value" id="portfolioValue">$0.00</div></div>
-            <div class="stat-item"><div class="stat-label">Today's P/L</div><div class="stat-value" id="todayPL">+$0.00</div></div>
-            <div class="stat-item"><div class="stat-label">Coins</div><div class="stat-value" id="coinCount">0</div></div>
-          </div>
+    <!-- ============================================================
+    LOGIN OVERLAY
+    ============================================================ -->
+    <div id="login-overlay">
+        <div class="logo">
+            <span class="mark">BINANCE</span><span class="text">COIN</span>
+            <span style="font-size:14px;font-weight:400;color:var(--text-muted);margin-left:4px;">GET</span>
         </div>
-        <div class="card"><div class="card-header"><span class="card-title">Markets</span></div><div id="homeCoinList"></div></div>
-      </section>
-
-      <!-- MARKETS -->
-      <section class="page" id="page-markets">
-        <div class="card"><div class="card-header"><span class="card-title">Live Prices</span></div><div id="marketCoinList"></div></div>
-      </section>
-
-      <!-- PORTFOLIO -->
-      <section class="page" id="page-portfolio">
-        <div class="card"><div class="stat-grid">
-          <div class="stat-item"><div class="stat-label">USD Balance</div><div class="stat-value gold" id="portfolioUsd">$0.00</div></div>
-          <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value" id="portfolioTotalValue">$0.00</div></div>
-        </div></div>
-        <div class="card"><div class="card-header"><span class="card-title">Holdings</span></div><div id="portfolioHoldings"></div></div>
-      </section>
-
-      <!-- DEPOSIT -->
-      <section class="page" id="page-deposit">
-        <div class="card">
-          <h3 style="margin-bottom:4px;">Add Virtual Credits</h3>
-          <div class="text-muted" style="margin-bottom:12px;font-size:13px;">Request credits — admin approval required</div>
-          <div class="field">
-            <label>Amount (USD)</label>
-            <input type="number" id="depositAmount" placeholder="Enter amount (min $1)" min="1" step="0.01" />
-          </div>
-          <div class="field" id="methodSelector" style="display:none;">
-            <label>Payment Method</label>
-            <div class="method-option" data-method="Binance Pay" onclick="selectMethod(this)">
-              <i class="fab fa-bitcoin" style="color:#f0b90b;"></i>
-              <div><strong>Binance Pay</strong><div style="font-size:11px;color:#7f92a8;">ID: 894307667</div></div>
-            </div>
-            <div class="method-option" data-method="TRC20" onclick="selectMethod(this)">
-              <i class="fas fa-coins" style="color:#22c55e;"></i>
-              <div><strong>TRC20</strong><div style="font-size:11px;color:#7f92a8;">TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7</div></div>
-            </div>
-            <div class="method-option" data-method="BEP20" onclick="selectMethod(this)">
-              <i class="fas fa-cube" style="color:#f0b90b;"></i>
-              <div><strong>BEP20</strong><div style="font-size:11px;color:#7f92a8;">0xdfd1138c7bfc2d15b7400fa43f3ca591679e0efa</div></div>
-            </div>
-            <input type="hidden" id="selectedMethod" value="" />
-          </div>
-          <button class="btn btn-primary btn-block" id="submitDepositBtn"><i class="fas fa-paper-plane"></i> Submit Order</button>
-        </div>
-        <div class="card"><div class="card-header"><span class="card-title">Deposit History</span></div><div id="depositHistoryList"></div></div>
-      </section>
-
-      <!-- WITHDRAW -->
-      <section class="page" id="page-withdraw">
-        <div class="card">
-          <h3 style="margin-bottom:4px;">Withdraw Virtual Credits</h3>
-          <div class="text-muted" style="margin-bottom:12px;font-size:13px;">Request withdrawal — admin approval required</div>
-          <div class="field">
-            <label>Amount (USD)</label>
-            <input type="number" id="withdrawAmount" placeholder="Enter amount" min="1" step="0.01" />
-          </div>
-          <div class="field">
-            <label>Withdrawal Method</label>
-            <div class="withdraw-method-item" data-method="Binance Pay" onclick="selectWithdrawMethod(this)">
-              <i class="fab fa-bitcoin" style="color:#f0b90b;"></i>
-              <div><strong>Binance Pay</strong><div style="font-size:11px;color:#7f92a8;">Payment UID</div></div>
-            </div>
-            <div class="withdraw-method-item" data-method="TRC20" onclick="selectWithdrawMethod(this)">
-              <i class="fas fa-coins" style="color:#22c55e;"></i>
-              <div><strong>TRC20</strong><div style="font-size:11px;color:#7f92a8;">Destination address</div></div>
-            </div>
-            <div class="withdraw-method-item" data-method="BEP20" onclick="selectWithdrawMethod(this)">
-              <i class="fas fa-cube" style="color:#f0b90b;"></i>
-              <div><strong>BEP20</strong><div style="font-size:11px;color:#7f92a8;">Destination address</div></div>
-            </div>
-            <input type="hidden" id="selectedWithdrawMethod" value="" />
-          </div>
-          <div class="field">
-            <label>Destination Identifier</label>
-            <input type="text" id="withdrawDestination" placeholder="Enter destination address/ID" />
-          </div>
-          <button class="btn btn-primary btn-block" id="submitWithdrawBtn"><i class="fas fa-paper-plane"></i> Submit Withdrawal Request</button>
-        </div>
-        <div class="card"><div class="card-header"><span class="card-title">Withdrawal History</span></div><div id="withdrawHistoryList"></div></div>
-      </section>
-
-      <!-- PROFILE -->
-      <section class="page" id="page-profile">
-        <div class="card"><div class="flex" style="gap:16px;"><img id="profileAvatar" src="" style="width:60px;height:60px;border-radius:50%;background:#2f3b4a;" /><div><div id="profileName" style="font-weight:700;font-size:20px;">—</div><div id="profileEmail" class="text-muted" style="font-size:13px;">—</div><div id="profileUid" class="text-muted" style="font-size:11px;">UID: —</div></div></div></div>
-        <div class="card">
-          <div class="profile-stats">
-            <div class="profile-stat"><div class="label">Balance</div><div class="value gold" id="profileBalance">$0.00</div></div>
-            <div class="profile-stat"><div class="label">Total Holdings</div><div class="value" id="profilePortfolio">$0.00</div></div>
-            <div class="profile-stat"><div class="label">Trades</div><div class="value" id="profileTrades">0</div></div>
-            <div class="profile-stat"><div class="label">P/L</div><div class="value" id="profilePL">+$0.00</div></div>
-          </div>
-        </div>
-        <div class="card"><div class="card-header"><span class="card-title">Holdings</span></div><div id="profileHoldings"></div></div>
-        <div class="card"><div class="card-header"><span class="card-title">Transactions</span></div><div id="profileTransactions"></div></div>
-        <!-- Hidden long-press area for admin entry -->
-        <div class="card" style="border-color:transparent;background:transparent;padding:0;margin:0;">
-          <div class="long-press-area" id="adminEntryArea">⏎</div>
-        </div>
-        <!-- Admin Panel (hidden by default, shown after auth) -->
-        <div class="card" id="adminPanelCard" style="display:none;border-color:#f0b90b;">
-          <div class="card-header"><span class="card-title" style="color:#f0b90b;"><i class="fas fa-shield-alt"></i> Admin Panel</span></div>
-          <button class="btn btn-primary btn-block" onclick="navigate('admin')"><i class="fas fa-cog"></i> Open Admin Dashboard</button>
-        </div>
-      </section>
-
-      <!-- ADMIN -->
-      <section class="page" id="page-admin">
-        <div class="admin-tab-bar">
-          <button class="btn btn-outline btn-sm" data-admin-tab="overview">Overview</button>
-          <button class="btn btn-outline btn-sm" data-admin-tab="deposits">Deposits</button>
-          <button class="btn btn-outline btn-sm" data-admin-tab="withdrawals">Withdrawals</button>
-          <button class="btn btn-outline btn-sm" data-admin-tab="users">Users</button>
-          <button class="btn btn-outline btn-sm" data-admin-tab="coins">Coins</button>
-          <button class="btn btn-outline btn-sm" data-admin-tab="transactions">Transactions</button>
-          <button class="btn btn-outline btn-sm" data-admin-tab="settings">Settings</button>
-        </div>
-        <div id="adminContent"><div class="text-muted">Select a tab</div></div>
-      </section>
+        <h2>Welcome Back</h2>
+        <div class="sub">Sign in to access your virtual trading environment</div>
+        <button class="btn-google" id="googleLoginBtn">
+            <svg class="google-icon" viewBox="0 0 48 48">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Continue with Google
+        </button>
+        <div class="disclaimer">Virtual trading only. No real funds are involved.</div>
     </div>
 
-    <!-- BOTTOM NAV -->
-    <nav class="bottom-nav" id="bottomNav">
-      <a class="active" data-page="home"><i class="fas fa-home"></i><span>Home</span></a>
-      <a data-page="markets"><i class="fas fa-chart-line"></i><span>Markets</span></a>
-      <a data-page="portfolio"><i class="fas fa-wallet"></i><span>Portfolio</span></a>
-      <a data-page="deposit"><i class="fas fa-plus-circle"></i><span>Deposit</span></a>
-      <a data-page="withdraw"><i class="fas fa-arrow-right"></i><span>Withdraw</span></a>
-      <a data-page="profile"><i class="fas fa-user"></i><span>Profile</span></a>
-    </nav>
-  </div>
-</div>
+    <!-- ============================================================
+    APP
+    ============================================================ -->
+    <div id="app">
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal" id="modalContent">
-    <h3 id="modalTitle">Trade</h3>
-    <div class="sub" id="modalSub">Coin details</div>
-    <div id="modalBody"></div>
-    <div class="actions" id="modalActions"></div>
-  </div>
-</div>
+        <!-- ============================================================
+        NAVBAR
+        ============================================================ -->
+        <nav class="navbar" id="mainNav">
+            <div class="container">
+                <div class="brand">
+                    <span class="mark">BINANCE</span><span class="text">COIN</span>
+                    <span style="font-size:14px;font-weight:400;color:var(--text-muted);">GET</span>
+                    <span class="badge">v2</span>
+                </div>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#platform">Platform</a></li>
+                    <li><a href="#market-updates">Market Updates</a></li>
+                    <li><a href="#ai-insights">AI Insights</a></li>
+                    <li><a href="#security">Security</a></li>
+                </ul>
+                <div class="nav-right">
+                    <button class="btn btn-google" id="navLoginBtn">
+                        <svg class="google-icon" viewBox="0 0 48 48" style="width:16px;height:16px;">
+                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                        </svg>
+                        Continue with Google
+                    </button>
+                    <button class="btn btn-primary" id="navDashboardBtn" style="display:none;">
+                        <i class="fas fa-chart-pie"></i> Dashboard
+                    </button>
+                    <button class="btn btn-secondary" id="navLogoutBtn" style="display:none;">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
 
-<!-- TOAST -->
-<div class="toast-container" id="toastContainer"></div>
+        <!-- ============================================================
+        MAIN CONTENT
+        ============================================================ -->
+        <main>
 
-<!-- FIREBASE + APP -->
-<script type="module">
-  // ---- Firebase imports ----
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getDatabase, ref, set, push, onValue, get, update, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+            <!-- ============================================================
+            HERO
+            ============================================================ -->
+            <section class="hero" id="hero">
+                <div class="container">
+                    <div class="grid">
+                        <div class="content">
+                            <div class="badge">⚡ Virtual Trading Infrastructure</div>
+                            <h1>Trade Smarter.<br><span class="highlight">Practice Without Risk.</span></h1>
+                            <p>A professional virtual trading environment designed to help you practice market strategies without real-money exposure.</p>
+                            <div class="actions">
+                                <button class="btn btn-primary" id="heroStartBtn">
+                                    <i class="fas fa-rocket"></i> Continue with Google
+                                </button>
+                                <button class="btn btn-secondary" id="heroHowBtn">How It Works</button>
+                            </div>
+                            <div class="label">
+                                <span>VIRTUAL TRADING • NO REAL FUNDS</span>
+                            </div>
+                        </div>
+                        <div class="visual" id="heroVisual">
+                            <canvas id="heroChart"></canvas>
+                            <div class="overlay-label">📊 Market Activity · Simulated</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-  // ---- Firebase config ----
-  const firebaseConfig = {
-    apiKey: "AIzaSyDWZURvEtRrsYR9_1CuGmvj4QYX7X7BcK4",
-    authDomain: "binance-coin-get.firebaseapp.com",
-    projectId: "binance-coin-get",
-    storageBucket: "binance-coin-get.firebasestorage.app",
-    messagingSenderId: "923736131797",
-    appId: "1:923736131797:web:9c05940c808bc54eb97a5c",
-    measurementId: "G-DEYW3RPMNM"
-  };
+            <!-- ============================================================
+            HOW IT WORKS
+            ============================================================ -->
+            <section id="how-it-works">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>How It Works</h2>
+                        <p>Start trading virtually in three simple steps</p>
+                    </div>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="icon"><i class="fas fa-shield-alt"></i></div>
+                            <h4>Sign In</h4>
+                            <p>Securely access your virtual trading environment with Google authentication.</p>
+                            <div class="data-point">
+                                <span class="label">Status</span>
+                                <span class="value text-green"><i class="fas fa-check-circle"></i> Secure</span>
+                            </div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="icon"><i class="fas fa-coins"></i></div>
+                            <h4>Virtual Funds</h4>
+                            <p>Start with simulated capital designed for risk-free trading practice.</p>
+                            <div class="data-point">
+                                <span class="label">Starting Balance</span>
+                                <span class="value text-gold">$10,000</span>
+                            </div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="icon"><i class="fas fa-chart-line"></i></div>
+                            <h4>Trade & Learn</h4>
+                            <p>Execute virtual trades, monitor positions, and evaluate your strategies.</p>
+                            <div class="data-point">
+                                <span class="label">Available Assets</span>
+                                <span class="value">30+</span>
+                            </div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="icon"><i class="fas fa-brain"></i></div>
+                            <h4>Analyze Performance</h4>
+                            <p>Track portfolio performance and trading activity over time.</p>
+                            <div class="data-point">
+                                <span class="label">AI Analysis</span>
+                                <span class="value text-green"><i class="fas fa-check-circle"></i> Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getDatabase(app);
+            <!-- ============================================================
+            PLATFORM
+            ============================================================ -->
+            <section id="platform" class="section-alt">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Professional Virtual Trading Infrastructure</h2>
+                        <p>Built for precision, designed for learning</p>
+                    </div>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="icon" style="color:var(--blue);"><i class="fas fa-bolt"></i></div>
+                            <h4>Real-time Data</h4>
+                            <p>Market data and price simulations updated in real-time.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="icon" style="color:var(--green);"><i class="fas fa-cog"></i></div>
+                            <h4>Order Simulation</h4>
+                            <p>Instant buy/sell execution with portfolio updates.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="icon" style="color:var(--gold);"><i class="fas fa-chart-pie"></i></div>
+                            <h4>Portfolio Analytics</h4>
+                            <p>Track your performance with detailed analytics.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="icon" style="color:#a78bfa;"><i class="fas fa-robot"></i></div>
+                            <h4>AI Insights</h4>
+                            <p>Intelligent market analysis and educational guidance.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-  // ---- state ----
-  let currentUser = null;
-  let userData = null;
-  let coinsData = {};
-  let holdings = {};
-  let allTransactions = [];
-  let allDeposits = [];
-  let allWithdrawals = [];
-  let allUsers = {};
-  let isAdmin = false;
-  let priceInterval = null;
-  let longPressTimer = null;
+            <!-- ============================================================
+            MARKET UPDATES
+            ============================================================ -->
+            <section id="market-updates">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Cryptocurrency Market Updates</h2>
+                        <p>Real-time market intelligence and activity indicators</p>
+                    </div>
+                    <div class="market-panel">
+                        <div class="header">
+                            <span class="title"><i class="fas fa-globe" style="color:var(--gold);"></i> Market Overview</span>
+                            <span class="status"><span class="text-green"><i class="fas fa-circle" style="font-size:8px;"></i> Live</span> • Updated in real-time</span>
+                        </div>
+                        <div class="market-grid" id="marketGrid"></div>
+                        <div class="market-footer">
+                            <span>📊 Market Sentiment: <span id="marketSentiment" class="text-gold">Neutral</span></span>
+                            <span>📈 24h Volume: <span id="marketVolume" class="text-gold">$0</span></span>
+                            <span>🔄 Volatility: <span id="marketVolatility" class="text-gold">Medium</span></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-  // ---- DOM refs ----
-  const $ = id => document.getElementById(id);
-  const loginOverlay = $('login-overlay');
-  const googleBtn = $('googleLoginBtn');
-  const toastContainer = $('toastContainer');
-  const modalOverlay = $('modalOverlay');
+            <!-- ============================================================
+            AI INSIGHTS
+            ============================================================ -->
+            <section id="ai-insights" class="section-alt">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>AI-Powered Market Intelligence</h2>
+                        <p>Advanced market analysis and portfolio insights</p>
+                    </div>
+                    <div class="ai-panel">
+                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                            <span style="font-weight:600;"><i class="fas fa-brain" style="color:var(--gold);"></i> AI Market Analysis</span>
+                            <span style="font-size:12px;color:var(--text-muted);">Based on current market conditions</span>
+                        </div>
+                        <div class="insight-grid" id="aiInsightGrid"></div>
+                    </div>
 
-  // ---- helpers ----
-  function toast(msg, type='') { 
-    const d=document.createElement('div'); 
-    d.className='toast '+(type||''); 
-    d.textContent=msg; 
-    toastContainer.appendChild(d); 
-    setTimeout(()=>d.remove(),3000); 
-  }
-  function uid() { return currentUser?.uid || 'anon'; }
-  function formatUSD(v) { return '$'+Number(v).toFixed(2); }
-  function formatNum(v) { return Number(v).toFixed(4); }
-  function generateOrderId() { return 'BCG-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substring(2,6).toUpperCase(); }
-  function getCoinLogo(symbol) {
-    const colors = {
-      MXR:'#f0b90b', QTR:'#22c55e', VLX:'#3b82f6', AVQ:'#a855f7', ZVT:'#ec4899',
-      NXL:'#f59e0b', ORV:'#06b6d4', KVX:'#8b5cf6', TVR:'#ef4444', LMT:'#14b8a6',
-      VYR:'#f472b6', AXT:'#6366f1', NVX:'#22d3ee', QVX:'#fb923c', ELV:'#a3e635',
-      ZTH:'#d946ef', MRX:'#f43f5e', VLT:'#2dd4bf', OXV:'#facc15', RVT:'#60a5fa',
-      CYV:'#34d399', NX2:'#f0b90b', VMR:'#22c55e', QVA:'#3b82f6', TVX:'#a855f7',
-      AVX:'#ec4899', ZYR:'#f59e0b', MXR:'#f0b90b', QTR:'#22c55e', VLX:'#3b82f6'
-    };
-    return `<div class="coin-logo-svg" style="background:${colors[symbol]||'#1f2937'};color:#0b0e14;">${symbol.slice(0,2)}</div>`;
-  }
+                    <!-- AI Chat -->
+                    <div style="margin-top:20px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+                            <span style="font-weight:600;"><i class="fas fa-comment-dots" style="color:var(--gold);"></i> Trading AI Assistant</span>
+                            <span style="font-size:12px;color:var(--text-muted);">Ask anything about trading</span>
+                        </div>
+                        <div class="chat-container" id="chatContainer">
+                            <div class="msg ai">👋 Hello! I'm your Trading AI. Ask me about market concepts, trading strategies, or portfolio analysis.</div>
+                            <div id="chatMessages"></div>
+                            <div class="chat-input-row">
+                                <input type="text" id="chatInput" placeholder="Ask a question..." />
+                                <button id="chatSendBtn"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-  // ---- sound ----
-  function playClickSound() {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.value = 800;
-      osc.type = 'sine';
-      gain.gain.setValueAtTime(0.1, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.1);
-    } catch(e) { /* silent */ }
-  }
+            <!-- ============================================================
+            SECURITY
+            ============================================================ -->
+            <section id="security">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Designed With Security in Mind</h2>
+                        <p>Your virtual trading environment is protected</p>
+                    </div>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="icon" style="color:var(--green);"><i class="fas fa-lock"></i></div>
+                            <h4>Secure Authentication</h4>
+                            <p>Google Authentication with industry-standard security protocols.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="icon" style="color:var(--blue);"><i class="fas fa-user-shield"></i></div>
+                            <h4>Protected Sessions</h4>
+                            <p>Your account and portfolio data are securely managed.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="icon" style="color:var(--gold);"><i class="fas fa-coins"></i></div>
+                            <h4>Virtual-Only Funds</h4>
+                            <p>No real-money deposits. No withdrawals. Complete simulation.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="icon" style="color:var(--green);"><i class="fas fa-database"></i></div>
+                            <h4>Data Protection</h4>
+                            <p>Your trading data is stored securely and privately.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-  // ---- navigation ----
-  function navigate(page) {
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    const target = document.getElementById('page-'+page);
-    if(target) target.classList.add('active');
-    document.querySelectorAll('.sidebar nav a, .bottom-nav a').forEach(el=>{
-      el.classList.toggle('active', el.dataset.page===page);
-    });
-    if(page==='admin' && !isAdmin) { toast('Admin access required','error'); return; }
-    if(page==='admin' && isAdmin) renderAdminOverview();
-  }
-  window.navigate = navigate;
+            <!-- ============================================================
+            DASHBOARD (authenticated)
+            ============================================================ -->
+            <section id="dashboardSection" style="display:none;" class="section-alt">
+                <div class="container">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+                        <h2 style="font-size:28px;font-weight:700;">Trading Dashboard</h2>
+                        <span style="font-size:13px;color:var(--text-muted);">
+                            <i class="fas fa-circle" style="color:var(--green);font-size:8px;"></i> Virtual Trading Active
+                        </span>
+                    </div>
 
-  document.querySelectorAll('.sidebar nav a, .bottom-nav a').forEach(el=>{
-    el.addEventListener('click', (e)=>{
-      e.preventDefault();
-      const page = el.dataset.page;
-      if(page==='admin' && !isAdmin) { toast('Admin access required','error'); return; }
-      navigate(page);
-    });
-  });
+                    <!-- Stats -->
+                    <div class="dash-grid" id="dashStats"></div>
 
-  // ---- modal ----
-  function openModal(title, sub, bodyHTML, actionsHTML) {
-    $('modalTitle').textContent=title;
-    $('modalSub').textContent=sub||'';
-    $('modalBody').innerHTML=bodyHTML;
-    $('modalActions').innerHTML=actionsHTML||'';
-    modalOverlay.classList.add('open');
-  }
-  function closeModal() { modalOverlay.classList.remove('open'); }
-  window.closeModal = closeModal;
-  modalOverlay.addEventListener('click', (e)=>{ if(e.target===modalOverlay) closeModal(); });
+                    <!-- Holdings -->
+                    <div class="table-wrap">
+                        <div class="table-header">
+                            <span class="title"><i class="fas fa-briefcase"></i> Your Holdings</span>
+                            <span style="font-size:12px;color:var(--text-muted);">Virtual positions only</span>
+                        </div>
+                        <div id="holdingsTable">
+                            <table>
+                                <thead>
+                                    <tr><th>Asset</th><th>Quantity</th><th>Avg Price</th><th>Current Price</th><th>Value</th><th>P/L</th><th>Actions</th></tr>
+                                </thead>
+                                <tbody id="holdingsBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
 
-  // ---- method selectors ----
-  window.selectMethod = function(el) {
-    document.querySelectorAll('.method-option').forEach(m=>m.classList.remove('selected'));
-    el.classList.add('selected');
-    document.getElementById('selectedMethod').value = el.dataset.method;
-    playClickSound();
-  };
+                    <!-- Transactions -->
+                    <div class="table-wrap">
+                        <div class="table-header">
+                            <span class="title"><i class="fas fa-history"></i> Transaction History</span>
+                        </div>
+                        <div id="transactionTable">
+                            <table>
+                                <thead>
+                                    <tr><th>Asset</th><th>Type</th><th>Quantity</th><th>Price</th><th>Total</th><th>Date</th></tr>
+                                </thead>
+                                <tbody id="transactionBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-  window.selectWithdrawMethod = function(el) {
-    document.querySelectorAll('.withdraw-method-item').forEach(m=>m.classList.remove('selected'));
-    el.classList.add('selected');
-    document.getElementById('selectedWithdrawMethod').value = el.dataset.method;
-    playClickSound();
-  };
+            <!-- ============================================================
+            FOOTER
+            ============================================================ -->
+            <footer class="footer">
+                <div class="container">
+                    <div class="grid">
+                        <div>
+                            <div class="brand">
+                                <span class="mark">BINANCE</span><span class="text">COIN</span>
+                                <span style="font-size:14px;font-weight:400;color:var(--text-muted);">GET</span>
+                            </div>
+                            <p style="max-width:280px;">A professional virtual trading environment designed for market strategy practice.</p>
+                            <div style="margin-top:8px;font-size:12px;color:var(--text-muted);">Virtual Trading • No Real Funds</div>
+                        </div>
+                        <div class="links">
+                            <span style="font-weight:600;color:var(--text-primary);">Platform</span>
+                            <a href="#how-it-works">How It Works</a>
+                            <a href="#platform">Platform</a>
+                            <a href="#market-updates">Market Updates</a>
+                            <a href="#ai-insights">AI Insights</a>
+                        </div>
+                        <div class="links">
+                            <span style="font-weight:600;color:var(--text-primary);">Security</span>
+                            <a href="#security">Security Overview</a>
+                            <a href="#">Privacy Policy</a>
+                            <a href="#">Terms of Service</a>
+                        </div>
+                        <div class="links">
+                            <span style="font-weight:600;color:var(--text-primary);">Connect</span>
+                            <a href="#"><i class="fab fa-github"></i> GitHub</a>
+                            <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
+                            <a href="#"><i class="fab fa-discord"></i> Discord</a>
+                        </div>
+                    </div>
+                    <div class="bottom">
+                        <span>© 2026 BINANCECOIN GET. All rights reserved.</span>
+                        <span>Virtual trading simulator — not a real exchange.</span>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
 
-  // ---- login ----
-  googleBtn.addEventListener('click', async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Login error:", error.code, error.message);
-      let msg = "Login failed. ";
-      switch(error.code) {
-        case 'auth/popup-closed-by-user': msg += "Popup was closed."; break;
-        case 'auth/popup-blocked': msg += "Popup blocked. Please allow popups."; break;
-        case 'auth/unauthorized-domain': msg += "Domain not authorized. Add it in Firebase Console."; break;
-        case 'auth/operation-not-allowed': msg += "Google Auth not enabled in Firebase Console."; break;
-        case 'auth/network-request-failed': msg += "Network error. Check connection."; break;
-        default: msg += error.message;
-      }
-      toast(msg, 'error');
-    }
-  });
+    <!-- ============================================================
+    TRADE MODAL
+    ============================================================ -->
+    <div class="modal-overlay" id="tradeModal">
+        <div class="modal">
+            <h3 id="modalTitle">Trade</h3>
+            <div class="sub" id="modalSub">Virtual trade</div>
+            <div id="modalBody"></div>
+            <div class="actions" id="modalActions"></div>
+        </div>
+    </div>
 
-  // ---- auth listener ----
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      currentUser = user;
-      loginOverlay.style.display = 'none';
-      await loadUserData(user);
-      await loadCoins();
-      await loadDeposits();
-      await loadWithdrawals();
-      await loadTransactions();
-      await checkAdmin();
-      await loadAllUsers();
-      renderAll();
-      startPriceEngine();
-      if (isAdmin) document.getElementById('adminPanelCard').style.display = 'block';
-      toast(`Welcome ${user.displayName || 'Trader'}!`, 'success');
-    } else {
-      loginOverlay.style.display = 'flex';
-      currentUser = null;
-      userData = null;
-      if(priceInterval) clearInterval(priceInterval);
-    }
-  });
+    <!-- ============================================================
+    TOAST CONTAINER
+    ============================================================ -->
+    <div class="toast-container" id="toastContainer"></div>
 
-  // ---- load user data ----
-  async function loadUserData(user) {
-    const userRef = ref(db, 'users/'+user.uid);
-    const snap = await get(userRef);
-    if(snap.exists()) {
-      userData = snap.val();
-    } else {
-      const newUser = {
-        displayName: user.displayName || 'Trader',
-        email: user.email,
-        photoURL: user.photoURL || '',
-        createdAt: serverTimestamp(),
-        virtualBalance: 0,
-        holdings: {},
-        avgBuyPrices: {}
-      };
-      await set(userRef, newUser);
-      userData = newUser;
-    }
-    if(!userData.holdings) userData.holdings = {};
-    if(!userData.avgBuyPrices) userData.avgBuyPrices = {};
-    holdings = userData.holdings;
-    $('sidebarAvatar').src = userData.photoURL || '';
-    $('sidebarName').textContent = userData.displayName || 'User';
-    $('profileAvatar').src = userData.photoURL || '';
-    $('profileName').textContent = userData.displayName || '—';
-    $('profileEmail').textContent = userData.email || '—';
-    $('profileUid').textContent = 'UID: '+user.uid;
-  }
+    <!-- ============================================================
+    JAVASCRIPT
+    ============================================================ -->
+    <script>
+        // ============================================================
+        // STATE
+        // ============================================================
+        let isLoggedIn = false;
+        let userData = {
+            displayName: 'Trader',
+            virtualBalance: 10000,
+            holdings: {},
+            avgBuyPrices: {}
+        };
+        let holdings = {};
+        let transactions = [];
+        let selectedAsset = null;
 
-  // ---- load coins ----
-  async function loadCoins() {
-    const coinsRef = ref(db, 'coins');
-    const snap = await get(coinsRef);
-    if(snap.exists()) {
-      coinsData = snap.val();
-    } else {
-      const initial = {
-        MXR: { price:13.00, change:0, symbol:'MXR', name:'Maxora', min:10, max:20, auto:true, color:'#f0b90b' },
-        QTR: { price:27.00, change:0, symbol:'QTR', name:'Quantrara', min:22, max:35, auto:true, color:'#22c55e' },
-        VLX: { price:42.00, change:0, symbol:'VLX', name:'Veltrix', min:38, max:50, auto:true, color:'#3b82f6' },
-        AVQ: { price:8.50, change:0, symbol:'AVQ', name:'Avenqor', min:6, max:12, auto:true, color:'#a855f7' },
-        ZVT: { price:65.00, change:0, symbol:'ZVT', name:'Zorvanta', min:55, max:75, auto:true, color:'#ec4899' },
-        NXL: { price:18.00, change:0, symbol:'NXL', name:'Nexalune', min:14, max:22, auto:true, color:'#f59e0b' },
-        ORV: { price:31.00, change:0, symbol:'ORV', name:'Orvion', min:26, max:38, auto:true, color:'#06b6d4' },
-        KVX: { price:9.20, change:0, symbol:'KVX', name:'Kryvexa', min:7, max:12, auto:true, color:'#8b5cf6' },
-        TVR: { price:55.00, change:0, symbol:'TVR', name:'Talveron', min:48, max:62, auto:true, color:'#ef4444' },
-        LMT: { price:24.00, change:0, symbol:'LMT', name:'Lumetra', min:20, max:28, auto:true, color:'#14b8a6' },
-        VYR: { price:47.00, change:0, symbol:'VYR', name:'Veyrona', min:40, max:55, auto:true, color:'#f472b6' },
-        AXT: { price:11.50, change:0, symbol:'AXT', name:'Axentara', min:9, max:14, auto:true, color:'#6366f1' },
-        NVX: { price:73.00, change:0, symbol:'NVX', name:'Novyrex', min:65, max:85, auto:true, color:'#22d3ee' },
-        QVX: { price:15.00, change:0, symbol:'QVX', name:'Quorvex', min:12, max:18, auto:true, color:'#fb923c' },
-        ELV: { price:39.00, change:0, symbol:'ELV', name:'Elvaris', min:34, max:45, auto:true, color:'#a3e635' },
-        ZTH: { price:58.00, change:0, symbol:'ZTH', name:'Zenthor', min:52, max:65, auto:true, color:'#d946ef' },
-        MRX: { price:7.80, change:0, symbol:'MRX', name:'Marovex', min:6, max:10, auto:true, color:'#f43f5e' },
-        VLT: { price:33.00, change:0, symbol:'VLT', name:'Virelta', min:28, max:38, auto:true, color:'#2dd4bf' },
-        OXV: { price:19.00, change:0, symbol:'OXV', name:'Oxyvara', min:16, max:22, auto:true, color:'#facc15' },
-        RVT: { price:44.00, change:0, symbol:'RVT', name:'Raventra', min:38, max:50, auto:true, color:'#60a5fa' },
-        CYV: { price:6.20, change:0, symbol:'CYV', name:'Calyvex', min:5, max:8, auto:true, color:'#34d399' },
-        NX2: { price:25.00, change:0, symbol:'NX2', name:'Nexoria', min:20, max:30, auto:true, color:'#f0b90b' },
-        VMR: { price:36.00, change:0, symbol:'VMR', name:'Velmora', min:30, max:42, auto:true, color:'#22c55e' },
-        QVA: { price:49.00, change:0, symbol:'QVA', name:'Qelvanta', min:42, max:56, auto:true, color:'#3b82f6' },
-        TVX: { price:14.50, change:0, symbol:'TVX', name:'Torvexa', min:12, max:17, auto:true, color:'#a855f7' },
-        AVX: { price:28.00, change:0, symbol:'AVX', name:'Aurevex', min:24, max:32, auto:true, color:'#ec4899' },
-        ZYR: { price:61.00, change:0, symbol:'ZYR', name:'Zyvora', min:55, max:70, auto:true, color:'#f59e0b' },
-        LMR: { price:18.40, change:0, symbol:'LMR', name:'Lumora', min:15, max:22, auto:true, color:'#ec4899' },
-        ZTA: { price:42.00, change:0, symbol:'ZTA', name:'Zentara', min:38, max:48, auto:true, color:'#f59e0b' },
-        FLX: { price:91.00, change:0, symbol:'FLX', name:'Fluxora', min:80, max:100, auto:true, color:'#8b5cf6' }
-      };
-      await set(coinsRef, initial);
-      coinsData = initial;
-    }
-  }
+        // ============================================================
+        // MARKET DATA SERVICE (simulated)
+        // ============================================================
+        const marketService = {
+            assets: [
+                { id: 'asset-a', symbol: 'AST-A', name: 'Asset Alpha', price: 142.50, change24h: 2.4,
+                color: '#f0b90b' },
+                { id: 'asset-b', symbol: 'AST-B', name: 'Asset Beta', price: 87.30, change24h: -1.2,
+                color: '#3b82f6' },
+                { id: 'asset-c', symbol: 'AST-C', name: 'Asset Gamma', price: 215.80, change24h: 5.7,
+                color: '#22c55e' },
+                { id: 'asset-d', symbol: 'AST-D', name: 'Asset Delta', price: 43.20, change24h: -3.4,
+                color: '#ef4444' },
+                { id: 'asset-e', symbol: 'AST-E', name: 'Asset Epsilon', price: 678.50, change24h: 1.8,
+                color: '#a855f7' }
+            ],
 
-  async function updateCoinPrice(symbol, newPrice, updateDb=true) {
-    if(newPrice < 0.01) return toast('Price too low','error');
-    const coin = coinsData[symbol];
-    if(coin.min && newPrice < coin.min) return toast(`Price below minimum ${formatUSD(coin.min)}`,'error');
-    if(coin.max && newPrice > coin.max) return toast(`Price above maximum ${formatUSD(coin.max)}`,'error');
-    coin.price = newPrice;
-    if(updateDb) {
-      const coinRef = ref(db, 'coins/'+symbol);
-      await update(coinRef, { price: newPrice, change: coin.change || 0 });
-    }
-    renderAll();
-    toast(`${symbol} price updated to ${formatUSD(newPrice)}`,'success');
-  }
+            getAssets() { return this.assets; },
+            getAsset(id) { return this.assets.find(a => a.id === id); },
 
-  // ---- load deposits ----
-  async function loadDeposits() {
-    const depRef = ref(db, 'deposits');
-    const snap = await get(depRef);
-    allDeposits = snap.exists() ? Object.values(snap.val()) : [];
-  }
+            getMarketStats() {
+                const avgChange = this.assets.reduce((s, a) => s + a.change24h, 0) / this.assets.length;
+                const totalVolume = this.assets.reduce((s, a) => s + (a.price * 1000), 0);
+                const volatility = Math.abs(avgChange) > 3 ? 'High' : Math.abs(avgChange) > 1 ? 'Medium' : 'Low';
+                return {
+                    sentiment: avgChange > 1 ? 'Bullish' : avgChange < -1 ? 'Bearish' : 'Neutral',
+                    volume: totalVolume,
+                    volatility
+                };
+            },
 
-  // ---- load withdrawals ----
-  async function loadWithdrawals() {
-    const wdRef = ref(db, 'withdrawals');
-    const snap = await get(wdRef);
-    allWithdrawals = snap.exists() ? Object.values(snap.val()) : [];
-  }
+            getAIInsights() {
+                const stats = this.getMarketStats();
+                return {
+                    trend: stats.sentiment,
+                    volatility: stats.volatility,
+                    momentum: stats.sentiment === 'Bullish' ? 'Positive' : stats.sentiment === 'Bearish' ? 'Negative' :
+                        'Neutral',
+                    summary: `The market is currently showing ${stats.sentiment.toLowerCase()} momentum with ${stats.volatility.toLowerCase()} volatility. ${stats.sentiment === 'Bullish' ? 'Market conditions suggest positive short-term movement.' : stats.sentiment === 'Bearish' ? 'Market conditions suggest caution.' : 'Market conditions are neutral.'}`
+                };
+            },
 
-  // ---- load transactions ----
-  async function loadTransactions() {
-    const txRef = ref(db, 'transactions');
-    const snap = await get(txRef);
-    allTransactions = snap.exists() ? Object.values(snap.val()) : [];
-  }
-
-  // ---- admin check ----
-  async function checkAdmin() {
-    const adminRef = ref(db, 'settings/admins');
-    const snap = await get(adminRef);
-    const admins = snap.exists() ? snap.val() : [];
-    if(admins.includes(currentUser?.uid)) {
-      isAdmin = true;
-      document.getElementById('adminPanelCard').style.display = 'block';
-    } else {
-      isAdmin = false;
-      document.getElementById('adminPanelCard').style.display = 'none';
-    }
-  }
-
-  // ---- load all users ----
-  async function loadAllUsers() {
-    const usersRef = ref(db, 'users');
-    const snap = await get(usersRef);
-    if(snap.exists()) allUsers = snap.val();
-  }
-
-  // ---- long press handler ----
-  function setupLongPress() {
-    const area = document.getElementById('adminEntryArea');
-    let pressTimer = null;
-    
-    const startPress = () => {
-      pressTimer = setTimeout(() => {
-        if (isAdmin) {
-          toast('Admin access already granted', 'success');
-          navigate('admin');
-        } else {
-          checkAdmin().then(() => {
-            if (isAdmin) {
-              toast('Admin access granted!', 'success');
-              document.getElementById('adminPanelCard').style.display = 'block';
-              navigate('admin');
-            } else {
-              toast('Admin access denied. Contact administrator.', 'error');
+            getHistorical(assetId, days = 30) {
+                const asset = this.getAsset(assetId);
+                if (!asset) return [];
+                const data = [];
+                let price = asset.price;
+                for (let i = days; i >= 0; i--) {
+                    const change = (Math.random() - 0.5) * 4;
+                    price = Math.max(1, price * (1 + change / 100));
+                    data.push({ timestamp: Date.now() - i * 86400000, price });
+                }
+                return data;
             }
-          });
+        };
+
+        // ============================================================
+        // DOM HELPERS
+        // ============================================================
+        const $ = id => document.getElementById(id);
+        const toastContainer = $('toastContainer');
+
+        function toast(msg, type = 'info') {
+            const d = document.createElement('div');
+            d.className = 'toast ' + type;
+            d.textContent = msg;
+            toastContainer.appendChild(d);
+            setTimeout(() => d.remove(), 3000);
         }
-      }, 5000);
-    };
-    
-    const endPress = () => {
-      if (pressTimer) {
-        clearTimeout(pressTimer);
-        pressTimer = null;
-      }
-    };
-    
-    area.addEventListener('mousedown', startPress);
-    area.addEventListener('mouseup', endPress);
-    area.addEventListener('mouseleave', endPress);
-    area.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      startPress();
-    });
-    area.addEventListener('touchend', endPress);
-    area.addEventListener('touchcancel', endPress);
-  }
 
-  // ---- render all ----
-  function renderAll() {
-    renderHome();
-    renderMarkets();
-    renderPortfolio();
-    renderProfile();
-    renderDepositHistory();
-    renderWithdrawHistory();
-    if(isAdmin) {
-      const activeTab = document.querySelector('[data-admin-tab].btn-primary');
-      if(activeTab) {
-        const tab = activeTab.dataset.adminTab;
-        if(tab==='overview') renderAdminOverview();
-        else if(tab==='users') renderAdminUsers();
-        else if(tab==='deposits') renderAdminDeposits();
-        else if(tab==='withdrawals') renderAdminWithdrawals();
-        else if(tab==='coins') renderAdminCoins();
-        else if(tab==='transactions') renderAdminTransactions();
-        else if(tab==='settings') renderAdminSettings();
-      }
-    }
-  }
+        function formatUSD(v) { return '$' + Number(v).toFixed(2); }
 
-  function renderHome() {
-    const balance = userData?.virtualBalance || 0;
-    const portfolioVal = calcPortfolioValue();
-    const total = balance + portfolioVal;
-    $('totalBalance').textContent = formatUSD(total);
-    $('portfolioValue').textContent = formatUSD(portfolioVal);
-    const pl = portfolioVal * 0.02;
-    $('todayPL').textContent = (pl>=0?'+':'')+formatUSD(pl);
-    $('coinCount').textContent = Object.keys(coinsData).length;
+        function formatNum(v) { return Number(v).toFixed(4); }
 
-    let html = '';
-    for(const [sym, coin] of Object.entries(coinsData)) {
-      const change = coin.change || 0;
-      const cls = change>=0?'up':'down';
-      html += `<div class="coin-row">
-        ${getCoinLogo(sym)}
-        <div class="coin-info"><div class="coin-name">${coin.name}</div><div class="coin-symbol">${sym}</div></div>
-        <div><span class="coin-price">${formatUSD(coin.price)}</span><span class="coin-change ${cls}">${change>=0?'+':''}${change.toFixed(2)}%</span></div>
-        <div class="coin-actions"><button class="btn btn-primary btn-sm" data-buy="${sym}">Buy</button></div>
-      </div>`;
-    }
-    $('homeCoinList').innerHTML = html;
-    document.querySelectorAll('[data-buy]').forEach(el=>{
-      el.addEventListener('click', ()=>openBuyModal(el.dataset.buy));
-    });
-  }
+        // ============================================================
+        // HERO CHART
+        // ============================================================
+        function drawHeroChart() {
+            const canvas = document.getElementById('heroChart');
+            if (!canvas) return;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            const w = rect.width || 400;
+            const h = rect.height || 300;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
 
-  function renderMarkets() {
-    let html = '';
-    for(const [sym, coin] of Object.entries(coinsData)) {
-      const change = coin.change || 0;
-      const cls = change>=0?'up':'down';
-      html += `<div class="coin-row">
-        ${getCoinLogo(sym)}
-        <div class="coin-info"><div class="coin-name">${coin.name}</div><div class="coin-symbol">${sym}</div></div>
-        <div><span class="coin-price">${formatUSD(coin.price)}</span><span class="coin-change ${cls}">${change>=0?'+':''}${change.toFixed(2)}%</span></div>
-        <div class="coin-actions"><button class="btn btn-primary btn-sm" data-buy-market="${sym}">Buy</button></div>
-      </div>`;
-    }
-    $('marketCoinList').innerHTML = html;
-    document.querySelectorAll('[data-buy-market]').forEach(el=>{
-      el.addEventListener('click', ()=>openBuyModal(el.dataset.buyMarket));
-    });
-  }
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            ctx.clearRect(0, 0, w, h);
 
-  function calcPortfolioValue() {
-    let val=0;
-    for(const [sym, qty] of Object.entries(holdings)) {
-      if(coinsData[sym]) val += qty * coinsData[sym].price;
-    }
-    return val;
-  }
+            // Generate random data
+            const data = [];
+            let price = 100;
+            for (let i = 0; i < 60; i++) {
+                const change = (Math.random() - 0.5) * 2;
+                price = Math.max(50, price + change);
+                data.push(price);
+            }
 
-  function renderPortfolio() {
-    const balance = userData?.virtualBalance || 0;
-    const portVal = calcPortfolioValue();
-    $('portfolioUsd').textContent = formatUSD(balance);
-    $('portfolioTotalValue').textContent = formatUSD(portVal);
+            const max = Math.max(...data);
+            const min = Math.min(...data);
+            const range = max - min || 1;
+            const pad = 20;
+            const xStep = (w - pad * 2) / (data.length - 1);
 
-    let html = '';
-    for(const [sym, qty] of Object.entries(holdings)) {
-      if(qty===0) continue;
-      const coin = coinsData[sym];
-      if(!coin) continue;
-      const value = qty * coin.price;
-      const avgBuy = userData?.avgBuyPrices?.[sym] || coin.price;
-      const pl = value - (qty * avgBuy);
-      const plp = avgBuy>0 ? (pl/(qty*avgBuy))*100 : 0;
-      html += `<div class="coin-row">
-        ${getCoinLogo(sym)}
-        <div><div class="coin-name">${coin.name}</div><div class="coin-symbol">${qty.toFixed(4)} ${sym}</div></div>
-        <div><div>${formatUSD(value)}</div><div class="${pl>=0?'text-green':'text-red'}">${pl>=0?'+':''}${formatUSD(pl)} (${plp>=0?'+':''}${plp.toFixed(2)}%)</div></div>
-        <div class="coin-actions"><button class="btn btn-danger btn-sm" data-sell="${sym}">Sell</button></div>
-      </div>`;
-    }
-    if(!html) html = '<div class="text-muted">No holdings</div>';
-    $('portfolioHoldings').innerHTML = html;
-    document.querySelectorAll('[data-sell]').forEach(el=>{
-      el.addEventListener('click', ()=>openSellModal(el.dataset.sell));
-    });
-  }
+            // Grid
+            ctx.strokeStyle = 'rgba(240, 185, 11, 0.06)';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i < 5; i++) {
+                const y = pad + (i / 4) * (h - pad * 2);
+                ctx.beginPath();
+                ctx.moveTo(pad, y);
+                ctx.lineTo(w - pad, y);
+                ctx.stroke();
+            }
 
-  function renderProfile() {
-    const balance = userData?.virtualBalance || 0;
-    const portVal = calcPortfolioValue();
-    $('profileBalance').textContent = formatUSD(balance);
-    $('profilePortfolio').textContent = formatUSD(portVal);
-    const trades = allTransactions.filter(t=>t.uid===currentUser?.uid).length;
-    $('profileTrades').textContent = trades;
-    $('profilePL').textContent = '+$0.00';
+            // Line
+            ctx.beginPath();
+            ctx.strokeStyle = '#f0b90b';
+            ctx.lineWidth = 2;
+            data.forEach((val, i) => {
+                const x = pad + i * xStep;
+                const y = pad + (1 - (val - min) / range) * (h - pad * 2);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
 
-    let html = '';
-    for(const [sym, qty] of Object.entries(holdings)) {
-      if(qty===0) continue;
-      const coin = coinsData[sym];
-      if(!coin) continue;
-      html += `<div class="flex-between" style="font-size:13px;padding:4px 0;border-bottom:1px solid #1f2937;"><span>${getCoinLogo(sym)} ${sym}</span><span>${qty.toFixed(4)} (${formatUSD(qty*coin.price)})</span></div>`;
-    }
-    $('profileHoldings').innerHTML = html || '<div class="text-muted">No holdings</div>';
+            // Gradient fill
+            const gradient = ctx.createLinearGradient(0, pad, 0, h - pad);
+            gradient.addColorStop(0, 'rgba(240, 185, 11, 0.15)');
+            gradient.addColorStop(1, 'rgba(240, 185, 11, 0)');
+            ctx.lineTo(w - pad, h - pad);
+            ctx.lineTo(pad, h - pad);
+            ctx.closePath();
+            ctx.fillStyle = gradient;
+            ctx.fill();
 
-    let txHtml = '';
-    const userTxs = allTransactions.filter(t=>t.uid===currentUser?.uid).slice(-10).reverse();
-    userTxs.forEach(t=>{
-      txHtml += `<div class="flex-between tx-item"><span>${t.type}</span><span>${t.coin||''}</span><span>${formatUSD(t.amount||0)}</span><span class="text-muted" style="font-size:11px;">${new Date(t.timestamp||Date.now()).toLocaleDateString()}</span></div>`;
-    });
-    $('profileTransactions').innerHTML = txHtml || '<div class="text-muted">No transactions</div>';
-  }
+            // Points
+            data.forEach((val, i) => {
+                if (i % 5 !== 0) return;
+                const x = pad + i * xStep;
+                const y = pad + (1 - (val - min) / range) * (h - pad * 2);
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = '#f0b90b';
+                ctx.fill();
+            });
 
-  function renderDepositHistory() {
-    const userDeps = allDeposits.filter(d=>d.uid===currentUser?.uid).slice(-10).reverse();
-    let html = '';
-    userDeps.forEach(d=>{
-      const status = d.status || 'PENDING';
-      const badge = `badge-${status.toLowerCase()}`;
-      html += `<div class="flex-between deposit-item"><span style="font-size:12px;">${d.orderId||'—'}</span><span>${formatUSD(d.amount)}</span><span class="badge ${badge}">${status}</span><span class="text-muted" style="font-size:11px;">${new Date(d.createdAt||Date.now()).toLocaleDateString()}</span></div>`;
-    });
-    $('depositHistoryList').innerHTML = html || '<div class="text-muted">No deposits</div>';
-  }
-
-  function renderWithdrawHistory() {
-    const userWds = allWithdrawals.filter(d=>d.uid===currentUser?.uid).slice(-10).reverse();
-    let html = '';
-    userWds.forEach(d=>{
-      const status = d.status || 'PENDING';
-      const badge = `badge-${status.toLowerCase()}`;
-      html += `<div class="flex-between deposit-item"><span style="font-size:12px;">${d.withdrawalId||'—'}</span><span>${formatUSD(d.amount)}</span><span class="badge ${badge}">${status}</span><span class="text-muted" style="font-size:11px;">${new Date(d.createdAt||Date.now()).toLocaleDateString()}</span></div>`;
-    });
-    $('withdrawHistoryList').innerHTML = html || '<div class="text-muted">No withdrawals</div>';
-  }
-
-  // ---- deposit amount change handler ----
-  document.getElementById('depositAmount').addEventListener('input', function() {
-    const val = parseFloat(this.value);
-    if (val && val >= 1) {
-      document.getElementById('methodSelector').style.display = 'block';
-    } else {
-      document.getElementById('methodSelector').style.display = 'none';
-      document.getElementById('selectedMethod').value = '';
-      document.querySelectorAll('.method-option').forEach(m => m.classList.remove('selected'));
-    }
-  });
-
-  // ---- buy modal ----
-  function openBuyModal(symbol) {
-    const coin = coinsData[symbol];
-    if(!coin) return toast('Coin not found','error');
-    const balance = userData?.virtualBalance || 0;
-    const body = `<div class="field"><label>Coin</label><div><strong>${coin.name} (${symbol})</strong></div></div>
-      <div class="field"><label>Price</label><div>${formatUSD(coin.price)}</div></div>
-      <div class="field"><label>Available Balance</label><div>${formatUSD(balance)}</div></div>
-      <div class="field"><label>Amount (USD)</label><input type="number" id="buyAmount" placeholder="Enter USD" min="0.01" step="0.01" value="10" /></div>
-      <div class="field"><label>Quantity</label><div id="buyQuantityDisplay">0.0000</div></div>`;
-    const actions = `<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="modalConfirmBuy">Buy</button>`;
-    openModal('Buy '+symbol, 'Virtual trade', body, actions);
-    const amountInput = document.getElementById('buyAmount');
-    const qtyDisplay = document.getElementById('buyQuantityDisplay');
-    const updateQty = ()=>{
-      const amt = parseFloat(amountInput.value) || 0;
-      qtyDisplay.textContent = (amt / coin.price).toFixed(4);
-    };
-    amountInput.addEventListener('input', updateQty);
-    updateQty();
-
-    document.getElementById('modalConfirmBuy').addEventListener('click', async ()=>{
-      const amt = parseFloat(amountInput.value);
-      if(!amt || amt<=0) return toast('Enter valid amount','error');
-      if(amt > (userData?.virtualBalance||0)) return toast('Insufficient balance','error');
-      const qty = amt / coin.price;
-      const userRef = ref(db, 'users/'+currentUser.uid);
-      const newBalance = (userData.virtualBalance||0) - amt;
-      const newHoldings = {...holdings};
-      newHoldings[symbol] = (newHoldings[symbol]||0) + qty;
-      const currentAvg = userData.avgBuyPrices?.[symbol] || 0;
-      const totalCost = (holdings[symbol]||0) * currentAvg + amt;
-      const newAvg = totalCost / newHoldings[symbol];
-      await update(userRef, { virtualBalance: newBalance, holdings: newHoldings, avgBuyPrices: { ...userData.avgBuyPrices, [symbol]: newAvg } });
-      const txRef = push(ref(db, 'transactions'));
-      await set(txRef, { uid: currentUser.uid, coin: symbol, type: 'BUY', amount: amt, quantity: qty, price: coin.price, timestamp: serverTimestamp() });
-      userData.virtualBalance = newBalance;
-      holdings = newHoldings;
-      if(!userData.avgBuyPrices) userData.avgBuyPrices = {};
-      userData.avgBuyPrices[symbol] = newAvg;
-      toast(`Bought ${qty.toFixed(4)} ${symbol} for ${formatUSD(amt)}`,'success');
-      closeModal();
-      renderAll();
-    });
-  }
-
-  // ---- sell modal ----
-  function openSellModal(symbol) {
-    const coin = coinsData[symbol];
-    if(!coin) return toast('Coin not found','error');
-    const qty = holdings[symbol] || 0;
-    if(qty<=0) return toast('No holdings to sell','error');
-    const value = qty * coin.price;
-    const body = `<div class="field"><label>Coin</label><div><strong>${coin.name} (${symbol})</strong></div></div>
-      <div class="field"><label>Quantity</label><div>${qty.toFixed(4)}</div></div>
-      <div class="field"><label>Current Price</label><div>${formatUSD(coin.price)}</div></div>
-      <div class="field"><label>Total Value</label><div>${formatUSD(value)}</div></div>`;
-    const actions = `<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-danger" id="modalConfirmSell">Sell All</button>`;
-    openModal('Sell '+symbol, 'Confirm sale', body, actions);
-    document.getElementById('modalConfirmSell').addEventListener('click', async ()=>{
-      const balance = userData?.virtualBalance || 0;
-      const newBalance = balance + value;
-      const newHoldings = {...holdings};
-      newHoldings[symbol] = 0;
-      const userRef = ref(db, 'users/'+currentUser.uid);
-      await update(userRef, { virtualBalance: newBalance, holdings: newHoldings });
-      const txRef = push(ref(db, 'transactions'));
-      await set(txRef, { uid: currentUser.uid, coin: symbol, type: 'SELL', amount: value, quantity: qty, price: coin.price, timestamp: serverTimestamp() });
-      userData.virtualBalance = newBalance;
-      holdings = newHoldings;
-      toast(`Sold ${qty.toFixed(4)} ${symbol} for ${formatUSD(value)}`,'success');
-      closeModal();
-      renderAll();
-    });
-  }
-
-  // ---- deposit request ----
-  document.getElementById('submitDepositBtn').addEventListener('click', async ()=>{
-    if(!currentUser) return toast('Login required','error');
-    const amount = parseFloat(document.getElementById('depositAmount').value);
-    if(!amount || amount<1) return toast('Enter amount (min $1)','error');
-    const method = document.getElementById('selectedMethod').value;
-    if(!method) return toast('Please select a payment method','error');
-    
-    const orderId = generateOrderId();
-    const body = `
-      <div class="field"><label>Method</label><div><strong>${method}</strong></div></div>
-      <div class="field"><label>Amount</label><div>${formatUSD(amount)}</div></div>
-      <div class="field"><label>Order ID</label><div><strong>${orderId}</strong></div></div>
-      <div class="field"><label>Status</label><div><span class="badge badge-pending">PENDING</span></div></div>
-    `;
-    const actions = `<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="confirmDepositRequest">Submit Order</button>`;
-    openModal('Confirm Deposit', 'Virtual credit request', body, actions);
-    
-    document.getElementById('confirmDepositRequest').addEventListener('click', async ()=>{
-      const depRef = push(ref(db, 'deposits'));
-      await set(depRef, {
-        orderId, 
-        uid: currentUser.uid, 
-        userName: userData.displayName || 'User',
-        userEmail: userData.email || '',
-        amount, 
-        method, 
-        status: 'PENDING', 
-        createdAt: serverTimestamp()
-      });
-      toast('Deposit order submitted. Await admin approval.','success');
-      document.getElementById('depositAmount').value = '';
-      document.getElementById('methodSelector').style.display = 'none';
-      document.querySelectorAll('.method-option').forEach(m=>m.classList.remove('selected'));
-      document.getElementById('selectedMethod').value = '';
-      closeModal();
-      await loadDeposits();
-      renderDepositHistory();
-    });
-  });
-
-  // ---- withdrawal request ----
-  document.getElementById('submitWithdrawBtn').addEventListener('click', async ()=>{
-    if(!currentUser) return toast('Login required','error');
-    const amount = parseFloat(document.getElementById('withdrawAmount').value);
-    if(!amount || amount<1) return toast('Enter amount (min $1)','error');
-    const method = document.getElementById('selectedWithdrawMethod').value;
-    if(!method) return toast('Please select a withdrawal method','error');
-    const destination = document.getElementById('withdrawDestination').value.trim();
-    if(!destination) return toast('Please enter destination identifier','error');
-    
-    const balance = userData?.virtualBalance || 0;
-    if(amount > balance) return toast('Insufficient balance','error');
-    
-    const withdrawalId = generateOrderId();
-    const body = `
-      <div class="field"><label>Method</label><div><strong>${method}</strong></div></div>
-      <div class="field"><label>Amount</label><div>${formatUSD(amount)}</div></div>
-      <div class="field"><label>Destination</label><div style="font-size:13px;word-break:break-all;">${destination}</div></div>
-      <div class="field"><label>Withdrawal ID</label><div><strong>${withdrawalId}</strong></div></div>
-      <div class="field"><label>Status</label><div><span class="badge badge-pending">PENDING</span></div></div>
-    `;
-    const actions = `<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="confirmWithdrawRequest">Submit Withdrawal</button>`;
-    openModal('Confirm Withdrawal', 'Virtual withdrawal request', body, actions);
-    
-    document.getElementById('confirmWithdrawRequest').addEventListener('click', async ()=>{
-      const wdRef = push(ref(db, 'withdrawals'));
-      await set(wdRef, {
-        withdrawalId, 
-        uid: currentUser.uid, 
-        userName: userData.displayName || 'User',
-        userEmail: userData.email || '',
-        amount, 
-        method,
-        destination,
-        status: 'PENDING', 
-        createdAt: serverTimestamp()
-      });
-      toast('Withdrawal request submitted. Await admin approval.','success');
-      document.getElementById('withdrawAmount').value = '';
-      document.getElementById('withdrawDestination').value = '';
-      document.querySelectorAll('.withdraw-method-item').forEach(m=>m.classList.remove('selected'));
-      document.getElementById('selectedWithdrawMethod').value = '';
-      closeModal();
-      await loadWithdrawals();
-      renderWithdrawHistory();
-    });
-  });
-
-  // ---- admin render functions ----
-  function renderAdminOverview() {
-    const container = document.getElementById('adminContent');
-    const totalUsers = Object.keys(allUsers).length || 0;
-    const totalBalance = Object.values(allUsers).reduce((s,u)=>s+(u.virtualBalance||0),0);
-    const totalHoldings = Object.values(allUsers).reduce((s,u)=>{
-      const h = u.holdings || {};
-      return s + Object.entries(h).reduce((sum,[sym,qty])=>{ const c=coinsData[sym]; return sum + (c?qty*c.price:0); },0);
-    },0);
-    const totalDeposited = allTransactions.filter(t=>t.type==='DEPOSIT').reduce((s,t)=>s+(t.amount||0),0);
-    const totalWithdrawn = allTransactions.filter(t=>t.type==='WITHDRAWAL').reduce((s,t)=>s+(t.amount||0),0);
-    const pendingDeposits = allDeposits.filter(d=>d.status==='PENDING').length;
-    const pendingWithdrawals = allWithdrawals.filter(d=>d.status==='PENDING').length;
-    const totalTrades = allTransactions.filter(t=>t.type==='BUY'||t.type==='SELL').length;
-    const totalTx = allTransactions.length;
-    const totalCoins = Object.keys(coinsData).length;
-    
-    let html = `<div class="stat-grid">
-      <div class="stat-item"><div class="stat-label">Total Users</div><div class="stat-value">${totalUsers}</div></div>
-      <div class="stat-item"><div class="stat-label">Total USD Balance</div><div class="stat-value gold">${formatUSD(totalBalance)}</div></div>
-      <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value">${formatUSD(totalHoldings)}</div></div>
-      <div class="stat-item"><div class="stat-label">Total Deposited</div><div class="stat-value green">${formatUSD(totalDeposited)}</div></div>
-      <div class="stat-item"><div class="stat-label">Total Withdrawn</div><div class="stat-value red">${formatUSD(totalWithdrawn)}</div></div>
-      <div class="stat-item"><div class="stat-label">Pending Deposits</div><div class="stat-value gold">${pendingDeposits}</div></div>
-      <div class="stat-item"><div class="stat-label">Pending Withdrawals</div><div class="stat-value gold">${pendingWithdrawals}</div></div>
-      <div class="stat-item"><div class="stat-label">Total Trades</div><div class="stat-value">${totalTrades}</div></div>
-      <div class="stat-item"><div class="stat-label">Total Transactions</div><div class="stat-value">${totalTx}</div></div>
-      <div class="stat-item"><div class="stat-label">Total Coins</div><div class="stat-value">${totalCoins}</div></div>
-    </div>`;
-    container.innerHTML = html;
-  }
-
-  async function renderAdminUsers() {
-    const container = document.getElementById('adminContent');
-    await loadAllUsers();
-    let html = '<div class="table-responsive"><table><thead><tr><th>User</th><th>Email</th><th>UID</th><th>Balance</th><th>Holdings</th><th>Coins</th><th>Deposited</th><th>Withdrawn</th><th>Trades</th></tr></thead><tbody>';
-    for(const [uid, data] of Object.entries(allUsers)) {
-      const portVal = (data.holdings) ? Object.entries(data.holdings).reduce((sum,[sym,qty])=>{ const c=coinsData[sym]; return sum + (c?qty*c.price:0); },0) : 0;
-      const coinCount = Object.keys(data.holdings||{}).filter(k=>data.holdings[k]>0).length;
-      const deposited = allTransactions.filter(t=>t.uid===uid && t.type==='DEPOSIT').reduce((s,t)=>s+(t.amount||0),0);
-      const withdrawn = allTransactions.filter(t=>t.uid===uid && t.type==='WITHDRAWAL').reduce((s,t)=>s+(t.amount||0),0);
-      const trades = allTransactions.filter(t=>t.uid===uid && (t.type==='BUY'||t.type==='SELL')).length;
-      html += `<tr><td>${data.displayName||'User'}</td><td>${data.email||''}</td><td style="font-size:11px;">${uid.slice(0,8)}</td><td>${formatUSD(data.virtualBalance||0)}</td><td>${formatUSD(portVal)}</td><td>${coinCount}</td><td>${formatUSD(deposited)}</td><td>${formatUSD(withdrawn)}</td><td>${trades}</td></tr>`;
-    }
-    html += '</tbody></table></div>';
-    container.innerHTML = html;
-  }
-
-  async function renderAdminDeposits() {
-    const container = document.getElementById('adminContent');
-    await loadDeposits();
-    let html = '<div class="admin-list">';
-    for(const dep of allDeposits.slice().reverse()) {
-      const status = dep.status || 'PENDING';
-      html += `<div class="item flex-between"><span>${dep.orderId||'—'}</span><span>${dep.userName||'User'}</span><span>${formatUSD(dep.amount)}</span><span class="badge badge-${status.toLowerCase()}">${status}</span>
-        ${status==='PENDING' ? `<button class="btn btn-sm btn-success" data-approve-dep="${dep.orderId}">Approve</button><button class="btn btn-sm btn-danger" data-reject-dep="${dep.orderId}">Reject</button>` : ''}
-      </div>`;
-    }
-    html += '</div>';
-    container.innerHTML = html;
-    document.querySelectorAll('[data-approve-dep]').forEach(el=>{
-      el.addEventListener('click', async ()=>{
-        const orderId = el.dataset.approveDep;
-        await processDeposit(orderId, 'APPROVED');
-      });
-    });
-    document.querySelectorAll('[data-reject-dep]').forEach(el=>{
-      el.addEventListener('click', async ()=>{
-        const orderId = el.dataset.rejectDep;
-        await processDeposit(orderId, 'REJECTED');
-      });
-    });
-  }
-
-  async function processDeposit(orderId, newStatus) {
-    const depRef = ref(db, 'deposits');
-    const snap = await get(depRef);
-    const deps = snap.exists() ? snap.val() : {};
-    let foundKey = null;
-    for(const [key, d] of Object.entries(deps)) {
-      if(d.orderId===orderId) { foundKey=key; break; }
-    }
-    if(!foundKey) return toast('Deposit not found','error');
-    const dep = deps[foundKey];
-    if(dep.status !== 'PENDING') return toast('Deposit already processed','error');
-    await update(ref(db, 'deposits/'+foundKey), { status: newStatus, processedAt: serverTimestamp() });
-    if(newStatus === 'APPROVED') {
-      const userRef = ref(db, 'users/'+dep.uid);
-      const userSnap = await get(userRef);
-      if(userSnap.exists()) {
-        const user = userSnap.val();
-        const newBalance = (user.virtualBalance||0) + dep.amount;
-        await update(userRef, { virtualBalance: newBalance });
-        const txRef = push(ref(db, 'transactions'));
-        await set(txRef, { uid: dep.uid, type: 'DEPOSIT', amount: dep.amount, coin: 'USD', timestamp: serverTimestamp() });
-        toast(`Deposit ${orderId} approved, ${formatUSD(dep.amount)} added`,'success');
-      }
-    } else {
-      toast(`Deposit ${orderId} rejected`,'error');
-    }
-    await loadDeposits();
-    await loadTransactions();
-    renderAll();
-    renderAdminDeposits();
-  }
-
-  async function renderAdminWithdrawals() {
-    const container = document.getElementById('adminContent');
-    await loadWithdrawals();
-    let html = '<div class="admin-list">';
-    for(const wd of allWithdrawals.slice().reverse()) {
-      const status = wd.status || 'PENDING';
-      html += `<div class="item flex-between"><span>${wd.withdrawalId||'—'}</span><span>${wd.userName||'User'}</span><span>${formatUSD(wd.amount)}</span><span class="badge badge-${status.toLowerCase()}">${status}</span>
-        ${status==='PENDING' ? `<button class="btn btn-sm btn-success" data-approve-wd="${wd.withdrawalId}">Approve</button><button class="btn btn-sm btn-danger" data-reject-wd="${wd.withdrawalId}">Reject</button>` : ''}
-      </div>`;
-    }
-    html += '</div>';
-    container.innerHTML = html;
-    document.querySelectorAll('[data-approve-wd]').forEach(el=>{
-      el.addEventListener('click', async ()=>{
-        const withdrawalId = el.dataset.approveWd;
-        await processWithdrawal(withdrawalId, 'APPROVED');
-      });
-    });
-    document.querySelectorAll('[data-reject-wd]').forEach(el=>{
-      el.addEventListener('click', async ()=>{
-        const withdrawalId = el.dataset.rejectWd;
-        await processWithdrawal(withdrawalId, 'REJECTED');
-      });
-    });
-  }
-
-  async function processWithdrawal(withdrawalId, newStatus) {
-    const wdRef = ref(db, 'withdrawals');
-    const snap = await get(wdRef);
-    const wds = snap.exists() ? snap.val() : {};
-    let foundKey = null;
-    for(const [key, d] of Object.entries(wds)) {
-      if(d.withdrawalId===withdrawalId) { foundKey=key; break; }
-    }
-    if(!foundKey) return toast('Withdrawal not found','error');
-    const wd = wds[foundKey];
-    if(wd.status !== 'PENDING') return toast('Withdrawal already processed','error');
-    await update(ref(db, 'withdrawals/'+foundKey), { status: newStatus, processedAt: serverTimestamp() });
-    if(newStatus === 'APPROVED') {
-      const userRef = ref(db, 'users/'+wd.uid);
-      const userSnap = await get(userRef);
-      if(userSnap.exists()) {
-        const user = userSnap.val();
-        const newBalance = (user.virtualBalance||0) - wd.amount;
-        if(newBalance < 0) return toast('Insufficient balance for withdrawal','error');
-        await update(userRef, { virtualBalance: newBalance });
-        const txRef = push(ref(db, 'transactions'));
-        await set(txRef, { uid: wd.uid, type: 'WITHDRAWAL', amount: wd.amount, coin: 'USD', timestamp: serverTimestamp() });
-        toast(`Withdrawal ${withdrawalId} approved, ${formatUSD(wd.amount)} deducted`,'success');
-      }
-    } else {
-      toast(`Withdrawal ${withdrawalId} rejected`,'error');
-    }
-    await loadWithdrawals();
-    await loadTransactions();
-    renderAll();
-    renderAdminWithdrawals();
-  }
-
-  function renderAdminCoins() {
-    const container = document.getElementById('adminContent');
-    let html = '<div class="admin-list">';
-    for(const [sym, coin] of Object.entries(coinsData)) {
-      html += `<div class="item flex-between" style="flex-wrap:wrap;gap:6px;">
-        <span>${getCoinLogo(sym)} <strong>${coin.name}</strong> (${sym})</span>
-        <span>${formatUSD(coin.price)}</span>
-        <span style="font-size:11px;color:#7f92a8;">Min: ${formatUSD(coin.min||0)} Max: ${formatUSD(coin.max||999)}</span>
-        <span><input type="number" id="priceInput_${sym}" value="${coin.price}" step="0.01" min="0.01" style="width:70px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:12px;" /></span>
-        <span><input type="number" id="minInput_${sym}" value="${coin.min||0}" step="0.01" min="0" style="width:55px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:11px;" placeholder="min" /></span>
-        <span><input type="number" id="maxInput_${sym}" value="${coin.max||999}" step="0.01" min="0" style="width:55px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:11px;" placeholder="max" /></span>
-        <button class="btn btn-sm btn-outline" data-set-price="${sym}">Set</button>
-        <button class="btn btn-sm btn-outline" data-set-range="${sym}">Range</button>
-        <button class="btn btn-sm ${coin.auto?'btn-success':'btn-outline'}" data-toggle-auto="${sym}">${coin.auto?'ON':'OFF'}</button>
-        <button class="btn btn-sm btn-danger" data-delete-coin="${sym}">×</button>
-      </div>`;
-    }
-    html += `<div class="item" style="border-left-color:#f0b90b;">
-      <button class="btn btn-primary btn-sm" onclick="document.getElementById('addCoinForm').style.display='block'">+ Add Coin</button>
-      <div id="addCoinForm" style="display:none;width:100%;margin-top:10px;">
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <input type="text" id="newCoinName" placeholder="Name" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:120px;" />
-          <input type="text" id="newCoinSymbol" placeholder="Symbol" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:80px;" />
-          <input type="number" id="newCoinPrice" placeholder="Price" step="0.01" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:80px;" />
-          <input type="number" id="newCoinMin" placeholder="Min" step="0.01" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:70px;" />
-          <input type="number" id="newCoinMax" placeholder="Max" step="0.01" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:70px;" />
-          <button class="btn btn-sm btn-success" id="confirmAddCoin">Add</button>
-          <button class="btn btn-sm btn-outline" onclick="document.getElementById('addCoinForm').style.display='none'">Cancel</button>
-        </div>
-      </div>
-    </div>`;
-    html += '</div>';
-    container.innerHTML = html;
-    
-    document.querySelectorAll('[data-set-price]').forEach(el=>{
-      el.addEventListener('click', ()=>{
-        const sym = el.dataset.setPrice;
-        const input = document.getElementById('priceInput_'+sym);
-        const val = parseFloat(input.value);
-        if(!val || val<=0) return toast('Invalid price','error');
-        updateCoinPrice(sym, val);
-      });
-    });
-    
-    document.querySelectorAll('[data-set-range]').forEach(el=>{
-      el.addEventListener('click', async ()=>{
-        const sym = el.dataset.setRange;
-        const minInput = document.getElementById('minInput_'+sym);
-        const maxInput = document.getElementById('maxInput_'+sym);
-        const min = parseFloat(minInput.value);
-        const max = parseFloat(maxInput.value);
-        if (isNaN(min) || isNaN(max) || min < 0 || max <= min) return toast('Invalid range','error');
-        const coin = coinsData[sym];
-        coin.min = min;
-        coin.max = max;
-        if (coin.price < min) coin.price = min;
-        if (coin.price > max) coin.price = max;
-        const coinRef = ref(db, 'coins/'+sym);
-        await update(coinRef, { min: min, max: max, price: coin.price });
-        toast(`${sym} range set: ${formatUSD(min)} - ${formatUSD(max)}`,'success');
-        renderAll();
-        renderAdminCoins();
-      });
-    });
-    
-    document.querySelectorAll('[data-toggle-auto]').forEach(el=>{
-      el.addEventListener('click', async ()=>{
-        const sym = el.dataset.toggleAuto;
-        const coin = coinsData[sym];
-        if(!coin) return;
-        coin.auto = !coin.auto;
-        const coinRef = ref(db, 'coins/'+sym);
-        await update(coinRef, { auto: coin.auto });
-        renderAdminCoins();
-        toast(`${sym} auto movement ${coin.auto?'enabled':'disabled'}`,'success');
-      });
-    });
-    
-    document.querySelectorAll('[data-delete-coin]').forEach(el=>{
-      el.addEventListener('click', async ()=>{
-        const sym = el.dataset.deleteCoin;
-        if(!confirm(`Delete ${sym}?`)) return;
-        const coinRef = ref(db, 'coins/'+sym);
-        await set(coinRef, null);
-        delete coinsData[sym];
-        toast(`${sym} deleted`,'success');
-        renderAll();
-        renderAdminCoins();
-      });
-    });
-    
-    document.getElementById('confirmAddCoin')?.addEventListener('click', async ()=>{
-      const name = document.getElementById('newCoinName').value.trim();
-      const symbol = document.getElementById('newCoinSymbol').value.trim().toUpperCase();
-      const price = parseFloat(document.getElementById('newCoinPrice').value);
-      const min = parseFloat(document.getElementById('newCoinMin').value) || 0;
-      const max = parseFloat(document.getElementById('newCoinMax').value) || 999;
-      if(!name || !symbol || !price || price<=0) return toast('Invalid coin data','error');
-      if(coinsData[symbol]) return toast('Symbol already exists','error');
-      const newCoin = { price, change:0, symbol, name, min, max, auto:true, color:'#f0b90b' };
-      const coinRef = ref(db, 'coins/'+symbol);
-      await set(coinRef, newCoin);
-      coinsData[symbol] = newCoin;
-      toast(`Coin ${name} (${symbol}) added`,'success');
-      document.getElementById('addCoinForm').style.display = 'none';
-      renderAll();
-      renderAdminCoins();
-    });
-  }
-
-  async function renderAdminTransactions() {
-    const container = document.getElementById('adminContent');
-    await loadTransactions();
-    let html = '<div class="admin-list">';
-    const searchHtml = `<div style="margin-bottom:10px;"><input type="text" id="txSearch" placeholder="Search by user or coin..." style="background:#0d141e;border:1px solid #2f3b4a;border-radius:10px;padding:8px 12px;color:#e8edf5;width:100%;font-size:13px;" /></div>`;
-    html += searchHtml;
-    html += '<div id="txList">';
-    for(const tx of allTransactions.slice().reverse().slice(0,30)) {
-      html += `<div class="item flex-between"><span>${tx.type}</span><span>${tx.coin||''}</span><span>${formatUSD(tx.amount||0)}</span><span class="text-muted" style="font-size:11px;">${new Date(tx.timestamp||Date.now()).toLocaleDateString()}</span></div>`;
-    }
-    html += '</div></div>';
-    container.innerHTML = html;
-    const searchInput = document.getElementById('txSearch');
-    if(searchInput) {
-      searchInput.addEventListener('input', ()=>{
-        const q = searchInput.value.toLowerCase();
-        const filtered = allTransactions.filter(t=> 
-          (t.coin||'').toLowerCase().includes(q) || 
-          (t.uid||'').toLowerCase().includes(q) ||
-          (t.type||'').toLowerCase().includes(q)
-        ).slice(0,30);
-        const list = document.getElementById('txList');
-        if(list) {
-          list.innerHTML = filtered.map(t=> 
-            `<div class="item flex-between"><span>${t.type}</span><span>${t.coin||''}</span><span>${formatUSD(t.amount||0)}</span><span class="text-muted" style="font-size:11px;">${new Date(t.timestamp||Date.now()).toLocaleDateString()}</span></div>`
-          ).join('');
+            // Labels
+            ctx.fillStyle = 'rgba(138, 154, 170, 0.4)';
+            ctx.font = '10px Inter, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('$' + Math.round(max), pad, 16);
+            ctx.textAlign = 'right';
+            ctx.fillText('$' + Math.round(min), pad, h - 8);
         }
-      });
-    }
-  }
 
-  function renderAdminSettings() {
-    const container = document.getElementById('adminContent');
-    const html = `
-      <div class="card">
-        <h4 style="margin-bottom:12px;">Admin Management</h4>
-        <div class="field">
-          <label>Current Admin UIDs</label>
-          <div id="adminList" style="background:#0d141e;border-radius:8px;padding:10px;margin-bottom:8px;max-height:150px;overflow-y:auto;"></div>
-        </div>
-        <div class="field">
-          <label>Add Admin UID</label>
-          <div style="display:flex;gap:8px;">
-            <input type="text" id="newAdminUid" placeholder="Enter user UID" style="flex:1;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:8px 12px;color:#e8edf5;" />
-            <button class="btn btn-primary btn-sm" id="addAdminBtn">Add</button>
-          </div>
-        </div>
-        <div style="margin-top:8px;font-size:12px;color:#7f92a8;">
-          Note: Only users with admin UID can access the admin dashboard.
-          To get a user's UID, check the Profile page or Firebase Authentication.
-        </div>
-      </div>
-    `;
-    container.innerHTML = html;
-    
-    // Load current admins
-    const adminRef = ref(db, 'settings/admins');
-    get(adminRef).then(snap => {
-      const admins = snap.exists() ? snap.val() : [];
-      const list = document.getElementById('adminList');
-      if(list) {
-        list.innerHTML = admins.length ? admins.map(uid => 
-          `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #1f2937;">
-            <span style="font-family:monospace;font-size:12px;">${uid}</span>
-            <button class="btn btn-sm btn-danger" data-remove-admin="${uid}">Remove</button>
-          </div>`
-        ).join('') : '<div class="text-muted">No admins configured</div>';
-        
-        document.querySelectorAll('[data-remove-admin]').forEach(el=>{
-          el.addEventListener('click', async ()=>{
-            const uid = el.dataset.removeAdmin;
-            const current = admins.filter(u => u !== uid);
-            await set(adminRef, current);
-            toast('Admin removed','success');
-            renderAdminSettings();
-          });
+        // ============================================================
+        // RENDER MARKET GRID
+        // ============================================================
+        function renderMarketGrid() {
+            const grid = document.getElementById('marketGrid');
+            const assets = marketService.getAssets();
+            grid.innerHTML = assets.map(asset => `
+                    <div class="market-item" onclick="showAssetDetail('${asset.id}')">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span class="symbol">${asset.symbol}</span>
+                            <span style="font-size:11px;color:var(--text-muted);">${asset.name}</span>
+                        </div>
+                        <div class="price">${formatUSD(asset.price)}</div>
+                        <div class="change ${asset.change24h >= 0 ? 'up' : 'down'}">${asset.change24h >= 0 ? '+' : ''}${asset.change24h.toFixed(2)}%</div>
+                        <div class="spark">${asset.change24h >= 0 ? '📈' : '📉'}</div>
+                    </div>
+                `).join('');
+
+            const stats = marketService.getMarketStats();
+            document.getElementById('marketSentiment').textContent = stats.sentiment;
+            document.getElementById('marketVolume').textContent = formatUSD(stats.volume);
+            document.getElementById('marketVolatility').textContent = stats.volatility;
+        }
+
+        // ============================================================
+        // RENDER AI INSIGHTS
+        // ============================================================
+        function renderAIInsights() {
+            const insights = marketService.getAIInsights();
+            const grid = document.getElementById('aiInsightGrid');
+            grid.innerHTML = `
+                    <div class="insight-item"><div class="label">Market Trend</div><div class="value ${insights.trend === 'Bullish' ? 'text-green' : insights.trend === 'Bearish' ? 'text-red' : ''}">${insights.trend}</div></div>
+                    <div class="insight-item"><div class="label">Volatility</div><div class="value">${insights.volatility}</div></div>
+                    <div class="insight-item"><div class="label">Momentum</div><div class="value ${insights.momentum === 'Positive' ? 'text-green' : insights.momentum === 'Negative' ? 'text-red' : ''}">${insights.momentum}</div></div>
+                    <div class="insight-item full"><div class="label">AI Summary</div><div class="value" style="font-weight:400;font-size:14px;color:var(--text-secondary);">${insights.summary}</div></div>
+                `;
+        }
+
+        // ============================================================
+        // AI CHAT
+        // ============================================================
+        function setupAIChat() {
+            const input = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('chatSendBtn');
+            const messages = document.getElementById('chatMessages');
+
+            const responses = {
+                'volatility': 'Volatility measures price variation. High volatility means larger price swings, while low volatility indicates more stable prices.',
+                'risk': 'Risk management involves strategies to minimize potential losses. In virtual trading, you can practice risk management without real financial consequences.',
+                'portfolio': 'Your portfolio is a collection of your virtual holdings. It shows the current value of your positions and overall performance.',
+                'market': 'The market operates 24/7 and is influenced by global events, technology developments, and investor sentiment.',
+                'trade': 'A trade is an exchange of assets. In virtual trading, you buy and sell simulated assets to practice your strategy.',
+                'diversification': 'Diversification spreads investments across different assets to reduce overall portfolio risk.',
+                'strategy': 'A trading strategy is a plan for entering and exiting positions. Virtual trading allows you to test strategies risk-free.',
+                'default': 'I can help explain trading concepts, market analysis, portfolio management, or specific strategies. What would you like to know?'
+            };
+
+            function getResponse(question) {
+                const q = question.toLowerCase();
+                if (q.includes('volatility')) return responses.volatility;
+                if (q.includes('risk')) return responses.risk;
+                if (q.includes('portfolio')) return responses.portfolio;
+                if (q.includes('market')) return responses.market;
+                if (q.includes('trade')) return responses.trade;
+                if (q.includes('diversification')) return responses.diversification;
+                if (q.includes('strategy')) return responses.strategy;
+                return responses.default;
+            }
+
+            function sendMessage() {
+                const text = input.value.trim();
+                if (!text) return;
+                messages.innerHTML += `<div class="msg user">${text}</div>`;
+                input.value = '';
+                setTimeout(() => {
+                    const response = getResponse(text);
+                    messages.innerHTML += `<div class="msg ai">${response}</div>`;
+                    const container = document.getElementById('chatContainer');
+                    container.scrollTop = container.scrollHeight;
+                }, 400);
+            }
+
+            sendBtn.addEventListener('click', sendMessage);
+            input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+        }
+
+        // ============================================================
+        // SHOW ASSET DETAIL
+        // ============================================================
+        window.showAssetDetail = function(assetId) {
+            const asset = marketService.getAsset(assetId);
+            if (!asset) return;
+            if (!isLoggedIn) {
+                toast('Please sign in to view asset details', 'error');
+                document.getElementById('login-overlay').classList.add('open');
+                return;
+            }
+            document.getElementById('dashboardSection').scrollIntoView({ behavior: 'smooth' });
+            toast(`Viewing ${asset.name} (${asset.symbol}) - Current price: ${formatUSD(asset.price)}`, 'info');
+        };
+
+        // ============================================================
+        // TRADE MODAL
+        // ============================================================
+        window.openTradeModal = function(assetId, side) {
+            const asset = marketService.getAsset(assetId);
+            if (!asset) return;
+            if (!isLoggedIn) {
+                toast('Please sign in to trade', 'error');
+                document.getElementById('login-overlay').classList.add('open');
+                return;
+            }
+
+            const balance = userData.virtualBalance || 0;
+            const qty = side === 'sell' ? (holdings[asset.symbol] || 0) : 0;
+
+            document.getElementById('modalTitle').textContent = `${side === 'buy' ? 'Buy' : 'Sell'} ${asset.name} (${asset.symbol})`;
+            document.getElementById('modalSub').textContent = `Current price: ${formatUSD(asset.price)}`;
+
+            document.getElementById('modalBody').innerHTML = `
+                    <div class="field"><label>Available ${side === 'buy' ? 'Balance' : 'Quantity'}</label>
+                        <div class="info-value">${side === 'buy' ? formatUSD(balance) : qty.toFixed(4)}</div>
+                    </div>
+                    <div class="field"><label>${side === 'buy' ? 'Amount (USD)' : 'Quantity to Sell'}</label>
+                        <input type="number" id="tradeAmount" placeholder="Enter amount" min="${side === 'buy' ? '1' : '0.0001'}" step="${side === 'buy' ? '1' : '0.0001'}" value="${side === 'buy' ? '10' : '1'}" />
+                    </div>
+                    <div class="field"><label>Estimated ${side === 'buy' ? 'Quantity' : 'Value'}</label>
+                        <div id="tradeEstimate" style="font-size:16px;font-weight:600;">0.0000</div>
+                    </div>
+                `;
+
+            document.getElementById('modalActions').innerHTML = `
+                    <button class="btn btn-secondary" onclick="closeTradeModal()">Cancel</button>
+                    <button class="btn ${side === 'buy' ? 'btn-primary' : 'btn-danger'}" id="confirmTrade">Confirm ${side === 'buy' ? 'Buy' : 'Sell'}</button>
+                `;
+
+            document.getElementById('tradeModal').classList.add('open');
+
+            const amountInput = document.getElementById('tradeAmount');
+            const estimateDisplay = document.getElementById('tradeEstimate');
+
+            amountInput.addEventListener('input', () => {
+                const val = parseFloat(amountInput.value) || 0;
+                if (side === 'buy') {
+                    estimateDisplay.textContent = (val / asset.price).toFixed(4);
+                } else {
+                    estimateDisplay.textContent = formatUSD(val * asset.price);
+                }
+            });
+            amountInput.dispatchEvent(new Event('input'));
+
+            document.getElementById('confirmTrade').addEventListener('click', function handler() {
+                const val = parseFloat(amountInput.value);
+                if (!val || val <= 0) return toast('Enter a valid amount', 'error');
+
+                if (side === 'buy') {
+                    const totalCost = val;
+                    if (totalCost > balance) return toast('Insufficient virtual balance', 'error');
+                    const qtyBought = val / asset.price;
+
+                    const newBalance = balance - totalCost;
+                    const newHoldings = { ...holdings };
+                    newHoldings[asset.symbol] = (newHoldings[asset.symbol] || 0) + qtyBought;
+                    const avg = userData.avgBuyPrices?.[asset.symbol] || 0;
+                    const totalCostAvg = (holdings[asset.symbol] || 0) * avg + totalCost;
+                    const newAvg = totalCostAvg / newHoldings[asset.symbol];
+
+                    userData.virtualBalance = newBalance;
+                    holdings = newHoldings;
+                    if (!userData.avgBuyPrices) userData.avgBuyPrices = {};
+                    userData.avgBuyPrices[asset.symbol] = newAvg;
+
+                    transactions.push({
+                        asset: asset.symbol,
+                        type: 'BUY',
+                        quantity: qtyBought,
+                        price: asset.price,
+                        total: totalCost,
+                        date: new Date().toLocaleDateString(),
+                        status: 'Completed'
+                    });
+
+                    toast(`Bought ${qtyBought.toFixed(4)} ${asset.symbol} for ${formatUSD(totalCost)}`, 'success');
+                } else {
+                    const qtySell = val;
+                    const owned = holdings[asset.symbol] || 0;
+                    if (qtySell > owned) return toast('Insufficient holdings', 'error');
+                    const totalValue = qtySell * asset.price;
+
+                    const newBalance = balance + totalValue;
+                    const newHoldings = { ...holdings };
+                    newHoldings[asset.symbol] = (newHoldings[asset.symbol] || 0) - qtySell;
+
+                    userData.virtualBalance = newBalance;
+                    holdings = newHoldings;
+
+                    transactions.push({
+                        asset: asset.symbol,
+                        type: 'SELL',
+                        quantity: qtySell,
+                        price: asset.price,
+                        total: totalValue,
+                        date: new Date().toLocaleDateString(),
+                        status: 'Completed'
+                    });
+
+                    toast(`Sold ${qtySell.toFixed(4)} ${asset.symbol} for ${formatUSD(totalValue)}`, 'success');
+                }
+
+                closeTradeModal();
+                renderDashboard();
+                document.getElementById('confirmTrade').removeEventListener('click', handler);
+            });
+        };
+
+        window.closeTradeModal = function() {
+            document.getElementById('tradeModal').classList.remove('open');
+        };
+
+        // ============================================================
+        // RENDER DASHBOARD
+        // ============================================================
+        function renderDashboard() {
+            if (!isLoggedIn) return;
+            const balance = userData.virtualBalance || 0;
+            const portVal = calcPortfolioValue();
+            const total = balance + portVal;
+            const trades = transactions.length;
+
+            document.getElementById('dashStats').innerHTML = `
+                    <div class="dash-stat"><div class="label">Virtual Balance</div><div class="value gold">${formatUSD(balance)}</div></div>
+                    <div class="dash-stat"><div class="label">Portfolio Value</div><div class="value">${formatUSD(portVal)}</div></div>
+                    <div class="dash-stat"><div class="label">Total Portfolio</div><div class="value gold">${formatUSD(total)}</div></div>
+                    <div class="dash-stat"><div class="label">Total Trades</div><div class="value">${trades}</div></div>
+                    <div class="dash-stat"><div class="label">Today's P/L</div><div class="value ${portVal >= 0 ? 'green' : 'red'}">${portVal >= 0 ? '+' : ''}${formatUSD(portVal * 0.02)}</div></div>
+                    <div class="dash-stat"><div class="label">Invested Amount</div><div class="value">${formatUSD(portVal * 0.8)}</div></div>
+                `;
+
+            // Holdings
+            const tbody = document.getElementById('holdingsBody');
+            const entries = Object.entries(holdings).filter(([_, qty]) => qty > 0);
+            if (entries.length === 0) {
+                tbody.innerHTML =
+                    `<tr><td colspan="7" class="text-center text-muted" style="padding:20px;">No holdings yet. Start trading!</td></tr>`;
+            } else {
+                tbody.innerHTML = entries.map(([symbol, qty]) => {
+                    const asset = marketService.getAssets().find(a => a.symbol === symbol);
+                    if (!asset) return '';
+                    const avgBuy = userData.avgBuyPrices?.[symbol] || asset.price;
+                    const value = qty * asset.price;
+                    const pl = value - (qty * avgBuy);
+                    const plp = avgBuy > 0 ? (pl / (qty * avgBuy)) * 100 : 0;
+                    return `<tr>
+                            <td>${asset.name} (${asset.symbol})</td>
+                            <td>${qty.toFixed(4)}</td>
+                            <td>${formatUSD(avgBuy)}</td>
+                            <td>${formatUSD(asset.price)}</td>
+                            <td>${formatUSD(value)}</td>
+                            <td class="${pl >= 0 ? 'text-green' : 'text-red'}">${pl >= 0 ? '+' : ''}${formatUSD(pl)} (${plp >= 0 ? '+' : ''}${plp.toFixed(2)}%)</td>
+                            <td>
+                                <button class="btn btn-success btn-sm" onclick="openTradeModal('${asset.id}', 'buy')">Buy</button>
+                                <button class="btn btn-danger btn-sm" onclick="openTradeModal('${asset.id}', 'sell')">Sell</button>
+                            </td>
+                        </tr>`;
+                }).join('');
+            }
+
+            // Transactions
+            const txBody = document.getElementById('transactionBody');
+            if (transactions.length === 0) {
+                txBody.innerHTML =
+                    `<tr><td colspan="6" class="text-center text-muted" style="padding:20px;">No transactions yet.</td></tr>`;
+            } else {
+                txBody.innerHTML = transactions.slice().reverse().slice(0, 10).map(t => `
+                        <tr>
+                            <td>${t.asset}</td>
+                            <td><span class="${t.type === 'BUY' ? 'text-green' : 'text-red'}">${t.type}</span></td>
+                            <td>${t.quantity.toFixed(4)}</td>
+                            <td>${formatUSD(t.price)}</td>
+                            <td>${formatUSD(t.total)}</td>
+                            <td style="font-size:12px;color:var(--text-muted);">${t.date}</td>
+                        </tr>
+                    `).join('');
+            }
+        }
+
+        function calcPortfolioValue() {
+            let val = 0;
+            for (const [symbol, qty] of Object.entries(holdings)) {
+                const asset = marketService.getAssets().find(a => a.symbol === symbol);
+                if (asset) val += qty * asset.price;
+            }
+            return val;
+        }
+
+        // ============================================================
+        // LOGIN / LOGOUT
+        // ============================================================
+        function handleLogin() {
+            isLoggedIn = true;
+            document.getElementById('login-overlay').classList.remove('open');
+            document.getElementById('navLoginBtn').style.display = 'none';
+            document.getElementById('navDashboardBtn').style.display = 'flex';
+            document.getElementById('navLogoutBtn').style.display = 'flex';
+            document.getElementById('dashboardSection').style.display = 'block';
+            renderDashboard();
+            toast('Welcome to your virtual trading environment!', 'success');
+        }
+
+        function handleLogout() {
+            isLoggedIn = false;
+            userData = { displayName: 'Trader', virtualBalance: 10000, holdings: {}, avgBuyPrices: {} };
+            holdings = {};
+            transactions = [];
+            document.getElementById('login-overlay').classList.remove('open');
+            document.getElementById('navLoginBtn').style.display = 'flex';
+            document.getElementById('navDashboardBtn').style.display = 'none';
+            document.getElementById('navLogoutBtn').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'none';
+            toast('Logged out successfully', 'info');
+        }
+
+        // ============================================================
+        // EVENT LISTENERS
+        // ============================================================
+        document.getElementById('googleLoginBtn').addEventListener('click', handleLogin);
+        document.getElementById('navLoginBtn').addEventListener('click', () => {
+            document.getElementById('login-overlay').classList.add('open');
         });
-      }
-    });
-    
-    document.getElementById('addAdminBtn')?.addEventListener('click', async ()=>{
-      const uid = document.getElementById('newAdminUid').value.trim();
-      if(!uid) return toast('Enter a UID','error');
-      const adminRef = ref(db, 'settings/admins');
-      const snap = await get(adminRef);
-      const admins = snap.exists() ? snap.val() : [];
-      if(admins.includes(uid)) return toast('Admin already exists','error');
-      admins.push(uid);
-      await set(adminRef, admins);
-      toast('Admin added','success');
-      document.getElementById('newAdminUid').value = '';
-      renderAdminSettings();
-    });
-  }
+        document.getElementById('navLogoutBtn').addEventListener('click', handleLogout);
+        document.getElementById('navDashboardBtn').addEventListener('click', () => {
+            document.getElementById('dashboardSection').scrollIntoView({ behavior: 'smooth' });
+        });
+        document.getElementById('heroStartBtn').addEventListener('click', () => {
+            if (isLoggedIn) {
+                document.getElementById('dashboardSection').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                document.getElementById('login-overlay').classList.add('open');
+            }
+        });
+        document.getElementById('heroHowBtn').addEventListener('click', () => {
+            document.getElementById('how-it-works').scrollIntoView({ behavior: 'smooth' });
+        });
 
-  // ---- admin tabs ----
-  document.querySelectorAll('[data-admin-tab]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      document.querySelectorAll('[data-admin-tab]').forEach(b=>b.classList.remove('btn-primary'));
-      btn.classList.add('btn-primary');
-      const tab = btn.dataset.adminTab;
-      if(tab==='overview') renderAdminOverview();
-      else if(tab==='users') renderAdminUsers();
-      else if(tab==='deposits') renderAdminDeposits();
-      else if(tab==='withdrawals') renderAdminWithdrawals();
-      else if(tab==='coins') renderAdminCoins();
-      else if(tab==='transactions') renderAdminTransactions();
-      else if(tab==='settings') renderAdminSettings();
-    });
-  });
-  document.querySelector('[data-admin-tab="overview"]')?.classList.add('btn-primary');
+        // Mobile toggle
+        document.getElementById('mobileToggle').addEventListener('click', () => {
+            document.getElementById('navLinks').classList.toggle('open');
+        });
 
-  // ---- price engine ----
-  function startPriceEngine() {
-    if(priceInterval) clearInterval(priceInterval);
-    priceInterval = setInterval(async ()=>{
-      for(const sym of Object.keys(coinsData)) {
-        const coin = coinsData[sym];
-        if(!coin.auto) continue;
-        const change = (Math.random()*2 - 1) * 0.6;
-        let newPrice = coin.price * (1 + change/100);
-        if(coin.min && newPrice < coin.min) newPrice = coin.min + Math.random() * 0.3;
-        if(coin.max && newPrice > coin.max) newPrice = coin.max - Math.random() * 0.3;
-        if(newPrice > 0.01) {
-          coin.price = newPrice;
-          coin.change = Math.min(10, Math.max(-10, (coin.change||0) + change*0.1));
-          const coinRef = ref(db, 'coins/'+sym);
-          await update(coinRef, { price: newPrice, change: coin.change });
-        }
-      }
-      renderAll();
-    }, 10000);
-  }
+        // ============================================================
+        // INIT
+        // ============================================================
+        drawHeroChart();
+        renderMarketGrid();
+        renderAIInsights();
+        setupAIChat();
 
-  // ---- init ----
-  setupLongPress();
-  console.log('✅ Binance Coin Get · Simulator loaded');
-  console.log('ℹ️ New users start with $0.00 balance');
-  console.log('ℹ️ 30 virtual coins available');
-  console.log('ℹ️ Admin approval required for deposits and withdrawals');
-  console.log('ℹ️ Long-press the empty area below transactions for 5 seconds to access admin');
-</script>
+        // Refresh chart on resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(drawHeroChart, 200);
+        });
+
+        console.log('✅ BINANCECOIN GET — Professional Virtual Trading Platform');
+        console.log('ℹ️ Virtual trading only. No real funds involved.');
+        console.log('ℹ️ Click "Continue with Google" to start trading.');
+    </script>
 </body>
 </html>
