@@ -129,7 +129,8 @@
     .method-demo-info { background:#0d141e; border-radius:10px; padding:10px; margin:6px 0; font-size:12px; border:1px solid #2a3440; }
     .method-demo-info .label { color:#7f92a8; }
     .method-demo-info .value { color:#f0b90b; font-family:monospace; word-break:break-all; }
-    .demo-warning { background:#1f2937; border-radius:8px; padding:8px 12px; font-size:11px; color:#f0b90b; text-align:center; border:1px solid #f0b90b33; margin:8px 0; }
+    .long-press-area { width:100%; height:60px; display:flex; align-items:center; justify-content:center; color:#1f2937; font-size:12px; user-select:none; cursor:default; border-radius:12px; transition:0.3s; }
+    .long-press-area.active { background:#1f2937; }
   </style>
 </head>
 <body>
@@ -152,7 +153,6 @@
       <a data-page="portfolio"><i class="fas fa-wallet"></i> Portfolio</a>
       <a data-page="deposit"><i class="fas fa-plus-circle"></i> Deposit</a>
       <a data-page="profile"><i class="fas fa-user"></i> Profile</a>
-      <a data-page="admin" id="adminNavLink" style="display:none;"><i class="fas fa-shield-alt"></i> Admin</a>
     </nav>
     <div class="user-mini" id="sidebarUser">
       <img id="sidebarAvatar" src="" alt="avatar" />
@@ -198,24 +198,23 @@
         <div class="card">
           <h3 style="margin-bottom:4px;">Add Virtual Credits</h3>
           <div class="text-muted" style="margin-bottom:12px;font-size:13px;">Request credits — admin approval required</div>
-          <div class="demo-warning">⚠️ DEMO / NOT A REAL PAYMENT ENDPOINT</div>
           <div class="field">
             <label>Amount (USD)</label>
-            <input type="number" id="depositAmount" placeholder="Enter amount" min="1" step="0.01" />
+            <input type="number" id="depositAmount" placeholder="Enter amount (min $1)" min="1" step="0.01" />
           </div>
-          <div class="field">
+          <div class="field" id="methodSelector" style="display:none;">
             <label>Payment Method</label>
             <div class="method-option" data-method="Binance Pay" onclick="selectMethod(this)">
               <i class="fab fa-bitcoin" style="color:#f0b90b;"></i>
-              <div><strong>Demo Binance Pay</strong><div style="font-size:11px;color:#7f92a8;">ID: 894307667</div></div>
+              <div><strong>Binance Pay</strong><div style="font-size:11px;color:#7f92a8;">ID: 894307667</div></div>
             </div>
             <div class="method-option" data-method="TRC20" onclick="selectMethod(this)">
               <i class="fas fa-coins" style="color:#22c55e;"></i>
-              <div><strong>Demo TRC20</strong><div style="font-size:11px;color:#7f92a8;">TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7</div></div>
+              <div><strong>TRC20</strong><div style="font-size:11px;color:#7f92a8;">TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7</div></div>
             </div>
             <div class="method-option" data-method="BEP20" onclick="selectMethod(this)">
               <i class="fas fa-cube" style="color:#f0b90b;"></i>
-              <div><strong>Demo BEP20</strong><div style="font-size:11px;color:#7f92a8;">0xdfd1138c7bfc2d15b7400fa43f3ca591679e0efa</div></div>
+              <div><strong>BEP20</strong><div style="font-size:11px;color:#7f92a8;">0xdfd1138c7bfc2d15b7400fa43f3ca591679e0efa</div></div>
             </div>
             <input type="hidden" id="selectedMethod" value="" />
           </div>
@@ -237,6 +236,11 @@
         </div>
         <div class="card"><div class="card-header"><span class="card-title">Holdings</span></div><div id="profileHoldings"></div></div>
         <div class="card"><div class="card-header"><span class="card-title">Transactions</span></div><div id="profileTransactions"></div></div>
+        <!-- Hidden long-press area for admin entry -->
+        <div class="card" style="border-color:transparent;background:transparent;padding:0;margin:0;">
+          <div class="long-press-area" id="adminEntryArea"></div>
+        </div>
+        <!-- Admin Panel (hidden by default, shown after auth) -->
         <div class="card" id="adminPanelCard" style="display:none;border-color:#f0b90b;">
           <div class="card-header"><span class="card-title" style="color:#f0b90b;"><i class="fas fa-shield-alt"></i> Admin Panel</span></div>
           <button class="btn btn-primary btn-block" onclick="navigate('admin')"><i class="fas fa-cog"></i> Open Admin Dashboard</button>
@@ -247,8 +251,8 @@
       <section class="page" id="page-admin">
         <div class="admin-tab-bar">
           <button class="btn btn-outline btn-sm" data-admin-tab="overview">Overview</button>
-          <button class="btn btn-outline btn-sm" data-admin-tab="users">Users</button>
           <button class="btn btn-outline btn-sm" data-admin-tab="deposits">Deposits</button>
+          <button class="btn btn-outline btn-sm" data-admin-tab="users">Users</button>
           <button class="btn btn-outline btn-sm" data-admin-tab="coins">Coins</button>
           <button class="btn btn-outline btn-sm" data-admin-tab="transactions">Transactions</button>
           <button class="btn btn-outline btn-sm" data-admin-tab="portfolio">Portfolio</button>
@@ -325,6 +329,8 @@
   let chartData = [];
   let chartCanvas = null;
   let chartCtx = null;
+  let longPressTimer = null;
+  let longPressActive = false;
 
   // ---- DOM refs ----
   const $ = id => document.getElementById(id);
@@ -529,11 +535,9 @@
     const admins = snap.exists() ? snap.val() : [];
     if(admins.includes(currentUser?.uid)) {
       isAdmin = true;
-      $('adminNavLink').style.display='flex';
       document.getElementById('adminPanelCard').style.display = 'block';
     } else {
       isAdmin = false;
-      $('adminNavLink').style.display='none';
       document.getElementById('adminPanelCard').style.display = 'none';
     }
   }
@@ -543,6 +547,52 @@
     const usersRef = ref(db, 'users');
     const snap = await get(usersRef);
     if(snap.exists()) allUsers = snap.val();
+  }
+
+  // ---- long press handler ----
+  function setupLongPress() {
+    const area = document.getElementById('adminEntryArea');
+    let pressTimer = null;
+    let startTime = 0;
+    
+    const startPress = (e) => {
+      startTime = Date.now();
+      pressTimer = setTimeout(() => {
+        // 5 seconds completed - check admin status
+        if (isAdmin) {
+          toast('Admin access already granted', 'success');
+          navigate('admin');
+        } else {
+          // Try to authenticate as admin
+          checkAdmin().then(() => {
+            if (isAdmin) {
+              toast('Admin access granted!', 'success');
+              document.getElementById('adminPanelCard').style.display = 'block';
+              navigate('admin');
+            } else {
+              toast('Admin access denied. Contact administrator.', 'error');
+            }
+          });
+        }
+      }, 5000);
+    };
+    
+    const endPress = () => {
+      if (pressTimer) {
+        clearTimeout(pressTimer);
+        pressTimer = null;
+      }
+    };
+    
+    area.addEventListener('mousedown', startPress);
+    area.addEventListener('mouseup', endPress);
+    area.addEventListener('mouseleave', endPress);
+    area.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      startPress(e);
+    });
+    area.addEventListener('touchend', endPress);
+    area.addEventListener('touchcancel', endPress);
   }
 
   // ---- render all ----
@@ -742,6 +792,18 @@
     });
   }
 
+  // ---- deposit amount change handler ----
+  document.getElementById('depositAmount').addEventListener('input', function() {
+    const val = parseFloat(this.value);
+    if (val && val >= 1) {
+      document.getElementById('methodSelector').style.display = 'block';
+    } else {
+      document.getElementById('methodSelector').style.display = 'none';
+      document.getElementById('selectedMethod').value = '';
+      document.querySelectorAll('.method-option').forEach(m => m.classList.remove('selected'));
+    }
+  });
+
   // ---- buy modal ----
   function openBuyModal(symbol) {
     const coin = coinsData[symbol];
@@ -822,21 +884,54 @@
   document.getElementById('submitDepositBtn').addEventListener('click', async ()=>{
     if(!currentUser) return toast('Login required','error');
     const amount = parseFloat(document.getElementById('depositAmount').value);
-    if(!amount || amount<=0) return toast('Enter valid amount','error');
+    if(!amount || amount<1) return toast('Enter amount (min $1)','error');
     const method = document.getElementById('selectedMethod').value;
     if(!method) return toast('Please select a payment method','error');
+    
+    // Show payment details based on method
+    let address = '';
+    if (method === 'Binance Pay') address = '894307667';
+    else if (method === 'TRC20') address = 'TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7';
+    else if (method === 'BEP20') address = '0xdfd1138c7bfc2d15b7400fa43f3ca591679e0efa';
+    
     const orderId = generateOrderId();
-    const depRef = push(ref(db, 'deposits'));
-    await set(depRef, {
-      orderId, uid: currentUser.uid, userName: userData.displayName || 'User',
-      amount, method, status: 'PENDING', createdAt: serverTimestamp()
+    const body = `
+      <div class="field"><label>Method</label><div><strong>${method}</strong></div></div>
+      <div class="field"><label>Payment Address</label>
+        <div style="background:#0d141e;border-radius:8px;padding:10px;font-family:monospace;font-size:13px;word-break:break-all;border:1px solid #2a3440;display:flex;justify-content:space-between;align-items:center;">
+          <span>${address}</span>
+          <button class="btn btn-sm btn-outline" onclick="navigator.clipboard.writeText('${address}'); toast('Address copied!','success');">Copy</button>
+        </div>
+      </div>
+      <div class="field"><label>Order ID</label><div><strong>${orderId}</strong></div></div>
+      <div class="field"><label>Amount</label><div>${formatUSD(amount)}</div></div>
+      <div class="field"><label>Status</label><div><span class="badge badge-pending">PENDING</span></div></div>
+      <div class="text-muted" style="font-size:12px;text-align:center;margin-top:8px;">Virtual simulator — no real payment is processed</div>
+    `;
+    const actions = `<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="confirmDepositRequest">Submit Request</button>`;
+    openModal('Deposit Request', 'Virtual credit request', body, actions);
+    
+    document.getElementById('confirmDepositRequest').addEventListener('click', async ()=>{
+      const depRef = push(ref(db, 'deposits'));
+      await set(depRef, {
+        orderId, 
+        uid: currentUser.uid, 
+        userName: userData.displayName || 'User',
+        userEmail: userData.email || '',
+        amount, 
+        method, 
+        status: 'PENDING', 
+        createdAt: serverTimestamp()
+      });
+      toast('Deposit request submitted. Await admin approval.','success');
+      document.getElementById('depositAmount').value = '';
+      document.getElementById('methodSelector').style.display = 'none';
+      document.querySelectorAll('.method-option').forEach(m=>m.classList.remove('selected'));
+      document.getElementById('selectedMethod').value = '';
+      closeModal();
+      await loadDeposits();
+      renderDepositHistory();
     });
-    toast('Deposit request submitted. Await admin approval.','success');
-    document.getElementById('depositAmount').value = '';
-    document.querySelectorAll('.method-option').forEach(m=>m.classList.remove('selected'));
-    document.getElementById('selectedMethod').value = '';
-    await loadDeposits();
-    renderDepositHistory();
   });
 
   // ---- admin render functions ----
@@ -911,7 +1006,7 @@
     if(!foundKey) return toast('Deposit not found','error');
     const dep = deps[foundKey];
     if(dep.status !== 'PENDING') return toast('Deposit already processed','error');
-    await update(ref(db, 'deposits/'+foundKey), { status: newStatus });
+    await update(ref(db, 'deposits/'+foundKey), { status: newStatus, processedAt: serverTimestamp() });
     if(newStatus === 'APPROVED') {
       const userRef = ref(db, 'users/'+dep.uid);
       const userSnap = await get(userRef);
@@ -940,8 +1035,11 @@
         <span><strong>${coin.name}</strong> (${sym}) ${getCoinLogo(sym)}</span>
         <span>${formatUSD(coin.price)}</span>
         <span style="font-size:11px;color:#7f92a8;">Min: ${formatUSD(coin.min||0)} Max: ${formatUSD(coin.max||999)}</span>
-        <span><input type="number" id="priceInput_${sym}" value="${coin.price}" step="0.01" min="0.01" style="width:80px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:12px;" /></span>
+        <span><input type="number" id="priceInput_${sym}" value="${coin.price}" step="0.01" min="0.01" style="width:70px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:12px;" /></span>
+        <span><input type="number" id="minInput_${sym}" value="${coin.min||0}" step="0.01" min="0" style="width:60px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:11px;" placeholder="min" /></span>
+        <span><input type="number" id="maxInput_${sym}" value="${coin.max||999}" step="0.01" min="0" style="width:60px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:11px;" placeholder="max" /></span>
         <button class="btn btn-sm btn-outline" data-set-price="${sym}">Set</button>
+        <button class="btn btn-sm btn-outline" data-set-range="${sym}">Range</button>
         <button class="btn btn-sm btn-outline" data-inc-price="${sym}">+5%</button>
         <button class="btn btn-sm btn-outline" data-dec-price="${sym}">-5%</button>
         <button class="btn btn-sm ${coin.auto?'btn-success':'btn-outline'}" data-toggle-auto="${sym}">${coin.auto?'Auto ON':'Auto OFF'}</button>
@@ -959,12 +1057,36 @@
         updateCoinPrice(sym, val);
       });
     });
+    
+    document.querySelectorAll('[data-set-range]').forEach(el=>{
+      el.addEventListener('click', async ()=>{
+        const sym = el.dataset.setRange;
+        const minInput = document.getElementById('minInput_'+sym);
+        const maxInput = document.getElementById('maxInput_'+sym);
+        const min = parseFloat(minInput.value);
+        const max = parseFloat(maxInput.value);
+        if (isNaN(min) || isNaN(max) || min < 0 || max <= min) return toast('Invalid range','error');
+        const coin = coinsData[sym];
+        coin.min = min;
+        coin.max = max;
+        if (coin.price < min) coin.price = min;
+        if (coin.price > max) coin.price = max;
+        const coinRef = ref(db, 'coins/'+sym);
+        await update(coinRef, { min: min, max: max, price: coin.price });
+        toast(`${sym} range set: ${formatUSD(min)} - ${formatUSD(max)}`,'success');
+        renderAll();
+        renderAdminCoins();
+      });
+    });
+    
     document.querySelectorAll('[data-inc-price]').forEach(el=>{
       el.addEventListener('click', ()=>{
         const sym = el.dataset.incPrice;
         const coin = coinsData[sym];
         if(!coin) return;
-        updateCoinPrice(sym, coin.price * 1.05);
+        let newPrice = coin.price * 1.05;
+        if (coin.max && newPrice > coin.max) newPrice = coin.max;
+        updateCoinPrice(sym, newPrice);
       });
     });
     document.querySelectorAll('[data-dec-price]').forEach(el=>{
@@ -972,7 +1094,9 @@
         const sym = el.dataset.decPrice;
         const coin = coinsData[sym];
         if(!coin) return;
-        updateCoinPrice(sym, coin.price * 0.95);
+        let newPrice = coin.price * 0.95;
+        if (coin.min && newPrice < coin.min) newPrice = coin.min;
+        updateCoinPrice(sym, newPrice);
       });
     });
     document.querySelectorAll('[data-toggle-auto]').forEach(el=>{
@@ -1071,9 +1195,11 @@
   }
 
   // ---- init ----
+  setupLongPress();
   console.log('✅ Binance Coin Get · Simulator loaded');
   console.log('ℹ️ New users start with $0.00 balance');
   console.log('ℹ️ Admin approval required for deposits');
+  console.log('ℹ️ Long-press the empty area below transactions for 5 seconds to access admin');
 </script>
 </body>
 </html>
