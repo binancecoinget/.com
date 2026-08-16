@@ -7,12 +7,17 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
   <style>
+    /* === RESET & BASE === */
     * { margin:0; padding:0; box-sizing:border-box; }
     body { font-family:'Inter', sans-serif; background:#0b0e14; color:#e8edf5; height:100vh; overflow:hidden; display:flex; }
     ::-webkit-scrollbar { width:4px; }
     ::-webkit-scrollbar-track { background:#1a1f2a; }
     ::-webkit-scrollbar-thumb { background:#2f3b4a; border-radius:8px; }
+
+    /* === APP LAYOUT === */
     #app { display:flex; width:100%; height:100vh; overflow:hidden; }
+
+    /* === SIDEBAR === */
     .sidebar { display:none; flex-direction:column; width:220px; background:#11171f; border-right:1px solid #252d3a; padding:24px 12px; height:100vh; position:sticky; top:0; }
     .sidebar .brand { font-weight:700; font-size:20px; letter-spacing:-0.3px; padding-bottom:28px; color:#f0b90b; }
     .sidebar .brand span { color:#e8edf5; }
@@ -23,19 +28,30 @@
     .sidebar .user-mini { margin-top:auto; border-top:1px solid #252d3a; padding-top:16px; display:flex; align-items:center; gap:12px; }
     .sidebar .user-mini img { width:36px; height:36px; border-radius:50%; background:#2f3b4a; }
     .sidebar .user-mini .name { font-weight:500; font-size:14px; }
+    .sidebar .logout-btn { margin-top:8px; width:100%; background:#1f2937; border:1px solid #2f3b4a; color:#e8edf5; padding:8px 0; border-radius:40px; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; text-align:center; }
+    .sidebar .logout-btn:hover { background:#2f3b4a; color:#f0b90b; }
+
+    /* === MAIN === */
     .main { flex:1; display:flex; flex-direction:column; height:100vh; overflow:hidden; background:#0b0e14; }
     .content { flex:1; overflow-y:auto; padding:16px 20px 100px; }
     .page { display:none; animation:fadeIn 0.2s ease; }
     .page.active { display:block; }
     @keyframes fadeIn { from { opacity:0.4; } to { opacity:1; } }
+
+    /* === BOTTOM NAV (mobile) === */
     .bottom-nav { display:flex; position:fixed; bottom:0; left:0; right:0; background:#11171f; border-top:1px solid #252d3a; justify-content:space-around; padding:8px 0 12px; z-index:50; }
     .bottom-nav a { display:flex; flex-direction:column; align-items:center; color:#9aa9b9; font-size:11px; font-weight:500; gap:3px; text-decoration:none; transition:0.2s; padding:4px 8px; border-radius:8px; }
     .bottom-nav a i { font-size:20px; }
     .bottom-nav a.active { color:#f0b90b; }
     .bottom-nav a span { font-size:10px; }
+    .bottom-nav .logout-mobile { color:#ef4444; }
+
+    /* === CARDS === */
     .card { background:#131b24; border-radius:16px; padding:18px 16px; border:1px solid #1f2937; margin-bottom:16px; }
     .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
     .card-title { font-weight:600; font-size:15px; color:#b0c4d9; letter-spacing:0.2px; }
+
+    /* === STAT GRID === */
     .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     .stat-item { background:#0d141e; border-radius:12px; padding:14px; }
     .stat-label { font-size:13px; color:#7f92a8; }
@@ -43,6 +59,8 @@
     .stat-value.green { color:#22c55e; }
     .stat-value.red { color:#ef4444; }
     .stat-value.gold { color:#f0b90b; }
+
+    /* === COIN ROW === */
     .coin-row { display:flex; align-items:center; justify-content:space-between; background:#0d141e; border-radius:14px; padding:12px 14px; margin-bottom:8px; border-left:4px solid #f0b90b; gap:8px; flex-wrap:wrap; }
     .coin-logo { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; background:#1f2937; color:#f0b90b; flex-shrink:0; }
     .coin-info { display:flex; flex-direction:column; flex:1; min-width:80px; }
@@ -53,6 +71,8 @@
     .coin-change.up { color:#22c55e; }
     .coin-change.down { color:#ef4444; }
     .coin-actions { display:flex; gap:6px; flex-wrap:wrap; }
+
+    /* === BUTTONS === */
     .btn { background:#1f2937; border:none; color:#e8edf5; padding:7px 14px; border-radius:40px; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:5px; }
     .btn-primary { background:#f0b90b; color:#0b0e14; }
     .btn-primary:hover { background:#d9a70a; }
@@ -61,6 +81,10 @@
     .btn-outline { background:transparent; border:1px solid #2f3b4a; }
     .btn-sm { padding:4px 10px; font-size:12px; }
     .btn-block { width:100%; justify-content:center; }
+    .btn-logout { background:#ef4444; color:#fff; border:none; padding:8px 20px; border-radius:40px; font-weight:600; cursor:pointer; transition:0.2s; }
+    .btn-logout:hover { background:#dc2626; }
+
+    /* === MODAL === */
     .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:100; }
     .modal-overlay.open { display:flex; }
     .modal { background:#131b24; border-radius:24px; max-width:440px; width:92%; padding:24px; border:1px solid #2a3440; max-height:92vh; overflow-y:auto; }
@@ -70,35 +94,20 @@
     .modal .field label { display:block; font-weight:500; font-size:13px; margin-bottom:4px; color:#b0c4d9; }
     .modal .field input, .modal .field select { width:100%; background:#0d141e; border:1px solid #2a3440; border-radius:12px; padding:10px 14px; color:#e8edf5; font-size:15px; outline:none; }
     .modal .field input:focus { border-color:#f0b90b; }
-    .modal .field .method-option { display:flex; align-items:center; gap:12px; padding:10px 14px; background:#0d141e; border:1px solid #2a3440; border-radius:12px; cursor:pointer; margin-bottom:6px; transition:0.2s; }
-    .modal .field .method-option:hover { border-color:#f0b90b; }
-    .modal .field .method-option.selected { border-color:#f0b90b; background:#1f2937; }
     .modal .actions { display:flex; gap:10px; margin-top:20px; justify-content:flex-end; }
     .modal .actions .btn { flex:1; justify-content:center; }
+
+    /* === BADGES === */
     .badge { background:#1f2937; padding:3px 10px; border-radius:40px; font-size:11px; font-weight:600; }
     .badge-pending { background:#b45309; color:#fff; }
     .badge-confirmed { background:#22c55e; color:#0b0e14; }
-    .badge-approved { background:#22c55e; color:#0b0e14; }
     .badge-cancelled { background:#ef4444; color:#fff; }
-    .badge-rejected { background:#ef4444; color:#fff; }
     .badge-failed { background:#dc2626; color:#fff; }
+
+    /* === ADMIN === */
+    .admin-tab-bar { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+    .admin-tab-bar .btn { flex:1; min-width:70px; justify-content:center; font-size:12px; padding:6px 10px; }
     .admin-list .item { display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; background:#0d141e; padding:10px 12px; border-radius:12px; margin-bottom:6px; border-left:2px solid #2f3b4a; font-size:13px; }
-    .admin-list .item .label { min-width:80px; font-weight:500; }
-    .admin-list .item .value { color:#b0c4d9; }
-    .toast-container { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); z-index:200; display:flex; flex-direction:column; gap:6px; align-items:center; }
-    .toast { background:#1f2937; border:1px solid #2f3b4a; border-radius:40px; padding:8px 18px; font-weight:500; font-size:13px; box-shadow:0 8px 20px rgba(0,0,0,0.6); color:#e8edf5; max-width:92%; }
-    .toast.success { border-color:#22c55e; color:#22c55e; }
-    .toast.error { border-color:#ef4444; color:#ef4444; }
-    @media(min-width:768px) {
-      .sidebar { display:flex; }
-      .bottom-nav { display:none; }
-      .content { padding:24px 32px 40px; }
-      .stat-grid { grid-template-columns:repeat(4,1fr); }
-    }
-    @media(max-width:767px) {
-      .stat-grid { grid-template-columns:1fr 1fr; }
-      .coin-row { flex-wrap:wrap; }
-    }
     .flex { display:flex; align-items:center; gap:8px; }
     .flex-between { display:flex; justify-content:space-between; align-items:center; }
     .text-muted { color:#7f92a8; }
@@ -112,6 +121,8 @@
     .mb-8 { margin-bottom:8px; }
     .gap-4 { gap:4px; }
     .gap-8 { gap:8px; }
+
+    /* === LOGIN OVERLAY === */
     #login-overlay { position:fixed; inset:0; background:#0b0e14; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:300; }
     #login-overlay .logo { font-size:36px; font-weight:700; color:#f0b90b; }
     #login-overlay .logo span { color:#e8edf5; }
@@ -119,30 +130,25 @@
     #login-overlay .btn-google { background:#1f2937; border:1px solid #2f3b4a; padding:14px 32px; border-radius:60px; font-size:18px; font-weight:600; color:#e8edf5; display:flex; align-items:center; gap:12px; cursor:pointer; transition:0.2s; }
     #login-overlay .btn-google:hover { background:#2f3b4a; }
     #login-overlay .btn-google i { font-size:22px; }
-    .admin-tab-bar { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
-    .admin-tab-bar .btn { flex:1; min-width:70px; justify-content:center; font-size:12px; padding:6px 10px; }
-    .tx-item { border-bottom:1px solid #1f2937; padding:6px 0; font-size:13px; }
-    .deposit-item { border-bottom:1px solid #1f2937; padding:6px 0; font-size:13px; }
-    .coin-logo-svg { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; flex-shrink:0; }
-    .profile-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-    .profile-stat { background:#0d141e; border-radius:10px; padding:10px; text-align:center; }
-    .profile-stat .label { font-size:11px; color:#7f92a8; }
-    .profile-stat .value { font-size:18px; font-weight:700; margin-top:2px; }
-    .method-demo-info { background:#0d141e; border-radius:10px; padding:10px; margin:6px 0; font-size:12px; border:1px solid #2a3440; }
-    .method-demo-info .label { color:#7f92a8; }
-    .method-demo-info .value { color:#f0b90b; font-family:monospace; word-break:break-all; }
     .long-press-area { width:100%; height:40px; display:flex; align-items:center; justify-content:center; color:#1f2937; font-size:11px; user-select:none; cursor:default; border-radius:12px; transition:0.3s; }
-    .long-press-area.active { background:#1f2937; }
-    .withdraw-method-item { display:flex; align-items:center; gap:12px; padding:10px 14px; background:#0d141e; border:1px solid #2a3440; border-radius:12px; cursor:pointer; margin-bottom:6px; transition:0.2s; }
-    .withdraw-method-item:hover { border-color:#f0b90b; }
-    .withdraw-method-item.selected { border-color:#f0b90b; background:#1f2937; }
-    .table-responsive { overflow-x:auto; }
-    table { width:100%; border-collapse:collapse; font-size:13px; }
-    th { text-align:left; padding:8px 6px; color:#7f92a8; font-weight:500; border-bottom:1px solid #1f2937; }
-    td { padding:8px 6px; border-bottom:1px solid #1f2937; }
-    tr:hover td { background:#0d141e; }
-    .deposit-success-message { background:#0d141e; border:1px solid #22c55e; border-radius:12px; padding:12px 16px; margin:10px 0; font-size:13px; color:#b0c4d9; }
-    .deposit-success-message strong { color:#22c55e; }
+
+    /* === TOAST === */
+    .toast-container { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); z-index:200; display:flex; flex-direction:column; gap:6px; align-items:center; }
+    .toast { background:#1f2937; border:1px solid #2f3b4a; border-radius:40px; padding:8px 18px; font-weight:500; font-size:13px; box-shadow:0 8px 20px rgba(0,0,0,0.6); color:#e8edf5; max-width:92%; }
+    .toast.success { border-color:#22c55e; color:#22c55e; }
+    .toast.error { border-color:#ef4444; color:#ef4444; }
+
+    /* === RESPONSIVE === */
+    @media(min-width:768px) {
+      .sidebar { display:flex; }
+      .bottom-nav { display:none; }
+      .content { padding:24px 32px 40px; }
+      .stat-grid { grid-template-columns:repeat(4,1fr); }
+    }
+    @media(max-width:767px) {
+      .stat-grid { grid-template-columns:1fr 1fr; }
+      .coin-row { flex-wrap:wrap; }
+    }
   </style>
 </head>
 <body>
@@ -171,6 +177,7 @@
       <img id="sidebarAvatar" src="" alt="avatar" />
       <div class="name" id="sidebarName">User</div>
     </div>
+    <button class="logout-btn" id="sidebarLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
   </aside>
 
   <!-- MAIN -->
@@ -180,27 +187,37 @@
       <section class="page active" id="page-home">
         <div class="card">
           <div class="stat-grid">
-            <div class="stat-item"><div class="stat-label">Total Balance</div><div class="stat-value gold" id="totalBalance">$0.00</div></div>
+            <div class="stat-item"><div class="stat-label">Demo Balance</div><div class="stat-value gold" id="totalBalance">$0.00</div></div>
             <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value" id="portfolioValue">$0.00</div></div>
             <div class="stat-item"><div class="stat-label">Today's P/L</div><div class="stat-value" id="todayPL">+$0.00</div></div>
             <div class="stat-item"><div class="stat-label">Coins</div><div class="stat-value" id="coinCount">0</div></div>
           </div>
         </div>
         <div class="card"><div class="card-header"><span class="card-title">Markets</span></div><div id="homeCoinList"></div></div>
+        <!-- Mobile logout button -->
+        <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
+          <button class="btn-logout" id="mobileLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
       </section>
 
       <!-- MARKETS -->
       <section class="page" id="page-markets">
         <div class="card"><div class="card-header"><span class="card-title">Live Prices</span></div><div id="marketCoinList"></div></div>
+        <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
+          <button class="btn-logout" id="mobileLogoutBtn2"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
       </section>
 
       <!-- PORTFOLIO -->
       <section class="page" id="page-portfolio">
         <div class="card"><div class="stat-grid">
-          <div class="stat-item"><div class="stat-label">USD Balance</div><div class="stat-value gold" id="portfolioUsd">$0.00</div></div>
+          <div class="stat-item"><div class="stat-label">Demo Balance</div><div class="stat-value gold" id="portfolioUsd">$0.00</div></div>
           <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value" id="portfolioTotalValue">$0.00</div></div>
         </div></div>
         <div class="card"><div class="card-header"><span class="card-title">Holdings</span></div><div id="portfolioHoldings"></div></div>
+        <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
+          <button class="btn-logout" id="mobileLogoutBtn3"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
       </section>
 
       <!-- DEPOSIT -->
@@ -231,6 +248,9 @@
           <button class="btn btn-primary btn-block" id="submitDepositBtn"><i class="fas fa-paper-plane"></i> Submit Order</button>
         </div>
         <div class="card"><div class="card-header"><span class="card-title">Deposit History</span></div><div id="depositHistoryList"></div></div>
+        <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
+          <button class="btn-logout" id="mobileLogoutBtn4"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
       </section>
 
       <!-- WITHDRAW -->
@@ -265,6 +285,9 @@
           <button class="btn btn-primary btn-block" id="submitWithdrawBtn"><i class="fas fa-paper-plane"></i> Submit Withdrawal Request</button>
         </div>
         <div class="card"><div class="card-header"><span class="card-title">Withdrawal History</span></div><div id="withdrawHistoryList"></div></div>
+        <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
+          <button class="btn-logout" id="mobileLogoutBtn5"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
       </section>
 
       <!-- PROFILE -->
@@ -272,7 +295,7 @@
         <div class="card"><div class="flex" style="gap:16px;"><img id="profileAvatar" src="" style="width:60px;height:60px;border-radius:50%;background:#2f3b4a;" /><div><div id="profileName" style="font-weight:700;font-size:20px;">—</div><div id="profileEmail" class="text-muted" style="font-size:13px;">—</div><div id="profileUid" class="text-muted" style="font-size:11px;">UID: —</div></div></div></div>
         <div class="card">
           <div class="profile-stats">
-            <div class="profile-stat"><div class="label">Balance</div><div class="value gold" id="profileBalance">$0.00</div></div>
+            <div class="profile-stat"><div class="label">Demo Balance</div><div class="value gold" id="profileBalance">$0.00</div></div>
             <div class="profile-stat"><div class="label">Total Holdings</div><div class="value" id="profilePortfolio">$0.00</div></div>
             <div class="profile-stat"><div class="label">Trades</div><div class="value" id="profileTrades">0</div></div>
             <div class="profile-stat"><div class="label">P/L</div><div class="value" id="profilePL">+$0.00</div></div>
@@ -286,6 +309,9 @@
         <div class="card" id="adminPanelCard" style="display:none;border-color:#f0b90b;">
           <div class="card-header"><span class="card-title" style="color:#f0b90b;"><i class="fas fa-shield-alt"></i> Admin Panel</span></div>
           <button class="btn btn-primary btn-block" onclick="navigate('admin')"><i class="fas fa-cog"></i> Open Admin Dashboard</button>
+        </div>
+        <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
+          <button class="btn-logout" id="mobileLogoutBtn6"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
       </section>
 
@@ -301,6 +327,9 @@
           <button class="btn btn-outline btn-sm" data-admin-tab="settings">Settings</button>
         </div>
         <div id="adminContent"><div class="text-muted">Select a tab</div></div>
+        <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
+          <button class="btn-logout" id="mobileLogoutBtn7"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
       </section>
     </div>
 
@@ -312,6 +341,7 @@
       <a data-page="deposit"><i class="fas fa-plus-circle"></i><span>Deposit</span></a>
       <a data-page="withdraw"><i class="fas fa-arrow-right"></i><span>Withdraw</span></a>
       <a data-page="profile"><i class="fas fa-user"></i><span>Profile</span></a>
+      <a id="bottomLogoutBtn" style="color:#ef4444;"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
     </nav>
   </div>
 </div>
@@ -333,7 +363,7 @@
 <script type="module">
   // ---- Firebase imports ----
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getDatabase, ref, set, push, onValue, get, update, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   // ---- Firebase config ----
@@ -400,7 +430,7 @@
       LMX:'#22d3ee', KVR:'#a3e635', XVR:'#fb923c', VRX2:'#ec4899', NVX2:'#8b5cf6',
       SVR:'#06b6d4'
     };
-    return `<div class="coin-logo-svg" style="background:${colors[symbol]||'#1f2937'};color:#0b0e14;">${symbol.slice(0,2)}</div>`;
+    return `<div class="coin-logo-svg" style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;background:${colors[symbol]||'#1f2937'};color:#0b0e14;">${symbol.slice(0,2)}</div>`;
   }
 
   // ---- sound ----
@@ -425,7 +455,7 @@
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     const target = document.getElementById('page-'+page);
     if(target) target.classList.add('active');
-    document.querySelectorAll('.sidebar nav a, .bottom-nav a').forEach(el=>{
+    document.querySelectorAll('.sidebar nav a, .bottom-nav a:not(#bottomLogoutBtn)').forEach(el=>{
       el.classList.toggle('active', el.dataset.page===page);
     });
     if(page==='admin' && !isAdmin) { toast('Admin access required','error'); return; }
@@ -433,7 +463,7 @@
   }
   window.navigate = navigate;
 
-  document.querySelectorAll('.sidebar nav a, .bottom-nav a').forEach(el=>{
+  document.querySelectorAll('.sidebar nav a, .bottom-nav a:not(#bottomLogoutBtn)').forEach(el=>{
     el.addEventListener('click', (e)=>{
       e.preventDefault();
       const page = el.dataset.page;
@@ -469,6 +499,45 @@
     playClickSound();
   };
 
+  // ============================================================
+  //  BALANCE MANAGEMENT (localStorage)
+  // ============================================================
+  function initializeBalance(uid) {
+    const key = 'bcg_balance_' + uid;
+    if (localStorage.getItem(key) === null) {
+      localStorage.setItem(key, '0');
+    }
+    return parseFloat(localStorage.getItem(key)) || 0;
+  }
+
+  function getBalance(uid) {
+    const key = 'bcg_balance_' + uid;
+    return parseFloat(localStorage.getItem(key)) || 0;
+  }
+
+  function setBalance(uid, amount) {
+    const key = 'bcg_balance_' + uid;
+    if (amount < 0) amount = 0;
+    localStorage.setItem(key, amount.toString());
+    return amount;
+  }
+
+  function updateBalanceUI() {
+    if (!currentUser) return;
+    const bal = getBalance(currentUser.uid);
+    const formatted = formatUSD(bal);
+    const els = ['totalBalance', 'portfolioUsd', 'profileBalance'];
+    els.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = formatted;
+    });
+    // also update sidebar mini if needed
+    const portVal = calcPortfolioValue();
+    document.getElementById('portfolioValue').textContent = formatUSD(portVal);
+    document.getElementById('profilePortfolio').textContent = formatUSD(portVal);
+    document.getElementById('portfolioTotalValue').textContent = formatUSD(portVal);
+  }
+
   // ---- login ----
   googleBtn.addEventListener('click', async () => {
     try {
@@ -489,12 +558,56 @@
     }
   });
 
+  // ---- logout ----
+  function performLogout() {
+    signOut(auth).then(() => {
+      // clear local session
+      currentUser = null;
+      userData = null;
+      loginOverlay.style.display = 'flex';
+      document.getElementById('adminPanelCard').style.display = 'none';
+      isAdmin = false;
+      if (priceInterval) clearInterval(priceInterval);
+      toast('Logged out successfully', 'success');
+    }).catch((err) => {
+      toast('Logout error: ' + err.message, 'error');
+    });
+  }
+
+  // attach logout buttons
+  document.querySelectorAll('#sidebarLogoutBtn, #mobileLogoutBtn, #mobileLogoutBtn2, #mobileLogoutBtn3, #mobileLogoutBtn4, #mobileLogoutBtn5, #mobileLogoutBtn6, #mobileLogoutBtn7, #bottomLogoutBtn').forEach(btn => {
+    btn.addEventListener('click', performLogout);
+  });
+
   // ---- auth listener ----
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       currentUser = user;
       loginOverlay.style.display = 'none';
+      
+      // Initialize or load balance from localStorage
+      let balance = initializeBalance(user.uid);
+      // If balance is 0, keep it 0. No free money.
+      
+      // Load user data from Firebase
       await loadUserData(user);
+      // Ensure Firebase balance matches localStorage (priority to localStorage)
+      if (userData) {
+        const fbBalance = userData.virtualBalance || 0;
+        const lsBalance = getBalance(user.uid);
+        // If Firebase has a different balance, update localStorage to match Firebase only if Firebase > 0
+        // But we want localStorage to be the source of truth for starting balance 0.
+        // Actually, we want to use localStorage as the source of truth.
+        if (fbBalance !== lsBalance) {
+          // Update Firebase to match localStorage
+          await update(ref(db, 'users/'+user.uid), { virtualBalance: lsBalance });
+          userData.virtualBalance = lsBalance;
+        } else {
+          // ensure userData has the correct balance
+          userData.virtualBalance = lsBalance;
+        }
+      }
+      
       await loadCoins();
       await loadDeposits();
       await loadWithdrawals();
@@ -502,6 +615,7 @@
       await checkAdmin();
       await loadAllUsers();
       renderAll();
+      updateBalanceUI();
       startPriceEngine();
       if (isAdmin) document.getElementById('adminPanelCard').style.display = 'block';
       toast(`Welcome ${user.displayName || 'Trader'}!`, 'success');
@@ -510,6 +624,11 @@
       currentUser = null;
       userData = null;
       if(priceInterval) clearInterval(priceInterval);
+      // hide admin panel
+      document.getElementById('adminPanelCard').style.display = 'none';
+      // reset UI
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      document.getElementById('page-home').classList.add('active');
     }
   });
 
@@ -519,18 +638,26 @@
     const snap = await get(userRef);
     if(snap.exists()) {
       userData = snap.val();
+      // Ensure virtualBalance matches localStorage
+      const lsBalance = getBalance(user.uid);
+      if (userData.virtualBalance !== lsBalance) {
+        userData.virtualBalance = lsBalance;
+        await update(userRef, { virtualBalance: lsBalance });
+      }
     } else {
       const newUser = {
         displayName: user.displayName || 'Trader',
         email: user.email,
         photoURL: user.photoURL || '',
         createdAt: serverTimestamp(),
-        virtualBalance: 0,
+        virtualBalance: 0, // start at 0
         holdings: {},
         avgBuyPrices: {}
       };
       await set(userRef, newUser);
       userData = newUser;
+      // ensure localStorage is 0
+      setBalance(user.uid, 0);
     }
     if(!userData.holdings) userData.holdings = {};
     if(!userData.avgBuyPrices) userData.avgBuyPrices = {};
@@ -545,7 +672,6 @@
 
   // ---- Complete coin data with all tokens ----
   const ALL_COINS = {
-    // === EXISTING 30 TOKENS ===
     MXR: { price:13.00, change:0, symbol:'MXR', name:'Maxora', min:10, max:20, auto:true, color:'#f0b90b' },
     QTR: { price:27.00, change:0, symbol:'QTR', name:'Quantrara', min:22, max:35, auto:true, color:'#22c55e' },
     VLX: { price:42.00, change:0, symbol:'VLX', name:'Veltrix', min:38, max:50, auto:true, color:'#3b82f6' },
@@ -576,11 +702,7 @@
     LMR: { price:18.40, change:0, symbol:'LMR', name:'Lumora', min:15, max:22, auto:true, color:'#ec4899' },
     ZTA: { price:42.00, change:0, symbol:'ZTA', name:'Zentara', min:38, max:48, auto:true, color:'#f59e0b' },
     FLX: { price:91.00, change:0, symbol:'FLX', name:'Fluxora', min:80, max:100, auto:true, color:'#8b5cf6' },
-    
-    // === NEW: VBTC Token (4th token) ===
     VBTC: { price:98.47, change:0, symbol:'VBTC', name:'VBcoin', min:85.00, max:115.00, auto:true, color:'#f0b90b' },
-    
-    // === 25 ADDITIONAL TOKENS ===
     NXA: { price:4.32, change:0, symbol:'NXA', name:'Nexora', min:3.50, max:5.50, auto:true, color:'#8b5cf6' },
     CLA: { price:7.89, change:0, symbol:'CLA', name:'Colara', min:6.50, max:9.50, auto:true, color:'#06b6d4' },
     KSA: { price:12.45, change:0, symbol:'KSA', name:'Kosa', min:10.00, max:15.00, auto:true, color:'#f59e0b' },
@@ -614,7 +736,6 @@
     const snap = await get(coinsRef);
     if(snap.exists()) {
       coinsData = snap.val();
-      // Add any missing coins from ALL_COINS
       let needsUpdate = false;
       for(const [sym, data] of Object.entries(ALL_COINS)) {
         if(!coinsData[sym]) {
@@ -727,7 +848,7 @@
     area.addEventListener('touchcancel', endPress);
   }
 
-  // ---- status helper functions ----
+  // ---- status helper ----
   function getDisplayStatus(status) {
     const map = {
       'PENDING': 'Pending Review',
@@ -774,10 +895,11 @@
         else if(tab==='settings') renderAdminSettings();
       }
     }
+    updateBalanceUI();
   }
 
   function renderHome() {
-    const balance = userData?.virtualBalance || 0;
+    const balance = getBalance(currentUser?.uid || '');
     const portfolioVal = calcPortfolioValue();
     const total = balance + portfolioVal;
     $('totalBalance').textContent = formatUSD(total);
@@ -832,7 +954,7 @@
   }
 
   function renderPortfolio() {
-    const balance = userData?.virtualBalance || 0;
+    const balance = getBalance(currentUser?.uid || '');
     const portVal = calcPortfolioValue();
     $('portfolioUsd').textContent = formatUSD(balance);
     $('portfolioTotalValue').textContent = formatUSD(portVal);
@@ -861,7 +983,7 @@
   }
 
   function renderProfile() {
-    const balance = userData?.virtualBalance || 0;
+    const balance = getBalance(currentUser?.uid || '');
     const portVal = calcPortfolioValue();
     $('profileBalance').textContent = formatUSD(balance);
     $('profilePortfolio').textContent = formatUSD(portVal);
@@ -944,7 +1066,7 @@
   function openBuyModal(symbol) {
     const coin = coinsData[symbol];
     if(!coin) return toast('Coin not found','error');
-    const balance = userData?.virtualBalance || 0;
+    const balance = getBalance(currentUser?.uid || '');
     const body = `<div class="field"><label>Coin</label><div><strong>${coin.name} (${symbol})</strong></div></div>
       <div class="field"><label>Price</label><div>${formatUSD(coin.price)}</div></div>
       <div class="field"><label>Available Balance</label><div>${formatUSD(balance)}</div></div>
@@ -964,15 +1086,18 @@
     document.getElementById('modalConfirmBuy').addEventListener('click', async ()=>{
       const amt = parseFloat(amountInput.value);
       if(!amt || amt<=0) return toast('Enter valid amount','error');
-      if(amt > (userData?.virtualBalance||0)) return toast('Insufficient balance','error');
+      const currentBalance = getBalance(currentUser.uid);
+      if(amt > currentBalance) return toast('Insufficient balance','error');
       const qty = amt / coin.price;
-      const userRef = ref(db, 'users/'+currentUser.uid);
-      const newBalance = (userData.virtualBalance||0) - amt;
+      const newBalance = currentBalance - amt;
+      setBalance(currentUser.uid, newBalance);
       const newHoldings = {...holdings};
       newHoldings[symbol] = (newHoldings[symbol]||0) + qty;
       const currentAvg = userData.avgBuyPrices?.[symbol] || 0;
       const totalCost = (holdings[symbol]||0) * currentAvg + amt;
       const newAvg = totalCost / newHoldings[symbol];
+      // Update Firebase
+      const userRef = ref(db, 'users/'+currentUser.uid);
       await update(userRef, { virtualBalance: newBalance, holdings: newHoldings, avgBuyPrices: { ...userData.avgBuyPrices, [symbol]: newAvg } });
       const txRef = push(ref(db, 'transactions'));
       await set(txRef, { uid: currentUser.uid, coin: symbol, type: 'BUY', amount: amt, quantity: qty, price: coin.price, timestamp: serverTimestamp() });
@@ -1000,8 +1125,9 @@
     const actions = `<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-danger" id="modalConfirmSell">Sell All</button>`;
     openModal('Sell '+symbol, 'Confirm sale', body, actions);
     document.getElementById('modalConfirmSell').addEventListener('click', async ()=>{
-      const balance = userData?.virtualBalance || 0;
-      const newBalance = balance + value;
+      const currentBalance = getBalance(currentUser.uid);
+      const newBalance = currentBalance + value;
+      setBalance(currentUser.uid, newBalance);
       const newHoldings = {...holdings};
       newHoldings[symbol] = 0;
       const userRef = ref(db, 'users/'+currentUser.uid);
@@ -1033,7 +1159,6 @@
     try {
       const orderId = generateOrderId();
       
-      // Show confirmation modal with status message
       const body = `
         <div class="field"><label>Method</label><div><strong>${method}</strong></div></div>
         <div class="field"><label>Amount</label><div>${formatUSD(amount)}</div></div>
@@ -1047,7 +1172,6 @@
       const actions = `<button class="btn btn-outline" onclick="closeModal()">Close</button>`;
       openModal('Deposit Submitted', 'Order pending review', body, actions);
       
-      // Create deposit record in database
       const depRef = push(ref(db, 'deposits'));
       await set(depRef, {
         orderId, 
@@ -1087,7 +1211,7 @@
     const destination = document.getElementById('withdrawDestination').value.trim();
     if(!destination) return toast('Please enter destination identifier','error');
     
-    const balance = userData?.virtualBalance || 0;
+    const balance = getBalance(currentUser.uid);
     if(amount > balance) return toast('Insufficient balance','error');
     
     const withdrawalId = generateOrderId();
@@ -1226,10 +1350,13 @@
         const user = userSnap.val();
         const newBalance = (user.virtualBalance||0) + dep.amount;
         await update(userRef, { virtualBalance: newBalance });
+        // update localStorage
+        if (dep.uid === currentUser?.uid) {
+          setBalance(dep.uid, newBalance);
+        }
         const txRef = push(ref(db, 'transactions'));
         await set(txRef, { uid: dep.uid, type: 'DEPOSIT', amount: dep.amount, coin: 'USD', timestamp: serverTimestamp() });
         toast(`Deposit ${orderId} confirmed, ${formatUSD(dep.amount)} added`, 'success');
-        // Update local user data if it's the current user
         if(dep.uid === currentUser?.uid) {
           userData.virtualBalance = newBalance;
         }
@@ -1298,6 +1425,9 @@
         const newBalance = (user.virtualBalance||0) - wd.amount;
         if(newBalance < 0) return toast('Insufficient balance for withdrawal','error');
         await update(userRef, { virtualBalance: newBalance });
+        if (wd.uid === currentUser?.uid) {
+          setBalance(wd.uid, newBalance);
+        }
         const txRef = push(ref(db, 'transactions'));
         await set(txRef, { uid: wd.uid, type: 'WITHDRAWAL', amount: wd.amount, coin: 'USD', timestamp: serverTimestamp() });
         toast(`Withdrawal ${withdrawalId} confirmed, ${formatUSD(wd.amount)} deducted`, 'success');
@@ -1572,7 +1702,7 @@
   console.log('📊 Total coins available: ' + Object.keys(ALL_COINS).length);
   console.log('💰 VBTC (VBcoin) added at $98.47');
   console.log('📈 25+ new tokens added with decimal price support');
-  console.log('🔒 Balance starts at $0.00 for new accounts');
+  console.log('🔒 Starting balance = $0.00 (localStorage)');
   console.log('📝 Deposit status: Pending Review → Confirmed/Cancelled');
   console.log('ℹ️ Long-press the empty area below transactions for 5 seconds to access admin');
 </script>
