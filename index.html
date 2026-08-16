@@ -436,17 +436,46 @@
         <div class="card">
           <h3 style="margin-bottom:4px;">Deposit Virtual Credits</h3>
           <div class="text-muted" style="margin-bottom:12px;font-size:13px;">Request credits — admin approval required</div>
+          
+          <!-- PAYMENT INFORMATION - VISIBLE TO USER -->
+          <div style="margin-bottom:16px;background:#0d141e;border-radius:12px;padding:16px;border:1px solid #1f2937;">
+            <h4 style="color:#f0b90b;margin-bottom:8px;"><i class="fas fa-credit-card"></i> Payment Information</h4>
+            
+            <div style="margin-bottom:12px;padding:10px;background:#1a1f2a;border-radius:8px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+                <div>
+                  <div style="font-weight:600;font-size:14px;">Binance Pay ID</div>
+                  <div style="font-family:monospace;font-size:15px;color:#b0c4d9;">894307667</div>
+                </div>
+                <button class="btn btn-sm btn-primary copy-payment-btn" data-copy="894307667"><i class="fas fa-copy"></i> Copy ID</button>
+              </div>
+            </div>
+            
+            <div style="padding:10px;background:#1a1f2a;border-radius:8px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+                <div>
+                  <div style="font-weight:600;font-size:14px;">USDT (TRC20)</div>
+                  <div style="font-family:monospace;font-size:15px;color:#b0c4d9;word-break:break-all;">TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7</div>
+                </div>
+                <button class="btn btn-sm btn-primary copy-payment-btn" data-copy="TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7"><i class="fas fa-copy"></i> Copy Address</button>
+              </div>
+            </div>
+            <div style="margin-top:8px;font-size:12px;color:#7f92a8;"><i class="fas fa-info-circle"></i> Copy the payment details above and complete your payment, then submit the request below.</div>
+          </div>
+          
           <div class="field">
             <label>Amount (USD)</label>
             <input type="number" id="depositAmount" placeholder="Enter amount (min $1)" min="1" step="0.01" />
           </div>
           <div class="field" id="methodSelector" style="display:none;">
-            <label>Payment Methods</label>
-            <div id="depositPaymentMethods"></div>
+            <label>Payment Method</label>
+            <div id="depositPaymentMethods">
+              <!-- Payment methods will be rendered here -->
+            </div>
             <input type="hidden" id="selectedMethod" value="" />
           </div>
           <div class="field" id="orderIdField" style="display:none;">
-            <label>Payment Order ID / Transaction ID</label>
+            <label>Payment Order ID / Transaction ID <span style="color:#ef4444;">*</span></label>
             <input type="text" id="depositOrderId" placeholder="Enter your payment order ID" />
             <div style="font-size:12px;color:#7f92a8;margin-top:4px;">Required — Enter the order ID from your payment</div>
           </div>
@@ -1340,6 +1369,24 @@
       });
     });
   }
+
+  // ---- Copy buttons for payment info (static in HTML) ----
+  document.querySelectorAll('.copy-payment-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const text = btn.dataset.copy;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => toast('Copied successfully', 'success'));
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        toast('Copied successfully', 'success');
+      }
+    });
+  });
 
   // ---- Deposit Amount Change ----
   document.getElementById('depositAmount').addEventListener('input', function() {
