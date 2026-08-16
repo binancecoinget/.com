@@ -77,7 +77,9 @@
     .btn-primary { background:#f0b90b; color:#0b0e14; }
     .btn-primary:hover { background:#d9a70a; transform:scale(1.02); }
     .btn-success { background:#22c55e; color:#0b0e14; }
+    .btn-success:hover { background:#16a34a; }
     .btn-danger { background:#ef4444; color:#fff; }
+    .btn-danger:hover { background:#dc2626; }
     .btn-outline { background:transparent; border:1px solid #2f3b4a; }
     .btn-sm { padding:4px 10px; font-size:12px; }
     .btn-block { width:100%; justify-content:center; }
@@ -87,7 +89,7 @@
     /* === MODAL === */
     .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:100; }
     .modal-overlay.open { display:flex; }
-    .modal { background:#131b24; border-radius:24px; max-width:440px; width:92%; padding:24px; border:1px solid #2a3440; max-height:92vh; overflow-y:auto; }
+    .modal { background:#131b24; border-radius:24px; max-width:480px; width:92%; padding:24px; border:1px solid #2a3440; max-height:92vh; overflow-y:auto; }
     .modal h3 { font-size:20px; margin-bottom:6px; }
     .modal .sub { color:#7f92a8; margin-bottom:16px; font-size:14px; }
     .modal .field { margin-bottom:14px; }
@@ -100,6 +102,9 @@
     /* === BADGES === */
     .badge { background:#1f2937; padding:3px 10px; border-radius:40px; font-size:11px; font-weight:600; }
     .badge-pending { background:#b45309; color:#fff; }
+    .badge-approved { background:#22c55e; color:#0b0e14; }
+    .badge-rejected { background:#ef4444; color:#fff; }
+    .badge-completed { background:#22c55e; color:#0b0e14; }
     .badge-confirmed { background:#22c55e; color:#0b0e14; }
     .badge-cancelled { background:#ef4444; color:#fff; }
     .badge-failed { background:#dc2626; color:#fff; }
@@ -280,6 +285,11 @@
       .admin-panel-body { padding: 12px 16px 30px; }
       .admin-stat-grid { grid-template-columns: 1fr 1fr; }
     }
+
+    /* Notification */
+    .notification-item { background:#0d141e; border-radius:10px; padding:10px 14px; margin-bottom:6px; border-left:3px solid #f0b90b; font-size:13px; }
+    .notification-item .time { font-size:11px; color:#7f92a8; }
+    .notification-item .badge { font-size:10px; }
   </style>
 </head>
 <body>
@@ -530,7 +540,7 @@
       <!-- DEPOSIT -->
       <section class="page" id="page-deposit">
         <div class="card">
-          <h3 style="margin-bottom:4px;">Add Virtual Credits</h3>
+          <h3 style="margin-bottom:4px;">Deposit Virtual Credits</h3>
           <div class="text-muted" style="margin-bottom:12px;font-size:13px;">Request credits — admin approval required</div>
           <div class="field">
             <label>Amount (USD)</label>
@@ -552,7 +562,7 @@
             </div>
             <input type="hidden" id="selectedMethod" value="" />
           </div>
-          <button class="btn btn-primary btn-block" id="submitDepositBtn"><i class="fas fa-paper-plane"></i> Submit Order</button>
+          <button class="btn btn-primary btn-block" id="submitDepositBtn"><i class="fas fa-paper-plane"></i> Submit Deposit Request</button>
         </div>
         <div class="card"><div class="card-header"><span class="card-title">Deposit History</span></div><div id="depositHistoryList"></div></div>
         <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
@@ -565,6 +575,10 @@
         <div class="card">
           <h3 style="margin-bottom:4px;">Withdraw Virtual Credits</h3>
           <div class="text-muted" style="margin-bottom:12px;font-size:13px;">Request withdrawal — admin approval required</div>
+          <div class="field">
+            <label>Available Balance</label>
+            <div id="withdrawBalanceDisplay" class="text-gold" style="font-size:18px;font-weight:700;">$0.00</div>
+          </div>
           <div class="field">
             <label>Amount (USD)</label>
             <input type="number" id="withdrawAmount" placeholder="Enter amount" min="1" step="0.01" />
@@ -610,6 +624,7 @@
         </div>
         <div class="card"><div class="card-header"><span class="card-title">Holdings</span></div><div id="profileHoldings"></div></div>
         <div class="card"><div class="card-header"><span class="card-title">Transactions</span></div><div id="profileTransactions"></div></div>
+        <div class="card"><div class="card-header"><span class="card-title">Notifications</span></div><div id="profileNotifications"></div></div>
         <div class="card" style="border-color:transparent;background:transparent;padding:0;margin:0;">
           <div class="long-press-area" id="adminEntryArea">⏎</div>
         </div>
@@ -690,14 +705,16 @@
       <div class="admin-stat-card"><div class="num" id="adminTotalTrades">0</div><div class="label">Total Trades</div></div>
       <div class="admin-stat-card"><div class="num" id="adminPendingDeposits">0</div><div class="label">Pending Deposits</div></div>
       <div class="admin-stat-card"><div class="num" id="adminPendingWithdrawals">0</div><div class="label">Pending Withdrawals</div></div>
+      <div class="admin-stat-card"><div class="num" id="adminActiveCoins">0</div><div class="label">Active Coins</div></div>
     </div>
     <div class="admin-tab-bar" id="adminPanelTabs">
       <button class="btn btn-primary btn-sm" data-admin-tab="dashboard">Dashboard</button>
+      <button class="btn btn-outline btn-sm" data-admin-tab="deposits">Deposits</button>
+      <button class="btn btn-outline btn-sm" data-admin-tab="withdrawals">Withdrawals</button>
       <button class="btn btn-outline btn-sm" data-admin-tab="users">Users</button>
-      <button class="btn btn-outline btn-sm" data-admin-tab="trading">Trading</button>
+      <button class="btn btn-outline btn-sm" data-admin-tab="coins">Coins</button>
       <button class="btn btn-outline btn-sm" data-admin-tab="transactions">Transactions</button>
-      <button class="btn btn-outline btn-sm" data-admin-tab="controls">Controls</button>
-      <button class="btn btn-outline btn-sm" data-admin-tab="security">Security</button>
+      <button class="btn btn-outline btn-sm" data-admin-tab="settings">Settings</button>
     </div>
     <div class="admin-tab-content" id="adminPanelContent">
       <div class="text-muted">Loading admin dashboard...</div>
@@ -785,7 +802,12 @@
   function uid() { return currentUser?.uid || 'anon'; }
   function formatUSD(v) { return '$'+Number(v).toFixed(2); }
   function formatNum(v) { return Number(v).toFixed(4); }
-  function generateOrderId() { return 'BCG-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substring(2,6).toUpperCase(); }
+  function generateOrderId(prefix) {
+    const date = new Date();
+    const ds = date.getFullYear().toString() + String(date.getMonth()+1).padStart(2,'0') + String(date.getDate()).padStart(2,'0');
+    const rand = String(Math.floor(Math.random() * 10000)).padStart(4,'0');
+    return prefix + '-' + ds + '-' + rand;
+  }
   
   function getCoinLogo(symbol) {
     const colors = {
@@ -898,7 +920,7 @@
     if (!currentUser) return;
     const bal = getBalance(currentUser.uid);
     const formatted = formatUSD(bal);
-    const els = ['totalBalance', 'portfolioUsd', 'profileBalance'];
+    const els = ['totalBalance', 'portfolioUsd', 'profileBalance', 'withdrawBalanceDisplay'];
     els.forEach(id => {
       const el = document.getElementById(id);
       if (el) el.textContent = formatted;
@@ -1032,62 +1054,62 @@
 
   // ---- Complete coin data with all tokens ----
   const ALL_COINS = {
-    MXR: { price:13.00, change:0, symbol:'MXR', name:'Maxora', min:10, max:20, auto:true, color:'#f0b90b' },
-    QTR: { price:27.00, change:0, symbol:'QTR', name:'Quantrara', min:22, max:35, auto:true, color:'#22c55e' },
-    VLX: { price:42.00, change:0, symbol:'VLX', name:'Veltrix', min:38, max:50, auto:true, color:'#3b82f6' },
-    AVQ: { price:8.50, change:0, symbol:'AVQ', name:'Avenqor', min:6, max:12, auto:true, color:'#a855f7' },
-    ZVT: { price:65.00, change:0, symbol:'ZVT', name:'Zorvanta', min:55, max:75, auto:true, color:'#ec4899' },
-    NXL: { price:18.00, change:0, symbol:'NXL', name:'Nexalune', min:14, max:22, auto:true, color:'#f59e0b' },
-    ORV: { price:31.00, change:0, symbol:'ORV', name:'Orvion', min:26, max:38, auto:true, color:'#06b6d4' },
-    KVX: { price:9.20, change:0, symbol:'KVX', name:'Kryvexa', min:7, max:12, auto:true, color:'#8b5cf6' },
-    TVR: { price:55.00, change:0, symbol:'TVR', name:'Talveron', min:48, max:62, auto:true, color:'#ef4444' },
-    LMT: { price:24.00, change:0, symbol:'LMT', name:'Lumetra', min:20, max:28, auto:true, color:'#14b8a6' },
-    VYR: { price:47.00, change:0, symbol:'VYR', name:'Veyrona', min:40, max:55, auto:true, color:'#f472b6' },
-    AXT: { price:11.50, change:0, symbol:'AXT', name:'Axentara', min:9, max:14, auto:true, color:'#6366f1' },
-    NVX: { price:73.00, change:0, symbol:'NVX', name:'Novyrex', min:65, max:85, auto:true, color:'#22d3ee' },
-    QVX: { price:15.00, change:0, symbol:'QVX', name:'Quorvex', min:12, max:18, auto:true, color:'#fb923c' },
-    ELV: { price:39.00, change:0, symbol:'ELV', name:'Elvaris', min:34, max:45, auto:true, color:'#a3e635' },
-    ZTH: { price:58.00, change:0, symbol:'ZTH', name:'Zenthor', min:52, max:65, auto:true, color:'#d946ef' },
-    MRX: { price:7.80, change:0, symbol:'MRX', name:'Marovex', min:6, max:10, auto:true, color:'#f43f5e' },
-    VLT: { price:33.00, change:0, symbol:'VLT', name:'Virelta', min:28, max:38, auto:true, color:'#2dd4bf' },
-    OXV: { price:19.00, change:0, symbol:'OXV', name:'Oxyvara', min:16, max:22, auto:true, color:'#facc15' },
-    RVT: { price:44.00, change:0, symbol:'RVT', name:'Raventra', min:38, max:50, auto:true, color:'#60a5fa' },
-    CYV: { price:6.20, change:0, symbol:'CYV', name:'Calyvex', min:5, max:8, auto:true, color:'#34d399' },
-    NX2: { price:25.00, change:0, symbol:'NX2', name:'Nexoria', min:20, max:30, auto:true, color:'#f0b90b' },
-    VMR: { price:36.00, change:0, symbol:'VMR', name:'Velmora', min:30, max:42, auto:true, color:'#22c55e' },
-    QVA: { price:49.00, change:0, symbol:'QVA', name:'Qelvanta', min:42, max:56, auto:true, color:'#3b82f6' },
-    TVX: { price:14.50, change:0, symbol:'TVX', name:'Torvexa', min:12, max:17, auto:true, color:'#a855f7' },
-    AVX: { price:28.00, change:0, symbol:'AVX', name:'Aurevex', min:24, max:32, auto:true, color:'#ec4899' },
-    ZYR: { price:61.00, change:0, symbol:'ZYR', name:'Zyvora', min:55, max:70, auto:true, color:'#f59e0b' },
-    LMR: { price:18.40, change:0, symbol:'LMR', name:'Lumora', min:15, max:22, auto:true, color:'#ec4899' },
-    ZTA: { price:42.00, change:0, symbol:'ZTA', name:'Zentara', min:38, max:48, auto:true, color:'#f59e0b' },
-    FLX: { price:91.00, change:0, symbol:'FLX', name:'Fluxora', min:80, max:100, auto:true, color:'#8b5cf6' },
-    VBTC: { price:98.47, change:0, symbol:'VBTC', name:'VBcoin', min:85.00, max:115.00, auto:true, color:'#f0b90b' },
-    NXA: { price:4.32, change:0, symbol:'NXA', name:'Nexora', min:3.50, max:5.50, auto:true, color:'#8b5cf6' },
-    CLA: { price:7.89, change:0, symbol:'CLA', name:'Colara', min:6.50, max:9.50, auto:true, color:'#06b6d4' },
-    KSA: { price:12.45, change:0, symbol:'KSA', name:'Kosa', min:10.00, max:15.00, auto:true, color:'#f59e0b' },
-    SKA: { price:3.76, change:0, symbol:'SKA', name:'Seka', min:2.80, max:4.80, auto:true, color:'#ec4899' },
-    SGA: { price:9.23, change:0, symbol:'SGA', name:'Siga', min:7.80, max:11.00, auto:true, color:'#22c55e' },
-    RSN: { price:18.90, change:0, symbol:'RSN', name:'Resona', min:15.00, max:22.00, auto:true, color:'#3b82f6' },
-    PRK: { price:5.67, change:0, symbol:'PRK', name:'Porksa', min:4.50, max:7.00, auto:true, color:'#f472b6' },
-    VLR: { price:24.30, change:0, symbol:'VLR', name:'Velora', min:20.00, max:28.00, auto:true, color:'#14b8a6' },
-    ZCR: { price:31.80, change:0, symbol:'ZCR', name:'Zecora', min:28.00, max:36.00, auto:true, color:'#a855f7' },
-    KVX2: { price:16.55, change:0, symbol:'KVX2', name:'Kavex', min:14.00, max:19.00, auto:true, color:'#ef4444' },
-    MRV: { price:22.40, change:0, symbol:'MRV', name:'Morvix', min:19.00, max:26.00, auto:true, color:'#f0b90b' },
-    NXV: { price:8.15, change:0, symbol:'NXV', name:'Nexvia', min:6.80, max:9.80, auto:true, color:'#2dd4bf' },
-    SLV: { price:11.72, change:0, symbol:'SLV', name:'Solvra', min:9.50, max:14.00, auto:true, color:'#60a5fa' },
-    KRV: { price:27.60, change:0, symbol:'KRV', name:'Korvex', min:23.00, max:32.00, auto:true, color:'#facc15' },
-    VRX: { price:6.34, change:0, symbol:'VRX', name:'Virexa', min:5.20, max:7.80, auto:true, color:'#d946ef' },
-    ZNR: { price:19.85, change:0, symbol:'ZNR', name:'Zenora', min:16.00, max:24.00, auto:true, color:'#34d399' },
-    QVX2: { price:13.28, change:0, symbol:'QVX2', name:'Qevix', min:11.00, max:16.00, auto:true, color:'#6366f1' },
-    RVR: { price:4.91, change:0, symbol:'RVR', name:'Ravora', min:3.80, max:6.00, auto:true, color:'#f43f5e' },
-    DXR: { price:29.14, change:0, symbol:'DXR', name:'Dexora', min:25.00, max:34.00, auto:true, color:'#f59e0b' },
-    LMX: { price:15.37, change:0, symbol:'LMX', name:'Lumexa', min:12.50, max:18.50, auto:true, color:'#22d3ee' },
-    KVR: { price:21.68, change:0, symbol:'KVR', name:'Kovira', min:18.00, max:25.00, auto:true, color:'#a3e635' },
-    XVR: { price:7.52, change:0, symbol:'XVR', name:'Xavora', min:6.00, max:9.00, auto:true, color:'#fb923c' },
-    VRX2: { price:33.90, change:0, symbol:'VRX2', name:'Verixa', min:29.00, max:39.00, auto:true, color:'#ec4899' },
-    NVX2: { price:10.86, change:0, symbol:'NVX2', name:'Novexa', min:8.50, max:13.00, auto:true, color:'#8b5cf6' },
-    SVR: { price:17.43, change:0, symbol:'SVR', name:'Sevora', min:14.50, max:20.50, auto:true, color:'#06b6d4' }
+    MXR: { price:13.00, change:0, symbol:'MXR', name:'Maxora', min:10, max:20, auto:true, status:'active', color:'#f0b90b' },
+    QTR: { price:27.00, change:0, symbol:'QTR', name:'Quantrara', min:22, max:35, auto:true, status:'active', color:'#22c55e' },
+    VLX: { price:42.00, change:0, symbol:'VLX', name:'Veltrix', min:38, max:50, auto:true, status:'active', color:'#3b82f6' },
+    AVQ: { price:8.50, change:0, symbol:'AVQ', name:'Avenqor', min:6, max:12, auto:true, status:'active', color:'#a855f7' },
+    ZVT: { price:65.00, change:0, symbol:'ZVT', name:'Zorvanta', min:55, max:75, auto:true, status:'active', color:'#ec4899' },
+    NXL: { price:18.00, change:0, symbol:'NXL', name:'Nexalune', min:14, max:22, auto:true, status:'active', color:'#f59e0b' },
+    ORV: { price:31.00, change:0, symbol:'ORV', name:'Orvion', min:26, max:38, auto:true, status:'active', color:'#06b6d4' },
+    KVX: { price:9.20, change:0, symbol:'KVX', name:'Kryvexa', min:7, max:12, auto:true, status:'active', color:'#8b5cf6' },
+    TVR: { price:55.00, change:0, symbol:'TVR', name:'Talveron', min:48, max:62, auto:true, status:'active', color:'#ef4444' },
+    LMT: { price:24.00, change:0, symbol:'LMT', name:'Lumetra', min:20, max:28, auto:true, status:'active', color:'#14b8a6' },
+    VYR: { price:47.00, change:0, symbol:'VYR', name:'Veyrona', min:40, max:55, auto:true, status:'active', color:'#f472b6' },
+    AXT: { price:11.50, change:0, symbol:'AXT', name:'Axentara', min:9, max:14, auto:true, status:'active', color:'#6366f1' },
+    NVX: { price:73.00, change:0, symbol:'NVX', name:'Novyrex', min:65, max:85, auto:true, status:'active', color:'#22d3ee' },
+    QVX: { price:15.00, change:0, symbol:'QVX', name:'Quorvex', min:12, max:18, auto:true, status:'active', color:'#fb923c' },
+    ELV: { price:39.00, change:0, symbol:'ELV', name:'Elvaris', min:34, max:45, auto:true, status:'active', color:'#a3e635' },
+    ZTH: { price:58.00, change:0, symbol:'ZTH', name:'Zenthor', min:52, max:65, auto:true, status:'active', color:'#d946ef' },
+    MRX: { price:7.80, change:0, symbol:'MRX', name:'Marovex', min:6, max:10, auto:true, status:'active', color:'#f43f5e' },
+    VLT: { price:33.00, change:0, symbol:'VLT', name:'Virelta', min:28, max:38, auto:true, status:'active', color:'#2dd4bf' },
+    OXV: { price:19.00, change:0, symbol:'OXV', name:'Oxyvara', min:16, max:22, auto:true, status:'active', color:'#facc15' },
+    RVT: { price:44.00, change:0, symbol:'RVT', name:'Raventra', min:38, max:50, auto:true, status:'active', color:'#60a5fa' },
+    CYV: { price:6.20, change:0, symbol:'CYV', name:'Calyvex', min:5, max:8, auto:true, status:'active', color:'#34d399' },
+    NX2: { price:25.00, change:0, symbol:'NX2', name:'Nexoria', min:20, max:30, auto:true, status:'active', color:'#f0b90b' },
+    VMR: { price:36.00, change:0, symbol:'VMR', name:'Velmora', min:30, max:42, auto:true, status:'active', color:'#22c55e' },
+    QVA: { price:49.00, change:0, symbol:'QVA', name:'Qelvanta', min:42, max:56, auto:true, status:'active', color:'#3b82f6' },
+    TVX: { price:14.50, change:0, symbol:'TVX', name:'Torvexa', min:12, max:17, auto:true, status:'active', color:'#a855f7' },
+    AVX: { price:28.00, change:0, symbol:'AVX', name:'Aurevex', min:24, max:32, auto:true, status:'active', color:'#ec4899' },
+    ZYR: { price:61.00, change:0, symbol:'ZYR', name:'Zyvora', min:55, max:70, auto:true, status:'active', color:'#f59e0b' },
+    LMR: { price:18.40, change:0, symbol:'LMR', name:'Lumora', min:15, max:22, auto:true, status:'active', color:'#ec4899' },
+    ZTA: { price:42.00, change:0, symbol:'ZTA', name:'Zentara', min:38, max:48, auto:true, status:'active', color:'#f59e0b' },
+    FLX: { price:91.00, change:0, symbol:'FLX', name:'Fluxora', min:80, max:100, auto:true, status:'active', color:'#8b5cf6' },
+    VBTC: { price:98.47, change:0, symbol:'VBTC', name:'VBcoin', min:85.00, max:115.00, auto:true, status:'active', color:'#f0b90b' },
+    NXA: { price:4.32, change:0, symbol:'NXA', name:'Nexora', min:3.50, max:5.50, auto:true, status:'active', color:'#8b5cf6' },
+    CLA: { price:7.89, change:0, symbol:'CLA', name:'Colara', min:6.50, max:9.50, auto:true, status:'active', color:'#06b6d4' },
+    KSA: { price:12.45, change:0, symbol:'KSA', name:'Kosa', min:10.00, max:15.00, auto:true, status:'active', color:'#f59e0b' },
+    SKA: { price:3.76, change:0, symbol:'SKA', name:'Seka', min:2.80, max:4.80, auto:true, status:'active', color:'#ec4899' },
+    SGA: { price:9.23, change:0, symbol:'SGA', name:'Siga', min:7.80, max:11.00, auto:true, status:'active', color:'#22c55e' },
+    RSN: { price:18.90, change:0, symbol:'RSN', name:'Resona', min:15.00, max:22.00, auto:true, status:'active', color:'#3b82f6' },
+    PRK: { price:5.67, change:0, symbol:'PRK', name:'Porksa', min:4.50, max:7.00, auto:true, status:'active', color:'#f472b6' },
+    VLR: { price:24.30, change:0, symbol:'VLR', name:'Velora', min:20.00, max:28.00, auto:true, status:'active', color:'#14b8a6' },
+    ZCR: { price:31.80, change:0, symbol:'ZCR', name:'Zecora', min:28.00, max:36.00, auto:true, status:'active', color:'#a855f7' },
+    KVX2: { price:16.55, change:0, symbol:'KVX2', name:'Kavex', min:14.00, max:19.00, auto:true, status:'active', color:'#ef4444' },
+    MRV: { price:22.40, change:0, symbol:'MRV', name:'Morvix', min:19.00, max:26.00, auto:true, status:'active', color:'#f0b90b' },
+    NXV: { price:8.15, change:0, symbol:'NXV', name:'Nexvia', min:6.80, max:9.80, auto:true, status:'active', color:'#2dd4bf' },
+    SLV: { price:11.72, change:0, symbol:'SLV', name:'Solvra', min:9.50, max:14.00, auto:true, status:'active', color:'#60a5fa' },
+    KRV: { price:27.60, change:0, symbol:'KRV', name:'Korvex', min:23.00, max:32.00, auto:true, status:'active', color:'#facc15' },
+    VRX: { price:6.34, change:0, symbol:'VRX', name:'Virexa', min:5.20, max:7.80, auto:true, status:'active', color:'#d946ef' },
+    ZNR: { price:19.85, change:0, symbol:'ZNR', name:'Zenora', min:16.00, max:24.00, auto:true, status:'active', color:'#34d399' },
+    QVX2: { price:13.28, change:0, symbol:'QVX2', name:'Qevix', min:11.00, max:16.00, auto:true, status:'active', color:'#6366f1' },
+    RVR: { price:4.91, change:0, symbol:'RVR', name:'Ravora', min:3.80, max:6.00, auto:true, status:'active', color:'#f43f5e' },
+    DXR: { price:29.14, change:0, symbol:'DXR', name:'Dexora', min:25.00, max:34.00, auto:true, status:'active', color:'#f59e0b' },
+    LMX: { price:15.37, change:0, symbol:'LMX', name:'Lumexa', min:12.50, max:18.50, auto:true, status:'active', color:'#22d3ee' },
+    KVR: { price:21.68, change:0, symbol:'KVR', name:'Kovira', min:18.00, max:25.00, auto:true, status:'active', color:'#a3e635' },
+    XVR: { price:7.52, change:0, symbol:'XVR', name:'Xavora', min:6.00, max:9.00, auto:true, status:'active', color:'#fb923c' },
+    VRX2: { price:33.90, change:0, symbol:'VRX2', name:'Verixa', min:29.00, max:39.00, auto:true, status:'active', color:'#ec4899' },
+    NVX2: { price:10.86, change:0, symbol:'NVX2', name:'Novexa', min:8.50, max:13.00, auto:true, status:'active', color:'#8b5cf6' },
+    SVR: { price:17.43, change:0, symbol:'SVR', name:'Sevora', min:14.50, max:20.50, auto:true, status:'active', color:'#06b6d4' }
   };
 
   // ---- load coins ----
@@ -1212,11 +1234,12 @@
   function getDisplayStatus(status) {
     const map = {
       'PENDING': 'Pending Review',
-      'APPROVED': 'Confirmed',
-      'REJECTED': 'Cancelled',
-      'CONFIRMED': 'Confirmed',
+      'APPROVED': 'Approved',
+      'REJECTED': 'Rejected',
+      'CONFIRMED': 'Completed',
       'CANCELLED': 'Cancelled',
-      'FAILED': 'Failed'
+      'FAILED': 'Failed',
+      'COMPLETED': 'Completed'
     };
     return map[status] || status || 'Pending Review';
   }
@@ -1225,9 +1248,10 @@
     const s = status?.toUpperCase() || 'PENDING';
     const map = {
       'PENDING': 'badge-pending',
-      'APPROVED': 'badge-confirmed',
-      'CONFIRMED': 'badge-confirmed',
-      'REJECTED': 'badge-cancelled',
+      'APPROVED': 'badge-approved',
+      'REJECTED': 'badge-rejected',
+      'CONFIRMED': 'badge-completed',
+      'COMPLETED': 'badge-completed',
       'CANCELLED': 'badge-cancelled',
       'FAILED': 'badge-failed'
     };
@@ -1242,6 +1266,7 @@
     renderProfile();
     renderDepositHistory();
     renderWithdrawHistory();
+    renderNotifications();
     if(isAdmin) {
       const activeTab = document.querySelector('[data-admin-tab].btn-primary');
       if(activeTab) {
@@ -1256,6 +1281,7 @@
       }
     }
     updateBalanceUI();
+    updateAdminStats();
   }
 
   function renderHome() {
@@ -1269,7 +1295,8 @@
     $('coinCount').textContent = Object.keys(coinsData).length;
 
     let html = '';
-    const sorted = Object.entries(coinsData).slice(0, 12);
+    const activeCoins = Object.entries(coinsData).filter(([sym, coin]) => coin.status !== 'disabled');
+    const sorted = activeCoins.slice(0, 12);
     for(const [sym, coin] of sorted) {
       const change = coin.change || 0;
       const cls = change>=0?'up':'down';
@@ -1288,7 +1315,8 @@
 
   function renderMarkets() {
     let html = '';
-    const sorted = Object.entries(coinsData).sort((a,b) => a[1].name.localeCompare(b[1].name));
+    const activeCoins = Object.entries(coinsData).filter(([sym, coin]) => coin.status !== 'disabled');
+    const sorted = activeCoins.sort((a,b) => a[1].name.localeCompare(b[1].name));
     for(const [sym, coin] of sorted) {
       const change = coin.change || 0;
       const cls = change>=0?'up':'down';
@@ -1347,7 +1375,7 @@
     const portVal = calcPortfolioValue();
     $('profileBalance').textContent = formatUSD(balance);
     $('profilePortfolio').textContent = formatUSD(portVal);
-    const trades = allTransactions.filter(t=>t.uid===currentUser?.uid).length;
+    const trades = allTransactions.filter(t=>t.uid===currentUser?.uid && (t.type==='BUY'||t.type==='SELL')).length;
     $('profileTrades').textContent = trades;
     $('profilePL').textContent = '+$0.00';
 
@@ -1361,15 +1389,17 @@
     $('profileHoldings').innerHTML = html || '<div class="text-muted">No holdings</div>';
 
     let txHtml = '';
-    const userTxs = allTransactions.filter(t=>t.uid===currentUser?.uid).slice(-10).reverse();
+    const userTxs = allTransactions.filter(t=>t.uid===currentUser?.uid).slice(-15).reverse();
     userTxs.forEach(t=>{
-      txHtml += `<div class="flex-between tx-item"><span>${t.type}</span><span>${t.coin||''}</span><span>${formatUSD(t.amount||0)}</span><span class="text-muted" style="font-size:11px;">${new Date(t.timestamp||Date.now()).toLocaleDateString()}</span></div>`;
+      const status = t.status || 'COMPLETED';
+      const badgeClass = getBadgeClass(status);
+      txHtml += `<div class="flex-between tx-item"><span>${t.type}</span><span>${t.coin||''}</span><span>${formatUSD(t.amount||0)}</span><span class="badge ${badgeClass}">${getDisplayStatus(status)}</span><span class="text-muted" style="font-size:11px;">${new Date(t.timestamp||Date.now()).toLocaleDateString()}</span></div>`;
     });
     $('profileTransactions').innerHTML = txHtml || '<div class="text-muted">No transactions</div>';
   }
 
   function renderDepositHistory() {
-    const userDeps = allDeposits.filter(d => d.uid === currentUser?.uid).slice(-10).reverse();
+    const userDeps = allDeposits.filter(d => d.uid === currentUser?.uid).slice(-15).reverse();
     let html = '';
     if(userDeps.length === 0) {
       html = '<div class="text-muted">No deposits yet</div>';
@@ -1379,7 +1409,7 @@
         const displayStatus = getDisplayStatus(status);
         const badgeClass = getBadgeClass(status);
         html += `<div class="flex-between deposit-item">
-          <span style="font-size:12px;">${d.orderId || '—'}</span>
+          <span style="font-size:12px;">${d.requestId || d.orderId || '—'}</span>
           <span>${formatUSD(d.amount)}</span>
           <span class="badge ${badgeClass}">${displayStatus}</span>
           <span class="text-muted" style="font-size:11px;">${new Date(d.createdAt || Date.now()).toLocaleDateString()}</span>
@@ -1390,7 +1420,7 @@
   }
 
   function renderWithdrawHistory() {
-    const userWds = allWithdrawals.filter(d => d.uid === currentUser?.uid).slice(-10).reverse();
+    const userWds = allWithdrawals.filter(d => d.uid === currentUser?.uid).slice(-15).reverse();
     let html = '';
     if(userWds.length === 0) {
       html = '<div class="text-muted">No withdrawals yet</div>';
@@ -1400,7 +1430,7 @@
         const displayStatus = getDisplayStatus(status);
         const badgeClass = getBadgeClass(status);
         html += `<div class="flex-between deposit-item">
-          <span style="font-size:12px;">${d.withdrawalId || '—'}</span>
+          <span style="font-size:12px;">${d.requestId || d.withdrawalId || '—'}</span>
           <span>${formatUSD(d.amount)}</span>
           <span class="badge ${badgeClass}">${displayStatus}</span>
           <span class="text-muted" style="font-size:11px;">${new Date(d.createdAt || Date.now()).toLocaleDateString()}</span>
@@ -1408,6 +1438,25 @@
       });
     }
     document.getElementById('withdrawHistoryList').innerHTML = html;
+  }
+
+  function renderNotifications() {
+    const container = document.getElementById('profileNotifications');
+    if (!container) return;
+    const notifs = getNotifications(currentUser?.uid || '');
+    if (notifs.length === 0) {
+      container.innerHTML = '<div class="text-muted">No notifications</div>';
+      return;
+    }
+    let html = '';
+    notifs.slice(-10).reverse().forEach(n => {
+      html += `<div class="notification-item">
+        <div>${n.message}</div>
+        <div class="flex-between"><span class="time">${new Date(n.timestamp || Date.now()).toLocaleString()}</span>
+        <span class="badge ${n.read ? 'badge-confirmed' : 'badge-pending'}">${n.read ? 'Read' : 'New'}</span></div>
+      </div>`;
+    });
+    container.innerHTML = html;
   }
 
   // ---- deposit amount change handler ----
@@ -1426,6 +1475,7 @@
   function openBuyModal(symbol) {
     const coin = coinsData[symbol];
     if(!coin) return toast('Coin not found','error');
+    if(coin.status === 'disabled') return toast('Trading disabled for this coin','error');
     const balance = getBalance(currentUser?.uid || '');
     const body = `<div class="field"><label>Coin</label><div><strong>${coin.name} (${symbol})</strong></div></div>
       <div class="field"><label>Price</label><div>${formatUSD(coin.price)}</div></div>
@@ -1459,7 +1509,7 @@
       const userRef = ref(db, 'users/'+currentUser.uid);
       await update(userRef, { virtualBalance: newBalance, holdings: newHoldings, avgBuyPrices: { ...userData.avgBuyPrices, [symbol]: newAvg } });
       const txRef = push(ref(db, 'transactions'));
-      await set(txRef, { uid: currentUser.uid, coin: symbol, type: 'BUY', amount: amt, quantity: qty, price: coin.price, timestamp: serverTimestamp() });
+      await set(txRef, { uid: currentUser.uid, coin: symbol, type: 'BUY', amount: amt, quantity: qty, price: coin.price, status: 'COMPLETED', timestamp: serverTimestamp() });
       userData.virtualBalance = newBalance;
       holdings = newHoldings;
       if(!userData.avgBuyPrices) userData.avgBuyPrices = {};
@@ -1474,6 +1524,7 @@
   function openSellModal(symbol) {
     const coin = coinsData[symbol];
     if(!coin) return toast('Coin not found','error');
+    if(coin.status === 'disabled') return toast('Trading disabled for this coin','error');
     const qty = holdings[symbol] || 0;
     if(qty<=0) return toast('No holdings to sell','error');
     const value = qty * coin.price;
@@ -1492,7 +1543,7 @@
       const userRef = ref(db, 'users/'+currentUser.uid);
       await update(userRef, { virtualBalance: newBalance, holdings: newHoldings });
       const txRef = push(ref(db, 'transactions'));
-      await set(txRef, { uid: currentUser.uid, coin: symbol, type: 'SELL', amount: value, quantity: qty, price: coin.price, timestamp: serverTimestamp() });
+      await set(txRef, { uid: currentUser.uid, coin: symbol, type: 'SELL', amount: value, quantity: qty, price: coin.price, status: 'COMPLETED', timestamp: serverTimestamp() });
       userData.virtualBalance = newBalance;
       holdings = newHoldings;
       toast(`Sold ${qty.toFixed(4)} ${symbol} for ${formatUSD(value)}`,'success');
@@ -1516,24 +1567,24 @@
     document.getElementById('submitDepositBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
     
     try {
-      const orderId = generateOrderId();
+      const requestId = generateOrderId('DEP');
       
       const body = `
         <div class="field"><label>Method</label><div><strong>${method}</strong></div></div>
         <div class="field"><label>Amount</label><div>${formatUSD(amount)}</div></div>
-        <div class="field"><label>Order ID</label><div><strong>${orderId}</strong></div></div>
+        <div class="field"><label>Request ID</label><div><strong>${requestId}</strong></div></div>
         <div class="field"><label>Status</label><div><span class="badge badge-pending">Pending Review</span></div></div>
         <div class="deposit-success-message">
           <i class="fas fa-info-circle" style="color:#f0b90b;"></i>
-          Your deposit order has been submitted successfully. It will be reviewed within 5–30 minutes. Your order may be confirmed or cancelled after verification.
+          Your deposit request has been submitted successfully. It will be reviewed by an administrator.
         </div>
       `;
       const actions = `<button class="btn btn-outline" onclick="closeModal()">Close</button>`;
-      openModal('Deposit Submitted', 'Order pending review', body, actions);
+      openModal('Deposit Request Submitted', 'Pending approval', body, actions);
       
       const depRef = push(ref(db, 'deposits'));
       await set(depRef, {
-        orderId, 
+        requestId, 
         uid: currentUser.uid, 
         userName: userData.displayName || 'User',
         userEmail: userData.email || '',
@@ -1543,7 +1594,7 @@
         createdAt: serverTimestamp()
       });
       
-      toast('Deposit order submitted. Awaiting review.', 'success');
+      toast('Deposit request submitted. Awaiting approval.', 'success');
       document.getElementById('depositAmount').value = '';
       document.getElementById('methodSelector').style.display = 'none';
       document.querySelectorAll('.method-option').forEach(m=>m.classList.remove('selected'));
@@ -1556,7 +1607,7 @@
     } finally {
       isSubmittingDeposit = false;
       document.getElementById('submitDepositBtn').disabled = false;
-      document.getElementById('submitDepositBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Submit Order';
+      document.getElementById('submitDepositBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Submit Deposit Request';
     }
   });
 
@@ -1573,21 +1624,34 @@
     const balance = getBalance(currentUser.uid);
     if(amount > balance) return toast('Insufficient balance','error');
     
-    const withdrawalId = generateOrderId();
+    const requestId = generateOrderId('WDR');
     const body = `
       <div class="field"><label>Method</label><div><strong>${method}</strong></div></div>
       <div class="field"><label>Amount</label><div>${formatUSD(amount)}</div></div>
       <div class="field"><label>Destination</label><div style="font-size:13px;word-break:break-all;">${destination}</div></div>
-      <div class="field"><label>Withdrawal ID</label><div><strong>${withdrawalId}</strong></div></div>
+      <div class="field"><label>Request ID</label><div><strong>${requestId}</strong></div></div>
       <div class="field"><label>Status</label><div><span class="badge badge-pending">Pending Review</span></div></div>
+      <div class="deposit-success-message">
+        <i class="fas fa-info-circle" style="color:#f0b90b;"></i>
+        Your withdrawal request has been submitted. Funds will be reserved until admin approval.
+      </div>
     `;
     const actions = `<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="confirmWithdrawRequest">Submit Withdrawal</button>`;
     openModal('Confirm Withdrawal', 'Virtual withdrawal request', body, actions);
     
     document.getElementById('confirmWithdrawRequest').addEventListener('click', async ()=>{
+      // Reserve funds (deduct from available, hold as reserved in localStorage)
+      const newBalance = getBalance(currentUser.uid) - amount;
+      if (newBalance < 0) {
+        toast('Insufficient balance','error');
+        closeModal();
+        return;
+      }
+      setBalance(currentUser.uid, newBalance);
+      
       const wdRef = push(ref(db, 'withdrawals'));
       await set(wdRef, {
-        withdrawalId, 
+        requestId, 
         uid: currentUser.uid, 
         userName: userData.displayName || 'User',
         userEmail: userData.email || '',
@@ -1597,7 +1661,7 @@
         status: 'PENDING', 
         createdAt: serverTimestamp()
       });
-      toast('Withdrawal request submitted. Awaiting review.','success');
+      toast('Withdrawal request submitted. Awaiting approval.','success');
       document.getElementById('withdrawAmount').value = '';
       document.getElementById('withdrawDestination').value = '';
       document.querySelectorAll('.withdraw-method-item').forEach(m=>m.classList.remove('selected'));
@@ -1605,6 +1669,7 @@
       closeModal();
       await loadWithdrawals();
       renderWithdrawHistory();
+      updateBalanceUI();
     });
   });
 
@@ -1617,17 +1682,18 @@
       const h = u.holdings || {};
       return s + Object.entries(h).reduce((sum,[sym,qty])=>{ const c=coinsData[sym]; return sum + (c?qty*c.price:0); },0);
     },0);
-    const totalDeposited = allTransactions.filter(t=>t.type==='DEPOSIT').reduce((s,t)=>s+(t.amount||0),0);
-    const totalWithdrawn = allTransactions.filter(t=>t.type==='WITHDRAWAL').reduce((s,t)=>s+(t.amount||0),0);
+    const totalDeposited = allTransactions.filter(t=>t.type==='DEPOSIT' && t.status==='COMPLETED').reduce((s,t)=>s+(t.amount||0),0);
+    const totalWithdrawn = allTransactions.filter(t=>t.type==='WITHDRAWAL' && t.status==='COMPLETED').reduce((s,t)=>s+(t.amount||0),0);
     const pendingDeposits = allDeposits.filter(d=>d.status==='PENDING').length;
     const pendingWithdrawals = allWithdrawals.filter(d=>d.status==='PENDING').length;
     const totalTrades = allTransactions.filter(t=>t.type==='BUY'||t.type==='SELL').length;
     const totalTx = allTransactions.length;
     const totalCoins = Object.keys(coinsData).length;
+    const activeCoins = Object.values(coinsData).filter(c=>c.status !== 'disabled').length;
     
     let html = `<div class="stat-grid">
       <div class="stat-item"><div class="stat-label">Total Users</div><div class="stat-value">${totalUsers}</div></div>
-      <div class="stat-item"><div class="stat-label">Total USD Balance</div><div class="stat-value gold">${formatUSD(totalBalance)}</div></div>
+      <div class="stat-item"><div class="stat-label">Total Balance</div><div class="stat-value gold">${formatUSD(totalBalance)}</div></div>
       <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value">${formatUSD(totalHoldings)}</div></div>
       <div class="stat-item"><div class="stat-label">Total Deposited</div><div class="stat-value green">${formatUSD(totalDeposited)}</div></div>
       <div class="stat-item"><div class="stat-label">Total Withdrawn</div><div class="stat-value red">${formatUSD(totalWithdrawn)}</div></div>
@@ -1635,7 +1701,7 @@
       <div class="stat-item"><div class="stat-label">Pending Withdrawals</div><div class="stat-value gold">${pendingWithdrawals}</div></div>
       <div class="stat-item"><div class="stat-label">Total Trades</div><div class="stat-value">${totalTrades}</div></div>
       <div class="stat-item"><div class="stat-label">Total Transactions</div><div class="stat-value">${totalTx}</div></div>
-      <div class="stat-item"><div class="stat-label">Total Coins</div><div class="stat-value">${totalCoins}</div></div>
+      <div class="stat-item"><div class="stat-label">Active Coins</div><div class="stat-value">${activeCoins}</div></div>
     </div>`;
     container.innerHTML = html;
   }
@@ -1647,8 +1713,8 @@
     for(const [uid, data] of Object.entries(allUsers)) {
       const portVal = (data.holdings) ? Object.entries(data.holdings).reduce((sum,[sym,qty])=>{ const c=coinsData[sym]; return sum + (c?qty*c.price:0); },0) : 0;
       const coinCount = Object.keys(data.holdings||{}).filter(k=>data.holdings[k]>0).length;
-      const deposited = allTransactions.filter(t=>t.uid===uid && t.type==='DEPOSIT').reduce((s,t)=>s+(t.amount||0),0);
-      const withdrawn = allTransactions.filter(t=>t.uid===uid && t.type==='WITHDRAWAL').reduce((s,t)=>s+(t.amount||0),0);
+      const deposited = allTransactions.filter(t=>t.uid===uid && t.type==='DEPOSIT' && t.status==='COMPLETED').reduce((s,t)=>s+(t.amount||0),0);
+      const withdrawn = allTransactions.filter(t=>t.uid===uid && t.type==='WITHDRAWAL' && t.status==='COMPLETED').reduce((s,t)=>s+(t.amount||0),0);
       const trades = allTransactions.filter(t=>t.uid===uid && (t.type==='BUY'||t.type==='SELL')).length;
       html += `<tr><td>${data.displayName||'User'}</td><td>${data.email||''}</td><td style="font-size:11px;">${uid.slice(0,8)}</td><td>${formatUSD(data.virtualBalance||0)}</td><td>${formatUSD(portVal)}</td><td>${coinCount}</td><td>${formatUSD(deposited)}</td><td>${formatUSD(withdrawn)}</td><td>${trades}</td></tr>`;
     }
@@ -1667,8 +1733,9 @@
         const status = dep.status || 'PENDING';
         const displayStatus = getDisplayStatus(status);
         const badgeClass = getBadgeClass(status);
-        html += `<div class="item flex-between"><span>${dep.orderId||'—'}</span><span>${dep.userName||'User'}</span><span>${formatUSD(dep.amount)}</span><span class="badge ${badgeClass}">${displayStatus}</span>
-          ${status==='PENDING' ? `<button class="btn btn-sm btn-success" data-approve-dep="${dep.orderId}">Confirm</button><button class="btn btn-sm btn-danger" data-reject-dep="${dep.orderId}">Cancel</button>` : ''}
+        const isPending = status === 'PENDING';
+        html += `<div class="item flex-between"><span>${dep.requestId || dep.orderId || '—'}</span><span>${dep.userName||'User'}</span><span>${formatUSD(dep.amount)}</span><span class="badge ${badgeClass}">${displayStatus}</span>
+          ${isPending ? `<button class="btn btn-sm btn-success" data-approve-dep="${dep.requestId || dep.orderId}">Approve</button><button class="btn btn-sm btn-danger" data-reject-dep="${dep.requestId || dep.orderId}">Reject</button>` : ''}
         </div>`;
       }
     }
@@ -1676,25 +1743,25 @@
     container.innerHTML = html;
     document.querySelectorAll('[data-approve-dep]').forEach(el=>{
       el.addEventListener('click', async ()=>{
-        const orderId = el.dataset.approveDep;
-        await processDeposit(orderId, 'APPROVED');
+        const requestId = el.dataset.approveDep;
+        await processDeposit(requestId, 'APPROVED');
       });
     });
     document.querySelectorAll('[data-reject-dep]').forEach(el=>{
       el.addEventListener('click', async ()=>{
-        const orderId = el.dataset.rejectDep;
-        await processDeposit(orderId, 'REJECTED');
+        const requestId = el.dataset.rejectDep;
+        await processDeposit(requestId, 'REJECTED');
       });
     });
   }
 
-  async function processDeposit(orderId, newStatus) {
+  async function processDeposit(requestId, newStatus) {
     const depRef = ref(db, 'deposits');
     const snap = await get(depRef);
     const deps = snap.exists() ? snap.val() : {};
     let foundKey = null;
     for(const [key, d] of Object.entries(deps)) {
-      if(d.orderId===orderId) { foundKey=key; break; }
+      if(d.requestId === requestId || d.orderId === requestId) { foundKey=key; break; }
     }
     if(!foundKey) return toast('Deposit not found','error');
     const dep = deps[foundKey];
@@ -1713,20 +1780,24 @@
           setBalance(dep.uid, newBalance);
         }
         const txRef = push(ref(db, 'transactions'));
-        await set(txRef, { uid: dep.uid, type: 'DEPOSIT', amount: dep.amount, coin: 'USD', timestamp: serverTimestamp() });
-        toast(`Deposit ${orderId} confirmed, ${formatUSD(dep.amount)} added`, 'success');
+        await set(txRef, { uid: dep.uid, type: 'DEPOSIT', amount: dep.amount, coin: 'USD', status: 'COMPLETED', timestamp: serverTimestamp() });
+        toast(`Deposit ${requestId} approved, ${formatUSD(dep.amount)} added`, 'success');
         if(dep.uid === currentUser?.uid) {
           userData.virtualBalance = newBalance;
         }
+        // Add notification
+        addNotification(dep.uid, `Deposit of ${formatUSD(dep.amount)} approved.`);
       }
     } else {
-      toast(`Deposit ${orderId} cancelled`, 'error');
+      toast(`Deposit ${requestId} rejected`, 'error');
+      addNotification(dep.uid, `Deposit request of ${formatUSD(dep.amount)} rejected.`);
     }
     await loadDeposits();
     await loadTransactions();
     await loadAllUsers();
     renderAll();
     renderAdminDeposits();
+    updateAdminStats();
   }
 
   async function renderAdminWithdrawals() {
@@ -1740,8 +1811,9 @@
         const status = wd.status || 'PENDING';
         const displayStatus = getDisplayStatus(status);
         const badgeClass = getBadgeClass(status);
-        html += `<div class="item flex-between"><span>${wd.withdrawalId||'—'}</span><span>${wd.userName||'User'}</span><span>${formatUSD(wd.amount)}</span><span class="badge ${badgeClass}">${displayStatus}</span>
-          ${status==='PENDING' ? `<button class="btn btn-sm btn-success" data-approve-wd="${wd.withdrawalId}">Confirm</button><button class="btn btn-sm btn-danger" data-reject-wd="${wd.withdrawalId}">Cancel</button>` : ''}
+        const isPending = status === 'PENDING';
+        html += `<div class="item flex-between"><span>${wd.requestId || wd.withdrawalId || '—'}</span><span>${wd.userName||'User'}</span><span>${formatUSD(wd.amount)}</span><span class="badge ${badgeClass}">${displayStatus}</span>
+          ${isPending ? `<button class="btn btn-sm btn-success" data-approve-wd="${wd.requestId || wd.withdrawalId}">Approve</button><button class="btn btn-sm btn-danger" data-reject-wd="${wd.requestId || wd.withdrawalId}">Reject</button>` : ''}
         </div>`;
       }
     }
@@ -1749,25 +1821,25 @@
     container.innerHTML = html;
     document.querySelectorAll('[data-approve-wd]').forEach(el=>{
       el.addEventListener('click', async ()=>{
-        const withdrawalId = el.dataset.approveWd;
-        await processWithdrawal(withdrawalId, 'APPROVED');
+        const requestId = el.dataset.approveWd;
+        await processWithdrawal(requestId, 'APPROVED');
       });
     });
     document.querySelectorAll('[data-reject-wd]').forEach(el=>{
       el.addEventListener('click', async ()=>{
-        const withdrawalId = el.dataset.rejectWd;
-        await processWithdrawal(withdrawalId, 'REJECTED');
+        const requestId = el.dataset.rejectWd;
+        await processWithdrawal(requestId, 'REJECTED');
       });
     });
   }
 
-  async function processWithdrawal(withdrawalId, newStatus) {
+  async function processWithdrawal(requestId, newStatus) {
     const wdRef = ref(db, 'withdrawals');
     const snap = await get(wdRef);
     const wds = snap.exists() ? snap.val() : {};
     let foundKey = null;
     for(const [key, d] of Object.entries(wds)) {
-      if(d.withdrawalId===withdrawalId) { foundKey=key; break; }
+      if(d.requestId === requestId || d.withdrawalId === requestId) { foundKey=key; break; }
     }
     if(!foundKey) return toast('Withdrawal not found','error');
     const wd = wds[foundKey];
@@ -1780,43 +1852,53 @@
       const userSnap = await get(userRef);
       if(userSnap.exists()) {
         const user = userSnap.val();
-        const newBalance = (user.virtualBalance||0) - wd.amount;
-        if(newBalance < 0) return toast('Insufficient balance for withdrawal','error');
+        // Funds already deducted when request was made (reserved)
+        // Just create transaction record
+        const txRef = push(ref(db, 'transactions'));
+        await set(txRef, { uid: wd.uid, type: 'WITHDRAWAL', amount: wd.amount, coin: 'USD', status: 'COMPLETED', timestamp: serverTimestamp() });
+        toast(`Withdrawal ${requestId} approved, ${formatUSD(wd.amount)} deducted`, 'success');
+        addNotification(wd.uid, `Withdrawal request of ${formatUSD(wd.amount)} approved.`);
+      }
+    } else {
+      // Rejected - return funds
+      const userRef = ref(db, 'users/'+wd.uid);
+      const userSnap = await get(userRef);
+      if(userSnap.exists()) {
+        const user = userSnap.val();
+        const newBalance = (user.virtualBalance||0) + wd.amount;
         await update(userRef, { virtualBalance: newBalance });
         if (wd.uid === currentUser?.uid) {
           setBalance(wd.uid, newBalance);
         }
-        const txRef = push(ref(db, 'transactions'));
-        await set(txRef, { uid: wd.uid, type: 'WITHDRAWAL', amount: wd.amount, coin: 'USD', timestamp: serverTimestamp() });
-        toast(`Withdrawal ${withdrawalId} confirmed, ${formatUSD(wd.amount)} deducted`, 'success');
-        if(wd.uid === currentUser?.uid) {
-          userData.virtualBalance = newBalance;
-        }
+        toast(`Withdrawal ${requestId} rejected, funds returned`, 'error');
+        addNotification(wd.uid, `Withdrawal request of ${formatUSD(wd.amount)} rejected. Funds returned.`);
       }
-    } else {
-      toast(`Withdrawal ${withdrawalId} cancelled`, 'error');
     }
     await loadWithdrawals();
     await loadTransactions();
     await loadAllUsers();
     renderAll();
     renderAdminWithdrawals();
+    updateAdminStats();
   }
 
   function renderAdminCoins() {
     const container = document.getElementById('adminContent');
     let html = '<div class="admin-list">';
     for(const [sym, coin] of Object.entries(coinsData)) {
+      const status = coin.status || 'active';
       html += `<div class="item flex-between" style="flex-wrap:wrap;gap:6px;">
         <span>${getCoinLogo(sym)} <strong>${coin.name}</strong> (${sym})</span>
         <span>${formatUSD(coin.price)}</span>
         <span style="font-size:11px;color:#7f92a8;">Min: ${formatUSD(coin.min||0)} Max: ${formatUSD(coin.max||999)}</span>
+        <span style="font-size:11px;color:#7f92a8;">Status: ${status}</span>
         <span><input type="number" id="priceInput_${sym}" value="${coin.price}" step="0.01" min="0.01" style="width:70px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:12px;" /></span>
-        <span><input type="number" id="minInput_${sym}" value="${coin.min||0}" step="0.01" min="0" style="width:55px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:11px;" placeholder="min" /></span>
-        <span><input type="number" id="maxInput_${sym}" value="${coin.max||999}" step="0.01" min="0" style="width:55px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:11px;" placeholder="max" /></span>
         <button class="btn btn-sm btn-outline" data-set-price="${sym}">Set</button>
-        <button class="btn btn-sm btn-outline" data-set-range="${sym}">Range</button>
-        <button class="btn btn-sm ${coin.auto?'btn-success':'btn-outline'}" data-toggle-auto="${sym}">${coin.auto?'ON':'OFF'}</button>
+        <button class="btn btn-sm btn-outline" data-inc-price="${sym}" data-pct="1">+1%</button>
+        <button class="btn btn-sm btn-outline" data-inc-price="${sym}" data-pct="5">+5%</button>
+        <button class="btn btn-sm btn-outline" data-inc-price="${sym}" data-pct="-1">-1%</button>
+        <button class="btn btn-sm btn-outline" data-inc-price="${sym}" data-pct="-5">-5%</button>
+        <button class="btn btn-sm ${status === 'disabled' ? 'btn-success' : 'btn-outline'}" data-toggle-status="${sym}">${status === 'disabled' ? 'Enable' : 'Disable'}</button>
         <button class="btn btn-sm btn-danger" data-delete-coin="${sym}">×</button>
       </div>`;
     }
@@ -1844,51 +1926,46 @@
         const val = parseFloat(input.value);
         if(!val || val<=0) return toast('Invalid price','error');
         updateCoinPrice(sym, val);
-      });
-    });
-    
-    document.querySelectorAll('[data-set-range]').forEach(el=>{
-      el.addEventListener('click', async ()=>{
-        const sym = el.dataset.setRange;
-        const minInput = document.getElementById('minInput_'+sym);
-        const maxInput = document.getElementById('maxInput_'+sym);
-        const min = parseFloat(minInput.value);
-        const max = parseFloat(maxInput.value);
-        if (isNaN(min) || isNaN(max) || min < 0 || max <= min) return toast('Invalid range','error');
-        const coin = coinsData[sym];
-        coin.min = min;
-        coin.max = max;
-        if (coin.price < min) coin.price = min;
-        if (coin.price > max) coin.price = max;
-        const coinRef = ref(db, 'coins/'+sym);
-        await update(coinRef, { min: min, max: max, price: coin.price });
-        toast(`${sym} range set: ${formatUSD(min)} - ${formatUSD(max)}`,'success');
-        renderAll();
         renderAdminCoins();
       });
     });
     
-    document.querySelectorAll('[data-toggle-auto]').forEach(el=>{
+    document.querySelectorAll('[data-inc-price]').forEach(el=>{
       el.addEventListener('click', async ()=>{
-        const sym = el.dataset.toggleAuto;
+        const sym = el.dataset.incPrice;
+        const pct = parseFloat(el.dataset.pct);
         const coin = coinsData[sym];
         if(!coin) return;
-        coin.auto = !coin.auto;
-        const coinRef = ref(db, 'coins/'+sym);
-        await update(coinRef, { auto: coin.auto });
+        const newPrice = coin.price * (1 + pct/100);
+        if (newPrice < 0.01) return toast('Price too low','error');
+        await updateCoinPrice(sym, newPrice);
         renderAdminCoins();
-        toast(`${sym} auto movement ${coin.auto?'enabled':'disabled'}`,'success');
+      });
+    });
+    
+    document.querySelectorAll('[data-toggle-status]').forEach(el=>{
+      el.addEventListener('click', async ()=>{
+        const sym = el.dataset.toggleStatus;
+        const coin = coinsData[sym];
+        if(!coin) return;
+        const newStatus = coin.status === 'disabled' ? 'active' : 'disabled';
+        coin.status = newStatus;
+        const coinRef = ref(db, 'coins/'+sym);
+        await update(coinRef, { status: newStatus });
+        toast(`${sym} ${newStatus === 'active' ? 'enabled' : 'disabled'}`,'success');
+        renderAdminCoins();
+        renderAll();
       });
     });
     
     document.querySelectorAll('[data-delete-coin]').forEach(el=>{
       el.addEventListener('click', async ()=>{
         const sym = el.dataset.deleteCoin;
-        if(!confirm(`Delete ${sym}?`)) return;
+        if(!confirm(`Are you sure you want to remove ${sym}? This will not delete user holdings.`)) return;
         const coinRef = ref(db, 'coins/'+sym);
         await set(coinRef, null);
         delete coinsData[sym];
-        toast(`${sym} deleted`,'success');
+        toast(`${sym} removed`,'success');
         renderAll();
         renderAdminCoins();
       });
@@ -1902,7 +1979,7 @@
       const max = parseFloat(document.getElementById('newCoinMax').value) || 999;
       if(!name || !symbol || !price || price<=0) return toast('Invalid coin data','error');
       if(coinsData[symbol]) return toast('Symbol already exists','error');
-      const newCoin = { price, change:0, symbol, name, min, max, auto:true, color:'#f0b90b' };
+      const newCoin = { price, change:0, symbol, name, min, max, auto:true, status:'active', color:'#f0b90b' };
       const coinRef = ref(db, 'coins/'+symbol);
       await set(coinRef, newCoin);
       coinsData[symbol] = newCoin;
@@ -1924,7 +2001,9 @@
       html += '<div class="text-muted">No transactions</div>';
     } else {
       for(const tx of allTransactions.slice().reverse().slice(0,30)) {
-        html += `<div class="item flex-between"><span>${tx.type}</span><span>${tx.coin||''}</span><span>${formatUSD(tx.amount||0)}</span><span class="text-muted" style="font-size:11px;">${new Date(tx.timestamp||Date.now()).toLocaleDateString()}</span></div>`;
+        const status = tx.status || 'COMPLETED';
+        const badgeClass = getBadgeClass(status);
+        html += `<div class="item flex-between"><span>${tx.type}</span><span>${tx.coin||''}</span><span>${formatUSD(tx.amount||0)}</span><span class="badge ${badgeClass}">${getDisplayStatus(status)}</span><span class="text-muted" style="font-size:11px;">${new Date(tx.timestamp||Date.now()).toLocaleDateString()}</span></div>`;
       }
     }
     html += '</div></div>';
@@ -1943,9 +2022,11 @@
           if(filtered.length === 0) {
             list.innerHTML = '<div class="text-muted">No matching transactions</div>';
           } else {
-            list.innerHTML = filtered.map(t=> 
-              `<div class="item flex-between"><span>${t.type}</span><span>${t.coin||''}</span><span>${formatUSD(t.amount||0)}</span><span class="text-muted" style="font-size:11px;">${new Date(t.timestamp||Date.now()).toLocaleDateString()}</span></div>`
-            ).join('');
+            list.innerHTML = filtered.map(t=> {
+              const status = t.status || 'COMPLETED';
+              const badgeClass = getBadgeClass(status);
+              return `<div class="item flex-between"><span>${t.type}</span><span>${t.coin||''}</span><span>${formatUSD(t.amount||0)}</span><span class="badge ${badgeClass}">${getDisplayStatus(status)}</span><span class="text-muted" style="font-size:11px;">${new Date(t.timestamp||Date.now()).toLocaleDateString()}</span></div>`;
+            }).join('');
           }
         }
       });
@@ -2037,7 +2118,7 @@
     priceInterval = setInterval(async ()=>{
       for(const sym of Object.keys(coinsData)) {
         const coin = coinsData[sym];
-        if(!coin.auto) continue;
+        if(!coin.auto || coin.status === 'disabled') continue;
         const change = (Math.random()*2 - 1) * 0.6;
         let newPrice = coin.price * (1 + change/100);
         if(coin.min && newPrice < coin.min) newPrice = coin.min + Math.random() * 0.3;
@@ -2065,6 +2146,45 @@
       item.classList.toggle('open');
     });
   });
+
+  // ============================================================
+  //  NOTIFICATION SYSTEM
+  // ============================================================
+  function getNotifications(uid) {
+    const key = 'bcg_notifications_' + uid;
+    try {
+      return JSON.parse(localStorage.getItem(key)) || [];
+    } catch { return []; }
+  }
+
+  function addNotification(uid, message) {
+    const key = 'bcg_notifications_' + uid;
+    const notifs = getNotifications(uid);
+    notifs.push({ message, timestamp: Date.now(), read: false });
+    localStorage.setItem(key, JSON.stringify(notifs));
+    // If current user, render
+    if (currentUser && currentUser.uid === uid) {
+      renderNotifications();
+    }
+  }
+
+  // ---- Update admin stats ----
+  function updateAdminStats() {
+    if (!document.getElementById('adminTotalUsers')) return;
+    const totalUsers = Object.keys(allUsers).length || 0;
+    const totalBalance = Object.values(allUsers).reduce((s,u)=>s+(u.virtualBalance||0),0);
+    const totalTrades = allTransactions.filter(t=>t.type==='BUY'||t.type==='SELL').length;
+    const pendingDeposits = allDeposits.filter(d=>d.status==='PENDING').length;
+    const pendingWithdrawals = allWithdrawals.filter(d=>d.status==='PENDING').length;
+    const activeCoins = Object.values(coinsData).filter(c=>c.status !== 'disabled').length;
+    
+    document.getElementById('adminTotalUsers').textContent = totalUsers;
+    document.getElementById('adminTotalBalance').textContent = formatUSD(totalBalance);
+    document.getElementById('adminTotalTrades').textContent = totalTrades;
+    document.getElementById('adminPendingDeposits').textContent = pendingDeposits;
+    document.getElementById('adminPendingWithdrawals').textContent = pendingWithdrawals;
+    document.getElementById('adminActiveCoins').textContent = activeCoins;
+  }
 
   // ============================================================
   //  ADMIN PANEL — Ctrl+P ACCESS
@@ -2123,6 +2243,7 @@
     document.querySelectorAll('#adminPanelTabs .btn').forEach(b => b.classList.remove('btn-primary'));
     const firstTab = document.querySelector('#adminPanelTabs .btn');
     if (firstTab) firstTab.classList.add('btn-primary');
+    updateAdminStats();
   }
 
   // Close admin panel
@@ -2145,12 +2266,14 @@
     const totalTrades = allTransactions.filter(t=>t.type==='BUY'||t.type==='SELL').length;
     const pendingDeposits = allDeposits.filter(d=>d.status==='PENDING').length;
     const pendingWithdrawals = allWithdrawals.filter(d=>d.status==='PENDING').length;
+    const activeCoins = Object.values(coinsData).filter(c=>c.status !== 'disabled').length;
 
     document.getElementById('adminTotalUsers').textContent = totalUsers;
     document.getElementById('adminTotalBalance').textContent = formatUSD(totalBalance);
     document.getElementById('adminTotalTrades').textContent = totalTrades;
     document.getElementById('adminPendingDeposits').textContent = pendingDeposits;
     document.getElementById('adminPendingWithdrawals').textContent = pendingWithdrawals;
+    document.getElementById('adminActiveCoins').textContent = activeCoins;
 
     // Render default tab content (Dashboard)
     renderAdminPanelTab('dashboard');
@@ -2169,12 +2292,84 @@
             <div class="item"><span class="label">Total Users</span><span class="value">${Object.keys(allUsers).length || 0}</span></div>
             <div class="item"><span class="label">Total Balance</span><span class="value gold">${formatUSD(Object.values(allUsers).reduce((s,u)=>s+(u.virtualBalance||0),0))}</span></div>
             <div class="item"><span class="label">Total Coins</span><span class="value">${Object.keys(coinsData).length}</span></div>
+            <div class="item"><span class="label">Active Coins</span><span class="value">${Object.values(coinsData).filter(c=>c.status !== 'disabled').length}</span></div>
             <div class="item"><span class="label">Total Trades</span><span class="value">${allTransactions.filter(t=>t.type==='BUY'||t.type==='SELL').length}</span></div>
             <div class="item"><span class="label">Pending Deposits</span><span class="value gold">${allDeposits.filter(d=>d.status==='PENDING').length}</span></div>
             <div class="item"><span class="label">Pending Withdrawals</span><span class="value gold">${allWithdrawals.filter(d=>d.status==='PENDING').length}</span></div>
             <div class="item"><span class="label">Admin Session</span><span class="value text-green">● Active</span></div>
           </div>
         `;
+        break;
+
+      case 'deposits':
+        let depHtml = '<div class="admin-list">';
+        const deps = allDeposits.slice().reverse();
+        if (deps.length === 0) {
+          depHtml += '<div class="text-muted">No deposit requests</div>';
+        } else {
+          deps.forEach(d => {
+            const status = d.status || 'PENDING';
+            const badgeClass = getBadgeClass(status);
+            const isPending = status === 'PENDING';
+            depHtml += `<div class="item flex-between"><span>${d.requestId || d.orderId || '—'}</span><span>${d.userName||'User'}</span><span>${formatUSD(d.amount)}</span><span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
+              ${isPending ? `<button class="btn btn-sm btn-success" data-ap-dep="${d.requestId || d.orderId}">Approve</button><button class="btn btn-sm btn-danger" data-rj-dep="${d.requestId || d.orderId}">Reject</button>` : ''}
+            </div>`;
+          });
+        }
+        depHtml += '</div>';
+        html = depHtml;
+        // Attach events
+        setTimeout(() => {
+          document.querySelectorAll('[data-ap-dep]').forEach(el => {
+            el.addEventListener('click', async () => {
+              const id = el.dataset.apDep;
+              await processDeposit(id, 'APPROVED');
+              renderAdminPanelTab('deposits');
+            });
+          });
+          document.querySelectorAll('[data-rj-dep]').forEach(el => {
+            el.addEventListener('click', async () => {
+              const id = el.dataset.rjDep;
+              await processDeposit(id, 'REJECTED');
+              renderAdminPanelTab('deposits');
+            });
+          });
+        }, 50);
+        break;
+
+      case 'withdrawals':
+        let wdHtml = '<div class="admin-list">';
+        const wds = allWithdrawals.slice().reverse();
+        if (wds.length === 0) {
+          wdHtml += '<div class="text-muted">No withdrawal requests</div>';
+        } else {
+          wds.forEach(d => {
+            const status = d.status || 'PENDING';
+            const badgeClass = getBadgeClass(status);
+            const isPending = status === 'PENDING';
+            wdHtml += `<div class="item flex-between"><span>${d.requestId || d.withdrawalId || '—'}</span><span>${d.userName||'User'}</span><span>${formatUSD(d.amount)}</span><span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
+              ${isPending ? `<button class="btn btn-sm btn-success" data-ap-wd="${d.requestId || d.withdrawalId}">Approve</button><button class="btn btn-sm btn-danger" data-rj-wd="${d.requestId || d.withdrawalId}">Reject</button>` : ''}
+            </div>`;
+          });
+        }
+        wdHtml += '</div>';
+        html = wdHtml;
+        setTimeout(() => {
+          document.querySelectorAll('[data-ap-wd]').forEach(el => {
+            el.addEventListener('click', async () => {
+              const id = el.dataset.apWd;
+              await processWithdrawal(id, 'APPROVED');
+              renderAdminPanelTab('withdrawals');
+            });
+          });
+          document.querySelectorAll('[data-rj-wd]').forEach(el => {
+            el.addEventListener('click', async () => {
+              const id = el.dataset.rjWd;
+              await processWithdrawal(id, 'REJECTED');
+              renderAdminPanelTab('withdrawals');
+            });
+          });
+        }, 50);
         break;
 
       case 'users':
@@ -2196,22 +2391,77 @@
         html = usersHtml;
         break;
 
-      case 'trading':
-        const trades = allTransactions.filter(t=>t.type==='BUY'||t.type==='SELL').slice(-20).reverse();
-        let tradesHtml = '<div class="admin-list">';
-        if (trades.length === 0) {
-          tradesHtml += '<div class="text-muted">No trading activity</div>';
-        } else {
-          trades.forEach(t => {
-            tradesHtml += `<div class="item"><span class="label">${t.type}</span>
-              <span>${t.coin || ''}</span>
-              <span class="value">${formatUSD(t.amount||0)}</span>
-              <span style="font-size:11px;color:#7f92a8;">${new Date(t.timestamp||Date.now()).toLocaleString()}</span>
-            </div>`;
-          });
+      case 'coins':
+        let coinsHtml = '<div class="admin-list">';
+        for (const [sym, coin] of Object.entries(coinsData)) {
+          const status = coin.status || 'active';
+          coinsHtml += `<div class="item flex-between" style="flex-wrap:wrap;gap:6px;">
+            <span>${getCoinLogo(sym)} <strong>${coin.name}</strong> (${sym})</span>
+            <span>${formatUSD(coin.price)}</span>
+            <span style="font-size:11px;color:#7f92a8;">Status: ${status}</span>
+            <span><input type="number" id="ap_price_${sym}" value="${coin.price}" step="0.01" min="0.01" style="width:70px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:12px;" /></span>
+            <button class="btn btn-sm btn-outline" data-ap-setprice="${sym}">Set</button>
+            <button class="btn btn-sm ${status === 'disabled' ? 'btn-success' : 'btn-outline'}" data-ap-status="${sym}">${status === 'disabled' ? 'Enable' : 'Disable'}</button>
+          </div>`;
         }
-        tradesHtml += '</div>';
-        html = tradesHtml;
+        coinsHtml += `<div class="item"><button class="btn btn-primary btn-sm" id="apAddCoinBtn">+ Add Coin</button>
+          <div id="apAddCoinForm" style="display:none;width:100%;margin-top:10px;">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <input type="text" id="ap_newName" placeholder="Name" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:120px;" />
+              <input type="text" id="ap_newSymbol" placeholder="Symbol" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:80px;" />
+              <input type="number" id="ap_newPrice" placeholder="Price" step="0.01" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:80px;" />
+              <button class="btn btn-sm btn-success" id="apConfirmAddCoin">Add</button>
+              <button class="btn btn-sm btn-outline" onclick="document.getElementById('apAddCoinForm').style.display='none'">Cancel</button>
+            </div>
+          </div>
+        </div>`;
+        coinsHtml += '</div>';
+        html = coinsHtml;
+        setTimeout(() => {
+          document.querySelectorAll('[data-ap-setprice]').forEach(el => {
+            el.addEventListener('click', async () => {
+              const sym = el.dataset.apSetprice;
+              const input = document.getElementById('ap_price_'+sym);
+              const val = parseFloat(input.value);
+              if(!val || val<=0) return toast('Invalid price','error');
+              await updateCoinPrice(sym, val);
+              renderAdminPanelTab('coins');
+            });
+          });
+          document.querySelectorAll('[data-ap-status]').forEach(el => {
+            el.addEventListener('click', async () => {
+              const sym = el.dataset.apStatus;
+              const coin = coinsData[sym];
+              if(!coin) return;
+              const newStatus = coin.status === 'disabled' ? 'active' : 'disabled';
+              coin.status = newStatus;
+              const coinRef = ref(db, 'coins/'+sym);
+              await update(coinRef, { status: newStatus });
+              toast(`${sym} ${newStatus === 'active' ? 'enabled' : 'disabled'}`,'success');
+              renderAdminPanelTab('coins');
+              renderAll();
+            });
+          });
+          document.getElementById('apAddCoinBtn')?.addEventListener('click', () => {
+            const form = document.getElementById('apAddCoinForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+          });
+          document.getElementById('apConfirmAddCoin')?.addEventListener('click', async () => {
+            const name = document.getElementById('ap_newName').value.trim();
+            const symbol = document.getElementById('ap_newSymbol').value.trim().toUpperCase();
+            const price = parseFloat(document.getElementById('ap_newPrice').value);
+            if(!name || !symbol || !price || price<=0) return toast('Invalid coin data','error');
+            if(coinsData[symbol]) return toast('Symbol already exists','error');
+            const newCoin = { price, change:0, symbol, name, min:0, max:999, auto:true, status:'active', color:'#f0b90b' };
+            const coinRef = ref(db, 'coins/'+symbol);
+            await set(coinRef, newCoin);
+            coinsData[symbol] = newCoin;
+            toast(`Coin ${name} (${symbol}) added`,'success');
+            document.getElementById('apAddCoinForm').style.display = 'none';
+            renderAll();
+            renderAdminPanelTab('coins');
+          });
+        }, 50);
         break;
 
       case 'transactions':
@@ -2221,9 +2471,12 @@
           txHtml += '<div class="text-muted">No transactions</div>';
         } else {
           recentTx.forEach(t => {
+            const status = t.status || 'COMPLETED';
+            const badgeClass = getBadgeClass(status);
             txHtml += `<div class="item"><span class="label">${t.type}</span>
               <span>${t.coin || 'USD'}</span>
               <span class="value">${formatUSD(t.amount||0)}</span>
+              <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
               <span style="font-size:11px;color:#7f92a8;">${new Date(t.timestamp||Date.now()).toLocaleString()}</span>
             </div>`;
           });
@@ -2232,29 +2485,7 @@
         html = txHtml;
         break;
 
-      case 'controls':
-        html = `
-          <div class="admin-list">
-            <div class="item"><span class="label">Platform Status</span>
-              <span class="value text-green">● Online</span>
-              <button class="btn btn-sm btn-outline">Toggle Status</button>
-            </div>
-            <div class="item"><span class="label">Maintenance Mode</span>
-              <span class="value">Disabled</span>
-              <button class="btn btn-sm btn-outline">Enable</button>
-            </div>
-            <div class="item"><span class="label">UI Theme</span>
-              <span class="value">Dark</span>
-              <button class="btn btn-sm btn-outline">Switch</button>
-            </div>
-            <div class="item"><span class="label">Refresh Data</span>
-              <button class="btn btn-sm btn-primary" onclick="location.reload()">Refresh</button>
-            </div>
-          </div>
-        `;
-        break;
-
-      case 'security':
+      case 'settings':
         html = `
           <div class="admin-list">
             <div class="item"><span class="label">Admin Session</span>
@@ -2323,18 +2554,15 @@
 
   // ---- Ctrl+P Handler ----
   document.addEventListener('keydown', (e) => {
-    // Check for Ctrl+P (or Cmd+P on Mac)
     if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
       e.preventDefault();
       e.stopPropagation();
 
-      // If admin panel is already open, bring it to focus or ignore
       if (adminPanelOverlay.classList.contains('open')) {
         toast('Admin panel already open', '');
         return;
       }
 
-      // If admin session is active, open panel directly
       if (adminSessionActive || sessionStorage.getItem('adminSession') === 'active') {
         adminSessionActive = true;
         sessionStorage.setItem('adminSession', 'active');
@@ -2350,20 +2578,18 @@
   adminLogoutBtn.addEventListener('click', adminLogout);
 
   // ---- Check for existing admin session on load ----
-  // We check after auth state is resolved, but we can also check now.
   setTimeout(() => {
     if (sessionStorage.getItem('adminSession') === 'active') {
       adminSessionActive = true;
-      // Don't auto-open on load, wait for user to press Ctrl+P
     }
   }, 100);
 
   // ---- init ----
   setupLongPress();
-  console.log('✅ Binance Coin Get · Simulator loaded (Ctrl+P Admin)');
+  console.log('✅ Binance Coin Get · Simulator loaded (Full Deposit/Withdraw/Coin Mgmt)');
   console.log('📊 Total coins available: ' + Object.keys(ALL_COINS).length);
   console.log('🔒 Admin password: 308580 (Ctrl+P)');
-  console.log('📝 Deposit status: Pending Review → Confirmed/Cancelled');
+  console.log('📝 Deposit/Withdraw: Pending → Admin Approve/Reject');
   console.log('ℹ️ Press Ctrl+P to open admin panel');
 </script>
 </body>
