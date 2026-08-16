@@ -7,17 +7,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
   <style>
-    /* === RESET & BASE === */
     * { margin:0; padding:0; box-sizing:border-box; }
     body { font-family:'Inter', sans-serif; background:#0b0e14; color:#e8edf5; min-height:100vh; overflow-x:hidden; }
     ::-webkit-scrollbar { width:4px; }
     ::-webkit-scrollbar-track { background:#1a1f2a; }
     ::-webkit-scrollbar-thumb { background:#2f3b4a; border-radius:8px; }
 
-    /* === APP LAYOUT === */
     #app { display:flex; width:100%; min-height:100vh; }
 
-    /* === SIDEBAR === */
     .sidebar { display:none; flex-direction:column; width:220px; background:#11171f; border-right:1px solid #252d3a; padding:24px 12px; min-height:100vh; position:sticky; top:0; height:100vh; overflow-y:auto; }
     .sidebar .brand { font-weight:700; font-size:20px; letter-spacing:-0.3px; padding-bottom:28px; color:#f0b90b; }
     .sidebar .brand span { color:#e8edf5; }
@@ -31,27 +28,22 @@
     .sidebar .logout-btn { margin-top:8px; width:100%; background:#1f2937; border:1px solid #2f3b4a; color:#e8edf5; padding:8px 0; border-radius:40px; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; text-align:center; }
     .sidebar .logout-btn:hover { background:#2f3b4a; color:#f0b90b; }
 
-    /* === MAIN === */
     .main { flex:1; display:flex; flex-direction:column; min-height:100vh; background:#0b0e14; }
     .content { flex:1; overflow-y:auto; padding:16px 20px 100px; }
     .page { display:none; animation:fadeIn 0.3s ease; }
     .page.active { display:block; }
     @keyframes fadeIn { from { opacity:0.3; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 
-    /* === BOTTOM NAV (mobile) === */
     .bottom-nav { display:flex; position:fixed; bottom:0; left:0; right:0; background:#11171f; border-top:1px solid #252d3a; justify-content:space-around; padding:8px 0 12px; z-index:50; }
     .bottom-nav a { display:flex; flex-direction:column; align-items:center; color:#9aa9b9; font-size:11px; font-weight:500; gap:3px; text-decoration:none; transition:0.2s; padding:4px 8px; border-radius:8px; }
     .bottom-nav a i { font-size:20px; }
     .bottom-nav a.active { color:#f0b90b; }
     .bottom-nav a span { font-size:10px; }
-    .bottom-nav .logout-mobile { color:#ef4444; }
 
-    /* === CARDS === */
     .card { background:#131b24; border-radius:16px; padding:18px 16px; border:1px solid #1f2937; margin-bottom:16px; }
     .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
     .card-title { font-weight:600; font-size:15px; color:#b0c4d9; letter-spacing:0.2px; }
 
-    /* === STAT GRID === */
     .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     .stat-item { background:#0d141e; border-radius:12px; padding:14px; }
     .stat-label { font-size:13px; color:#7f92a8; }
@@ -60,7 +52,6 @@
     .stat-value.red { color:#ef4444; }
     .stat-value.gold { color:#f0b90b; }
 
-    /* === COIN ROW === */
     .coin-row { display:flex; align-items:center; justify-content:space-between; background:#0d141e; border-radius:14px; padding:12px 14px; margin-bottom:8px; border-left:4px solid #f0b90b; gap:8px; flex-wrap:wrap; }
     .coin-logo { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; background:#1f2937; color:#f0b90b; flex-shrink:0; }
     .coin-info { display:flex; flex-direction:column; flex:1; min-width:80px; }
@@ -72,7 +63,6 @@
     .coin-change.down { color:#ef4444; }
     .coin-actions { display:flex; gap:6px; flex-wrap:wrap; }
 
-    /* === BUTTONS === */
     .btn { background:#1f2937; border:none; color:#e8edf5; padding:7px 14px; border-radius:40px; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:5px; }
     .btn-primary { background:#f0b90b; color:#0b0e14; }
     .btn-primary:hover { background:#d9a70a; transform:scale(1.02); }
@@ -86,10 +76,9 @@
     .btn-logout { background:#ef4444; color:#fff; border:none; padding:8px 20px; border-radius:40px; font-weight:600; cursor:pointer; transition:0.2s; }
     .btn-logout:hover { background:#dc2626; }
 
-    /* === MODAL === */
     .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:100; }
     .modal-overlay.open { display:flex; }
-    .modal { background:#131b24; border-radius:24px; max-width:480px; width:92%; padding:24px; border:1px solid #2a3440; max-height:92vh; overflow-y:auto; }
+    .modal { background:#131b24; border-radius:24px; max-width:520px; width:92%; padding:24px; border:1px solid #2a3440; max-height:92vh; overflow-y:auto; }
     .modal h3 { font-size:20px; margin-bottom:6px; }
     .modal .sub { color:#7f92a8; margin-bottom:16px; font-size:14px; }
     .modal .field { margin-bottom:14px; }
@@ -98,8 +87,11 @@
     .modal .field input:focus { border-color:#f0b90b; }
     .modal .actions { display:flex; gap:10px; margin-top:20px; justify-content:flex-end; }
     .modal .actions .btn { flex:1; justify-content:center; }
+    .modal .range-control { display:flex; align-items:center; gap:12px; }
+    .modal .range-control input[type="range"] { flex:1; -webkit-appearance:none; background:#1f2937; height:6px; border-radius:4px; outline:none; }
+    .modal .range-control input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:#f0b90b; cursor:pointer; }
+    .modal .range-control input[type="range"]::-moz-range-thumb { width:18px; height:18px; border-radius:50%; background:#f0b90b; cursor:pointer; border:none; }
 
-    /* === BADGES === */
     .badge { background:#1f2937; padding:3px 10px; border-radius:40px; font-size:11px; font-weight:600; }
     .badge-pending { background:#b45309; color:#fff; }
     .badge-approved { background:#22c55e; color:#0b0e14; }
@@ -109,7 +101,6 @@
     .badge-cancelled { background:#ef4444; color:#fff; }
     .badge-failed { background:#dc2626; color:#fff; }
 
-    /* === ADMIN === */
     .admin-tab-bar { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
     .admin-tab-bar .btn { flex:1; min-width:70px; justify-content:center; font-size:12px; padding:6px 10px; }
     .admin-list .item { display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; background:#0d141e; padding:10px 12px; border-radius:12px; margin-bottom:6px; border-left:2px solid #2f3b4a; font-size:13px; }
@@ -127,65 +118,41 @@
     .gap-4 { gap:4px; }
     .gap-8 { gap:8px; }
 
-    /* ===== LANDING / LOGIN OVERLAY ===== */
     #login-overlay {
       position:fixed; inset:0; background:#0b0e14; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; z-index:300; overflow-y:auto;
-      background: radial-gradient(ellipse at 30% 20%, rgba(240, 185, 11, 0.07) 0%, transparent 60%),
-                  radial-gradient(ellipse at 70% 80%, rgba(240, 185, 11, 0.04) 0%, transparent 50%),
-                  #0b0e14;
-      padding: 40px 20px;
+      background: radial-gradient(ellipse at 30% 20%, rgba(240,185,11,0.07) 0%, transparent 60%), radial-gradient(ellipse at 70% 80%, rgba(240,185,11,0.04) 0%, transparent 50%), #0b0e14;
+      padding:40px 20px;
     }
-    #login-overlay .landing-container {
-      max-width: 1200px;
-      width: 100%;
-      margin: 0 auto;
-    }
-    /* Hero */
-    .landing-hero {
-      display:flex; flex-direction:column; align-items:center; text-align:center; padding: 20px 0 40px;
-    }
-    .landing-hero .logo {
-      font-size: 36px; font-weight: 700; color: #f0b90b; letter-spacing: -0.5px; margin-bottom: 8px;
-    }
-    .landing-hero .logo span { color: #e8edf5; }
-    .landing-hero h1 {
-      font-size: clamp(2rem, 5vw, 3.8rem); font-weight: 700; margin-top: 24px; line-height:1.1; max-width:800px;
-      background: linear-gradient(135deg, #e8edf5 0%, #f0b90b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    .landing-hero p.sub {
-      font-size: clamp(1rem, 1.4vw, 1.4rem); color: #9aa9b9; max-width: 640px; margin: 16px auto 28px; line-height:1.6;
-    }
-    .landing-hero .btn-google {
-      background: #1f2937; border: 1px solid #2f3b4a; padding: 16px 36px; border-radius: 60px; font-size: 18px; font-weight: 600; color: #e8edf5;
-      display: inline-flex; align-items: center; justify-content: center; gap: 14px; cursor: pointer; transition: all 0.25s ease;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3); min-width: 240px;
-    }
-    .landing-hero .btn-google i { font-size: 22px; color: #f0b90b; }
-    .landing-hero .btn-google:hover { background: #2f3b4a; border-color: #f0b90b; transform: scale(1.02); box-shadow: 0 0 30px rgba(240,185,11,0.08); }
-    .landing-hero .secondary-text { margin-top: 20px; color: #6a7a8e; font-size: 15px; }
+    #login-overlay .landing-container { max-width:1200px; width:100%; margin:0 auto; }
+    .landing-hero { display:flex; flex-direction:column; align-items:center; text-align:center; padding:20px 0 40px; }
+    .landing-hero .logo { font-size:36px; font-weight:700; color:#f0b90b; letter-spacing:-0.5px; margin-bottom:8px; }
+    .landing-hero .logo span { color:#e8edf5; }
+    .landing-hero h1 { font-size:clamp(2rem,5vw,3.8rem); font-weight:700; margin-top:24px; line-height:1.1; max-width:800px; background:linear-gradient(135deg,#e8edf5 0%,#f0b90b 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .landing-hero p.sub { font-size:clamp(1rem,1.4vw,1.4rem); color:#9aa9b9; max-width:640px; margin:16px auto 28px; line-height:1.6; }
+    .landing-hero .btn-google { background:#1f2937; border:1px solid #2f3b4a; padding:16px 36px; border-radius:60px; font-size:18px; font-weight:600; color:#e8edf5; display:inline-flex; align-items:center; justify-content:center; gap:14px; cursor:pointer; transition:all 0.25s ease; box-shadow:0 8px 24px rgba(0,0,0,0.3); min-width:240px; }
+    .landing-hero .btn-google i { font-size:22px; color:#f0b90b; }
+    .landing-hero .btn-google:hover { background:#2f3b4a; border-color:#f0b90b; transform:scale(1.02); box-shadow:0 0 30px rgba(240,185,11,0.08); }
+    .landing-hero .secondary-text { margin-top:20px; color:#6a7a8e; font-size:15px; }
     .landing-hero .feature-pills { display:flex; flex-wrap:wrap; justify-content:center; gap:12px 24px; margin-top:28px; }
     .landing-hero .feature-pills span { display:flex; align-items:center; gap:8px; font-size:14px; color:#9aa9b9; background:rgba(255,255,255,0.03); padding:6px 16px; border-radius:40px; border:1px solid rgba(255,255,255,0.04); }
     .landing-hero .feature-pills i { color:#f0b90b; }
 
-    /* Sections */
-    .section { padding: 50px 0; border-top:1px solid rgba(255,255,255,0.04); }
-    .section-title { font-size: clamp(1.6rem, 3vw, 2.6rem); font-weight:700; text-align:center; margin-bottom:12px; }
+    .section { padding:50px 0; border-top:1px solid rgba(255,255,255,0.04); }
+    .section-title { font-size:clamp(1.6rem,3vw,2.6rem); font-weight:700; text-align:center; margin-bottom:12px; }
     .section-sub { text-align:center; color:#9aa9b9; max-width:700px; margin:0 auto 40px; font-size:1.05rem; line-height:1.6; }
-    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:24px; }
-    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:20px; }
-    .grid-4 { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:16px; }
+    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; }
+    .grid-4 { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; }
     .info-card { background:rgba(19,27,36,0.6); backdrop-filter:blur(4px); border-radius:20px; padding:24px; border:1px solid rgba(255,255,255,0.04); transition:0.3s; }
     .info-card:hover { border-color:rgba(240,185,11,0.2); transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.2); }
     .info-card .icon { font-size:32px; color:#f0b90b; margin-bottom:12px; display:block; }
     .info-card h4 { font-size:18px; font-weight:600; margin-bottom:6px; }
     .info-card p { color:#9aa9b9; font-size:14px; line-height:1.6; }
-    .info-card .step-num { font-size:13px; color:#f0b90b; font-weight:600; margin-bottom:4px; display:block; }
-    .trust-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:16px; }
+    .trust-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:16px; }
     .trust-item { text-align:center; padding:16px; background:rgba(19,27,36,0.4); border-radius:16px; border:1px solid rgba(255,255,255,0.03); }
     .trust-item i { font-size:28px; color:#f0b90b; margin-bottom:8px; }
     .trust-item span { display:block; font-size:14px; color:#b0c4d9; }
 
-    /* FAQ */
     .faq-item { border-bottom:1px solid rgba(255,255,255,0.06); padding:12px 0; cursor:pointer; }
     .faq-item .q { display:flex; justify-content:space-between; align-items:center; font-weight:600; font-size:16px; }
     .faq-item .q i { transition:0.3s; color:#f0b90b; }
@@ -193,7 +160,6 @@
     .faq-item.open .a { max-height:200px; padding-top:10px; }
     .faq-item.open .q i { transform:rotate(180deg); }
 
-    /* Support / Footer */
     .support-box { text-align:center; padding:30px; background:rgba(19,27,36,0.5); border-radius:24px; border:1px solid rgba(255,255,255,0.04); }
     .support-box .btn { margin-top:12px; }
     .footer { padding:30px 0 20px; border-top:1px solid rgba(255,255,255,0.04); margin-top:20px; }
@@ -203,7 +169,6 @@
     .footer .copy { text-align:center; color:#4a5a6e; font-size:13px; }
     .footer .disclaimer { text-align:center; color:#4a5a6e; font-size:12px; margin-top:8px; max-width:700px; margin-left:auto; margin-right:auto; }
 
-    /* === RESPONSIVE === */
     @media(min-width:768px) {
       .sidebar { display:flex; }
       .bottom-nav { display:none; }
@@ -219,11 +184,11 @@
       .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
       .trust-grid { grid-template-columns:1fr 1fr; }
     }
-    /* Keep dashboard hidden when logged out */
+
     #dashboard-wrapper { display:none; }
     .logged-in #dashboard-wrapper { display:flex; }
     .logged-in #login-overlay { display:none !important; }
-    /* small fix */
+
     .long-press-area { width:100%; height:40px; display:flex; align-items:center; justify-content:center; color:#1f2937; font-size:11px; user-select:none; cursor:default; border-radius:12px; transition:0.3s; }
     .profile-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .profile-stat { background:#0d141e; border-radius:10px; padding:10px; text-align:center; }
@@ -245,59 +210,58 @@
     td { padding:8px 6px; border-bottom:1px solid #1f2937; }
     tr:hover td { background:#0d141e; }
 
-    /* ===== ADMIN LOGIN MODAL ===== */
-    .admin-login-modal .modal { max-width: 380px; text-align: center; }
-    .admin-login-modal .admin-icon { font-size: 48px; color: #f0b90b; margin-bottom: 4px; }
-    .admin-login-modal .field { text-align: left; }
-    .admin-login-modal .password-wrapper { position: relative; }
-    .admin-login-modal .password-wrapper input { padding-right: 44px; }
-    .admin-login-modal .toggle-pwd { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #7f92a8; cursor: pointer; font-size: 16px; padding: 4px; }
-    .admin-login-modal .toggle-pwd:hover { color: #f0b90b; }
-    .admin-login-modal .error-msg { color: #ef4444; font-size: 13px; min-height: 24px; margin-top: 4px; }
+    .admin-login-modal .modal { max-width:380px; text-align:center; }
+    .admin-login-modal .admin-icon { font-size:48px; color:#f0b90b; margin-bottom:4px; }
+    .admin-login-modal .field { text-align:left; }
+    .admin-login-modal .password-wrapper { position:relative; }
+    .admin-login-modal .password-wrapper input { padding-right:44px; }
+    .admin-login-modal .toggle-pwd { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#7f92a8; cursor:pointer; font-size:16px; padding:4px; }
+    .admin-login-modal .toggle-pwd:hover { color:#f0b90b; }
+    .admin-login-modal .error-msg { color:#ef4444; font-size:13px; min-height:24px; margin-top:4px; }
 
-    /* ===== ADMIN PANEL OVERLAY ===== */
     #adminPanelOverlay {
-      position: fixed; inset: 0; background: #0b0e14; z-index: 500; display: none; flex-direction: column; overflow-y: auto;
-      background: radial-gradient(ellipse at 30% 20%, rgba(240, 185, 11, 0.06) 0%, transparent 60%), #0b0e14;
+      position:fixed; inset:0; background:#0b0e14; z-index:500; display:none; flex-direction:column; overflow-y:auto;
+      background:radial-gradient(ellipse at 30% 20%, rgba(240,185,11,0.06) 0%, transparent 60%), #0b0e14;
     }
-    #adminPanelOverlay.open { display: flex; }
-    .admin-panel-header {
-      display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: #11171f; border-bottom: 1px solid #252d3a; position: sticky; top: 0; z-index: 10; flex-wrap: wrap; gap: 12px;
-    }
-    .admin-panel-header .brand { font-weight: 700; font-size: 20px; color: #f0b90b; }
-    .admin-panel-header .brand span { color: #e8edf5; }
-    .admin-panel-header .admin-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-    .admin-panel-header .admin-actions .btn { padding: 6px 16px; font-size: 13px; }
-    .admin-panel-body { padding: 20px 24px 40px; flex: 1; max-width: 1400px; width: 100%; margin: 0 auto; }
-    .admin-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
-    .admin-stat-card { background: #131b24; border-radius: 16px; padding: 16px; border: 1px solid #1f2937; text-align: center; }
-    .admin-stat-card .num { font-size: 28px; font-weight: 700; color: #f0b90b; }
-    .admin-stat-card .label { font-size: 13px; color: #7f92a8; margin-top: 4px; }
-    .admin-panel-body .admin-tab-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; border-bottom: 1px solid #1f2937; padding-bottom: 12px; }
-    .admin-panel-body .admin-tab-bar .btn { flex: 0 1 auto; min-width: 80px; justify-content: center; font-size: 12px; padding: 6px 14px; }
-    .admin-panel-body .admin-tab-content { min-height: 200px; }
-    .admin-panel-body .admin-tab-content .admin-list .item { background: #0d141e; padding: 10px 14px; border-radius: 12px; margin-bottom: 6px; border-left: 2px solid #2f3b4a; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font-size: 13px; }
-    .admin-panel-body .admin-tab-content .admin-list .item .label { color: #7f92a8; min-width: 80px; }
-    .admin-panel-body .admin-tab-content .admin-list .item .value { color: #b0c4d9; }
-    .admin-panel-body .admin-tab-content .admin-list .item .badge { font-size: 11px; }
-    @media (max-width: 600px) {
-      .admin-panel-header { padding: 12px 16px; }
-      .admin-panel-body { padding: 12px 16px 30px; }
-      .admin-stat-grid { grid-template-columns: 1fr 1fr; }
+    #adminPanelOverlay.open { display:flex; }
+    .admin-panel-header { display:flex; justify-content:space-between; align-items:center; padding:16px 24px; background:#11171f; border-bottom:1px solid #252d3a; position:sticky; top:0; z-index:10; flex-wrap:wrap; gap:12px; }
+    .admin-panel-header .brand { font-weight:700; font-size:20px; color:#f0b90b; }
+    .admin-panel-header .brand span { color:#e8edf5; }
+    .admin-panel-header .admin-actions { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .admin-panel-header .admin-actions .btn { padding:6px 16px; font-size:13px; }
+    .admin-panel-body { padding:20px 24px 40px; flex:1; max-width:1400px; width:100%; margin:0 auto; }
+    .admin-stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:16px; margin-bottom:24px; }
+    .admin-stat-card { background:#131b24; border-radius:16px; padding:16px; border:1px solid #1f2937; text-align:center; }
+    .admin-stat-card .num { font-size:28px; font-weight:700; color:#f0b90b; }
+    .admin-stat-card .label { font-size:13px; color:#7f92a8; margin-top:4px; }
+    .admin-panel-body .admin-tab-bar { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:20px; border-bottom:1px solid #1f2937; padding-bottom:12px; }
+    .admin-panel-body .admin-tab-bar .btn { flex:0 1 auto; min-width:80px; justify-content:center; font-size:12px; padding:6px 14px; }
+    .admin-panel-body .admin-tab-content { min-height:200px; }
+    .admin-panel-body .admin-tab-content .admin-list .item { background:#0d141e; padding:10px 14px; border-radius:12px; margin-bottom:6px; border-left:2px solid #2f3b4a; display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; font-size:13px; }
+    .admin-panel-body .admin-tab-content .admin-list .item .label { color:#7f92a8; min-width:80px; }
+    .admin-panel-body .admin-tab-content .admin-list .item .value { color:#b0c4d9; }
+    .admin-panel-body .admin-tab-content .admin-list .item .badge { font-size:11px; }
+    @media(max-width:600px) {
+      .admin-panel-header { padding:12px 16px; }
+      .admin-panel-body { padding:12px 16px 30px; }
+      .admin-stat-grid { grid-template-columns:1fr 1fr; }
     }
 
-    /* Notification */
     .notification-item { background:#0d141e; border-radius:10px; padding:10px 14px; margin-bottom:6px; border-left:3px solid #f0b90b; font-size:13px; }
     .notification-item .time { font-size:11px; color:#7f92a8; }
     .notification-item .badge { font-size:10px; }
+
+    .payment-method-card { background:#0d141e; border-radius:12px; padding:16px; border:1px solid #1f2937; margin-bottom:10px; }
+    .payment-method-card .address { font-family:monospace; font-size:14px; color:#b0c4d9; word-break:break-all; padding:8px; background:#1a1f2a; border-radius:8px; margin:6px 0; }
+    .payment-method-card .copy-btn { background:#1f2937; border:none; color:#e8edf5; padding:4px 12px; border-radius:40px; font-size:12px; cursor:pointer; transition:0.2s; }
+    .payment-method-card .copy-btn:hover { background:#2f3b4a; color:#f0b90b; }
   </style>
 </head>
 <body>
 
-<!-- ===== LOGIN / LANDING OVERLAY ===== -->
+<!-- LOGIN OVERLAY -->
 <div id="login-overlay">
   <div class="landing-container">
-    <!-- Hero -->
     <div class="landing-hero">
       <div class="logo">BINANCE<span>COIN</span></div>
       <h1>Trade Crypto. Buy &amp; Sell With Confidence.</h1>
@@ -311,8 +275,6 @@
         <span><i class="fas fa-bolt"></i> Fast &amp; Responsive</span>
       </div>
     </div>
-
-    <!-- What Is Crypto Trading? -->
     <div class="section">
       <h2 class="section-title">What Is Crypto Trading?</h2>
       <p class="section-sub">Crypto trading means buying and selling digital assets based on their market price. Users can potentially buy crypto when they believe the price may increase, sell when they believe it may decrease, monitor market prices, manage their portfolio, and review trading activity.</p>
@@ -320,49 +282,13 @@
         <i class="fas fa-exclamation-triangle" style="color:#f0b90b;margin-right:8px;"></i> Cryptocurrency prices can move quickly and trading involves risk.
       </div>
     </div>
-
-    <!-- How To Buy & Sell -->
     <div class="section">
       <h2 class="section-title">How To Buy &amp; Sell</h2>
       <div class="grid-2">
-        <div class="info-card">
-          <span class="step-num">01 — Select a Coin</span>
-          <h4>Choose</h4>
-          <p>Select the cryptocurrency you want to trade from the available markets.</p>
-          <span class="step-num" style="margin-top:12px;">02 — Check the Market</span>
-          <h4>Review</h4>
-          <p>Check the current price and available market information.</p>
-          <span class="step-num" style="margin-top:12px;">03 — Enter Amount</span>
-          <h4>Amount</h4>
-          <p>Enter how much you want to buy in USD or crypto units.</p>
-          <span class="step-num" style="margin-top:12px;">04 — Review</span>
-          <h4>Review</h4>
-          <p>Check the order details before confirming.</p>
-          <span class="step-num" style="margin-top:12px;">05 — Confirm Buy</span>
-          <h4>Confirm</h4>
-          <p>Confirm the purchase to execute the trade.</p>
-        </div>
-        <div class="info-card">
-          <span class="step-num">01 — Select Your Asset</span>
-          <h4>Choose</h4>
-          <p>Select the cryptocurrency you currently hold from your portfolio.</p>
-          <span class="step-num" style="margin-top:12px;">02 — Enter Amount</span>
-          <h4>Amount</h4>
-          <p>Enter the amount you want to sell.</p>
-          <span class="step-num" style="margin-top:12px;">03 — Review Price</span>
-          <h4>Market</h4>
-          <p>Check the current market price for the asset.</p>
-          <span class="step-num" style="margin-top:12px;">04 — Review Order</span>
-          <h4>Review</h4>
-          <p>Confirm the order details and expected proceeds.</p>
-          <span class="step-num" style="margin-top:12px;">05 — Confirm Sell</span>
-          <h4>Confirm</h4>
-          <p>Confirm the sell action to complete the trade.</p>
-        </div>
+        <div class="info-card"><span class="step-num">01 — Select a Coin</span><h4>Choose</h4><p>Select the cryptocurrency you want to trade from the available markets.</p><span class="step-num" style="margin-top:12px;">02 — Check the Market</span><h4>Review</h4><p>Check the current price and available market information.</p><span class="step-num" style="margin-top:12px;">03 — Enter Amount</span><h4>Amount</h4><p>Enter how much you want to buy in USD or crypto units.</p><span class="step-num" style="margin-top:12px;">04 — Review</span><h4>Review</h4><p>Check the order details before confirming.</p><span class="step-num" style="margin-top:12px;">05 — Confirm Buy</span><h4>Confirm</h4><p>Confirm the purchase to execute the trade.</p></div>
+        <div class="info-card"><span class="step-num">01 — Select Your Asset</span><h4>Choose</h4><p>Select the cryptocurrency you currently hold from your portfolio.</p><span class="step-num" style="margin-top:12px;">02 — Enter Amount</span><h4>Amount</h4><p>Enter the amount you want to sell.</p><span class="step-num" style="margin-top:12px;">03 — Review Price</span><h4>Market</h4><p>Check the current market price for the asset.</p><span class="step-num" style="margin-top:12px;">04 — Review Order</span><h4>Review</h4><p>Confirm the order details and expected proceeds.</p><span class="step-num" style="margin-top:12px;">05 — Confirm Sell</span><h4>Confirm</h4><p>Confirm the sell action to complete the trade.</p></div>
       </div>
     </div>
-
-    <!-- How It Works -->
     <div class="section">
       <h2 class="section-title">How It Works</h2>
       <div class="grid-4">
@@ -372,8 +298,6 @@
         <div class="info-card"><span class="icon"><i class="fas fa-wallet"></i></span><h4>Manage Portfolio</h4><p>Monitor your balance, assets and trading activity.</p></div>
       </div>
     </div>
-
-    <!-- Platform Features -->
     <div class="section">
       <h2 class="section-title">Built For Modern Traders</h2>
       <div class="trust-grid">
@@ -387,8 +311,6 @@
         <div class="trust-item"><i class="fas fa-bullseye"></i><span>Market Tracking</span></div>
       </div>
     </div>
-
-    <!-- Security -->
     <div class="section">
       <h2 class="section-title">Security First</h2>
       <div class="grid-3">
@@ -398,11 +320,9 @@
         <div class="info-card"><span class="icon"><i class="fas fa-circle-check"></i></span><h4>Transparent Trading</h4><p>Users see clear order information before confirmation.</p></div>
       </div>
     </div>
-
-    <!-- Trust -->
     <div class="section">
       <h2 class="section-title">Why Users Choose A Modern Trading Interface</h2>
-      <div class="trust-grid" style="grid-template-columns:repeat(auto-fit, minmax(150px,1fr));">
+      <div class="trust-grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));">
         <div class="trust-item"><i class="fas fa-hand-pointer"></i><span>Simple interface</span></div>
         <div class="trust-item"><i class="fas fa-chart-simple"></i><span>Clear market info</span></div>
         <div class="trust-item"><i class="fas fa-cart-plus"></i><span>Easy Buy/Sell</span></div>
@@ -412,8 +332,6 @@
         <div class="trust-item"><i class="fas fa-wallet"></i><span>Easy portfolio monitoring</span></div>
       </div>
     </div>
-
-    <!-- Live Markets (placeholder) -->
     <div class="section" id="landing-live-markets">
       <h2 class="section-title">Live Markets</h2>
       <p class="section-sub" style="margin-bottom:20px;">Market data will appear here when connected.</p>
@@ -424,8 +342,6 @@
         <div class="info-card" style="text-align:center;opacity:0.6;"><span class="icon"><i class="fas fa-coins"></i></span><h4>SOL</h4><p>$—</p></div>
       </div>
     </div>
-
-    <!-- Buy vs Sell -->
     <div class="section">
       <h2 class="section-title">Buy vs Sell</h2>
       <div class="grid-2">
@@ -436,8 +352,6 @@
         <i class="fas fa-triangle-exclamation" style="color:#f0b90b;margin-right:8px;"></i> Cryptocurrency markets are volatile. Trading involves risk and prices can rise or fall.
       </div>
     </div>
-
-    <!-- FAQ -->
     <div class="section">
       <h2 class="section-title">Frequently Asked Questions</h2>
       <div style="max-width:700px;margin:0 auto;">
@@ -451,8 +365,6 @@
         <div class="faq-item"><div class="q"><span>Is cryptocurrency trading risk-free?</span><i class="fas fa-chevron-down"></i></div><div class="a"><strong>No.</strong> Cryptocurrency trading involves financial risk and losses are possible.</div></div>
       </div>
     </div>
-
-    <!-- Support -->
     <div class="section">
       <div class="support-box">
         <h3 style="margin-bottom:6px;">Need Help?</h3>
@@ -460,27 +372,16 @@
         <button class="btn btn-primary" id="contactSupportBtn"><i class="fas fa-headset"></i> Contact Support</button>
       </div>
     </div>
-
-    <!-- Footer -->
     <div class="footer">
-      <div class="links">
-        <a href="#">About</a>
-        <a href="#">Trading</a>
-        <a href="#">Security</a>
-        <a href="#">FAQ</a>
-        <a href="#">Support</a>
-        <a href="#">Terms</a>
-        <a href="#">Privacy</a>
-      </div>
+      <div class="links"><a href="#">About</a><a href="#">Trading</a><a href="#">Security</a><a href="#">FAQ</a><a href="#">Support</a><a href="#">Terms</a><a href="#">Privacy</a></div>
       <div class="copy">© 2026 BINANCECOIN GET. All rights reserved.</div>
       <div class="disclaimer">Cryptocurrency trading involves risk. Past performance does not guarantee future results.</div>
     </div>
   </div>
 </div>
 
-<!-- ===== DASHBOARD WRAPPER ===== -->
+<!-- DASHBOARD WRAPPER -->
 <div id="dashboard-wrapper">
-  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="brand">BINANCE<span>COIN</span></div>
     <nav>
@@ -498,7 +399,6 @@
     <button class="logout-btn" id="sidebarLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
   </aside>
 
-  <!-- MAIN -->
   <div class="main">
     <div class="content" id="mainContent">
       <!-- HOME -->
@@ -512,17 +412,13 @@
           </div>
         </div>
         <div class="card"><div class="card-header"><span class="card-title">Markets</span></div><div id="homeCoinList"></div></div>
-        <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
-          <button class="btn-logout" id="mobileLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
+        <div style="display:flex;justify-content:center;margin:16px 0 8px;" class="mobile-logout-wrap"><button class="btn-logout" id="mobileLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
       </section>
 
       <!-- MARKETS -->
       <section class="page" id="page-markets">
         <div class="card"><div class="card-header"><span class="card-title">Live Prices</span></div><div id="marketCoinList"></div></div>
-        <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
-          <button class="btn-logout" id="mobileLogoutBtn2"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
+        <div style="display:flex;justify-content:center;margin:16px 0 8px;" class="mobile-logout-wrap"><button class="btn-logout" id="mobileLogoutBtn2"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
       </section>
 
       <!-- PORTFOLIO -->
@@ -532,9 +428,7 @@
           <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value" id="portfolioTotalValue">$0.00</div></div>
         </div></div>
         <div class="card"><div class="card-header"><span class="card-title">Holdings</span></div><div id="portfolioHoldings"></div></div>
-        <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
-          <button class="btn-logout" id="mobileLogoutBtn3"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
+        <div style="display:flex;justify-content:center;margin:16px 0 8px;" class="mobile-logout-wrap"><button class="btn-logout" id="mobileLogoutBtn3"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
       </section>
 
       <!-- DEPOSIT -->
@@ -548,26 +442,18 @@
           </div>
           <div class="field" id="methodSelector" style="display:none;">
             <label>Payment Method</label>
-            <div class="method-option" data-method="Binance Pay" onclick="selectMethod(this)">
-              <i class="fab fa-bitcoin" style="color:#f0b90b;"></i>
-              <div><strong>Binance Pay</strong><div style="font-size:11px;color:#7f92a8;">ID: 894307667</div></div>
-            </div>
-            <div class="method-option" data-method="TRC20" onclick="selectMethod(this)">
-              <i class="fas fa-coins" style="color:#22c55e;"></i>
-              <div><strong>TRC20</strong><div style="font-size:11px;color:#7f92a8;">TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7</div></div>
-            </div>
-            <div class="method-option" data-method="BEP20" onclick="selectMethod(this)">
-              <i class="fas fa-cube" style="color:#f0b90b;"></i>
-              <div><strong>BEP20</strong><div style="font-size:11px;color:#7f92a8;">0xdfd1138c7bfc2d15b7400fa43f3ca591679e0efa</div></div>
-            </div>
+            <div id="depositPaymentMethods"></div>
             <input type="hidden" id="selectedMethod" value="" />
+          </div>
+          <div class="field" id="orderIdField" style="display:none;">
+            <label>Payment Order ID / Transaction ID</label>
+            <input type="text" id="depositOrderId" placeholder="Enter your payment order ID" />
+            <div style="font-size:12px;color:#7f92a8;margin-top:4px;">Required — Enter the order ID from your payment</div>
           </div>
           <button class="btn btn-primary btn-block" id="submitDepositBtn"><i class="fas fa-paper-plane"></i> Submit Deposit Request</button>
         </div>
         <div class="card"><div class="card-header"><span class="card-title">Deposit History</span></div><div id="depositHistoryList"></div></div>
-        <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
-          <button class="btn-logout" id="mobileLogoutBtn4"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
+        <div style="display:flex;justify-content:center;margin:16px 0 8px;" class="mobile-logout-wrap"><button class="btn-logout" id="mobileLogoutBtn4"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
       </section>
 
       <!-- WITHDRAW -->
@@ -606,9 +492,7 @@
           <button class="btn btn-primary btn-block" id="submitWithdrawBtn"><i class="fas fa-paper-plane"></i> Submit Withdrawal Request</button>
         </div>
         <div class="card"><div class="card-header"><span class="card-title">Withdrawal History</span></div><div id="withdrawHistoryList"></div></div>
-        <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
-          <button class="btn-logout" id="mobileLogoutBtn5"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
+        <div style="display:flex;justify-content:center;margin:16px 0 8px;" class="mobile-logout-wrap"><button class="btn-logout" id="mobileLogoutBtn5"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
       </section>
 
       <!-- PROFILE -->
@@ -632,9 +516,7 @@
           <div class="card-header"><span class="card-title" style="color:#f0b90b;"><i class="fas fa-shield-alt"></i> Admin Panel</span></div>
           <button class="btn btn-primary btn-block" onclick="navigate('admin')"><i class="fas fa-cog"></i> Open Admin Dashboard</button>
         </div>
-        <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
-          <button class="btn-logout" id="mobileLogoutBtn6"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
+        <div style="display:flex;justify-content:center;margin:16px 0 8px;" class="mobile-logout-wrap"><button class="btn-logout" id="mobileLogoutBtn6"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
       </section>
 
       <!-- ADMIN -->
@@ -649,13 +531,10 @@
           <button class="btn btn-outline btn-sm" data-admin-tab="settings">Settings</button>
         </div>
         <div id="adminContent"><div class="text-muted">Select a tab</div></div>
-        <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
-          <button class="btn-logout" id="mobileLogoutBtn7"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
+        <div style="display:flex;justify-content:center;margin:16px 0 8px;" class="mobile-logout-wrap"><button class="btn-logout" id="mobileLogoutBtn7"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
       </section>
     </div>
 
-    <!-- BOTTOM NAV -->
     <nav class="bottom-nav" id="bottomNav">
       <a class="active" data-page="home"><i class="fas fa-home"></i><span>Home</span></a>
       <a data-page="markets"><i class="fas fa-chart-line"></i><span>Markets</span></a>
@@ -668,7 +547,7 @@
   </div>
 </div>
 
-<!-- ===== ADMIN LOGIN MODAL (Ctrl+P) ===== -->
+<!-- ADMIN LOGIN MODAL (Ctrl+P) -->
 <div class="modal-overlay admin-login-modal" id="adminLoginModal">
   <div class="modal">
     <div class="admin-icon"><i class="fas fa-shield-alt"></i></div>
@@ -678,7 +557,7 @@
       <label>Password</label>
       <div class="password-wrapper">
         <input type="password" id="adminPwdInput" placeholder="Enter admin password" autocomplete="off" />
-        <button class="toggle-pwd" id="toggleAdminPwd" type="button" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+        <button class="toggle-pwd" id="toggleAdminPwd" type="button"><i class="fas fa-eye"></i></button>
       </div>
       <div class="error-msg" id="adminPwdError"></div>
     </div>
@@ -689,7 +568,7 @@
   </div>
 </div>
 
-<!-- ===== ADMIN PANEL OVERLAY ===== -->
+<!-- ADMIN PANEL OVERLAY -->
 <div id="adminPanelOverlay">
   <div class="admin-panel-header">
     <div class="brand">BINANCE<span>COIN</span> · Admin</div>
@@ -713,6 +592,7 @@
       <button class="btn btn-outline btn-sm" data-admin-tab="withdrawals">Withdrawals</button>
       <button class="btn btn-outline btn-sm" data-admin-tab="users">Users</button>
       <button class="btn btn-outline btn-sm" data-admin-tab="coins">Coins</button>
+      <button class="btn btn-outline btn-sm" data-admin-tab="payments">Payments</button>
       <button class="btn btn-outline btn-sm" data-admin-tab="transactions">Transactions</button>
       <button class="btn btn-outline btn-sm" data-admin-tab="settings">Settings</button>
     </div>
@@ -737,12 +617,10 @@
 
 <!-- FIREBASE + APP -->
 <script type="module">
-  // ---- Firebase imports ----
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getDatabase, ref, set, push, onValue, get, update, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // ---- Firebase config ----
   const firebaseConfig = {
     apiKey: "AIzaSyDWZURvEtRrsYR9_1CuGmvj4QYX7X7BcK4",
     authDomain: "binance-coin-get.firebaseapp.com",
@@ -757,7 +635,6 @@
   const auth = getAuth(app);
   const db = getDatabase(app);
 
-  // ---- state ----
   let currentUser = null;
   let userData = null;
   let coinsData = {};
@@ -768,10 +645,8 @@
   let allUsers = {};
   let isAdmin = false;
   let priceInterval = null;
-  let longPressTimer = null;
   let isSubmittingDeposit = false;
 
-  // ---- DOM refs ----
   const $ = id => document.getElementById(id);
   const loginOverlay = $('login-overlay');
   const googleBtn = $('googleLoginBtn');
@@ -779,7 +654,6 @@
   const modalOverlay = $('modalOverlay');
   const dashboardWrapper = $('dashboard-wrapper');
 
-  // ---- Admin Panel refs ----
   const adminLoginModal = $('adminLoginModal');
   const adminPwdInput = $('adminPwdInput');
   const adminPwdError = $('adminPwdError');
@@ -808,7 +682,7 @@
     const rand = String(Math.floor(Math.random() * 10000)).padStart(4,'0');
     return prefix + '-' + ds + '-' + rand;
   }
-  
+
   function getCoinLogo(symbol) {
     const colors = {
       MXR:'#f0b90b', QTR:'#22c55e', VLX:'#3b82f6', AVQ:'#a855f7', ZVT:'#ec4899',
@@ -827,7 +701,6 @@
     return `<div class="coin-logo-svg" style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;background:${colors[symbol]||'#1f2937'};color:#0b0e14;">${symbol.slice(0,2)}</div>`;
   }
 
-  // ---- sound ----
   function playClickSound() {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -844,7 +717,6 @@
     } catch(e) { /* silent */ }
   }
 
-  // ---- navigation ----
   function navigate(page) {
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     const target = document.getElementById('page-'+page);
@@ -866,7 +738,6 @@
     });
   });
 
-  // ---- modal ----
   function openModal(title, sub, bodyHTML, actionsHTML) {
     $('modalTitle').textContent=title;
     $('modalSub').textContent=sub||'';
@@ -878,7 +749,6 @@
   window.closeModal = closeModal;
   modalOverlay.addEventListener('click', (e)=>{ if(e.target===modalOverlay) closeModal(); });
 
-  // ---- method selectors ----
   window.selectMethod = function(el) {
     document.querySelectorAll('.method-option').forEach(m=>m.classList.remove('selected'));
     el.classList.add('selected');
@@ -893,35 +763,27 @@
     playClickSound();
   };
 
-  // ============================================================
-  //  BALANCE MANAGEMENT (localStorage)
-  // ============================================================
+  // ---- Balance Management ----
   function initializeBalance(uid) {
     const key = 'bcg_balance_' + uid;
-    if (localStorage.getItem(key) === null) {
-      localStorage.setItem(key, '0');
-    }
+    if (localStorage.getItem(key) === null) localStorage.setItem(key, '0');
     return parseFloat(localStorage.getItem(key)) || 0;
   }
-
   function getBalance(uid) {
     const key = 'bcg_balance_' + uid;
     return parseFloat(localStorage.getItem(key)) || 0;
   }
-
   function setBalance(uid, amount) {
     const key = 'bcg_balance_' + uid;
     if (amount < 0) amount = 0;
     localStorage.setItem(key, amount.toString());
     return amount;
   }
-
   function updateBalanceUI() {
     if (!currentUser) return;
     const bal = getBalance(currentUser.uid);
     const formatted = formatUSD(bal);
-    const els = ['totalBalance', 'portfolioUsd', 'profileBalance', 'withdrawBalanceDisplay'];
-    els.forEach(id => {
+    ['totalBalance','portfolioUsd','profileBalance','withdrawBalanceDisplay'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.textContent = formatted;
     });
@@ -931,48 +793,34 @@
     document.getElementById('portfolioTotalValue').textContent = formatUSD(portVal);
   }
 
-  // ---- login ----
+  // ---- Login / Logout ----
   googleBtn.addEventListener('click', async () => {
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
     } catch (error) {
-      console.error("Login error:", error.code, error.message);
-      let msg = "Login failed. ";
-      switch(error.code) {
-        case 'auth/popup-closed-by-user': msg += "Popup was closed."; break;
-        case 'auth/popup-blocked': msg += "Popup blocked. Please allow popups."; break;
-        case 'auth/unauthorized-domain': msg += "Domain not authorized. Add it in Firebase Console."; break;
-        case 'auth/operation-not-allowed': msg += "Google Auth not enabled in Firebase Console."; break;
-        case 'auth/network-request-failed': msg += "Network error. Check connection."; break;
-        default: msg += error.message;
-      }
-      toast(msg, 'error');
+      console.error("Login error:", error);
+      toast('Login failed: ' + error.message, 'error');
     }
   });
 
-  // ---- logout ----
   function performLogout() {
     signOut(auth).then(() => {
-      currentUser = null;
-      userData = null;
+      currentUser = null; userData = null;
       loginOverlay.style.display = 'flex';
       dashboardWrapper.style.display = 'none';
       document.getElementById('adminPanelCard').style.display = 'none';
       isAdmin = false;
       if (priceInterval) clearInterval(priceInterval);
       toast('Logged out successfully', 'success');
-    }).catch((err) => {
-      toast('Logout error: ' + err.message, 'error');
-    });
+    }).catch((err) => toast('Logout error: ' + err.message, 'error'));
   }
 
-  // attach logout buttons
   document.querySelectorAll('#sidebarLogoutBtn, #mobileLogoutBtn, #mobileLogoutBtn2, #mobileLogoutBtn3, #mobileLogoutBtn4, #mobileLogoutBtn5, #mobileLogoutBtn6, #mobileLogoutBtn7, #bottomLogoutBtn').forEach(btn => {
     btn.addEventListener('click', performLogout);
   });
 
-  // ---- auth listener ----
+  // ---- Auth Listener ----
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       currentUser = user;
@@ -980,7 +828,6 @@
       dashboardWrapper.style.display = 'flex';
       
       let balance = initializeBalance(user.uid);
-      
       await loadUserData(user);
       if (userData) {
         const fbBalance = userData.virtualBalance || 0;
@@ -1007,8 +854,7 @@
     } else {
       loginOverlay.style.display = 'flex';
       dashboardWrapper.style.display = 'none';
-      currentUser = null;
-      userData = null;
+      currentUser = null; userData = null;
       if(priceInterval) clearInterval(priceInterval);
       document.getElementById('adminPanelCard').style.display = 'none';
       document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1016,7 +862,7 @@
     }
   });
 
-  // ---- load user data ----
+  // ---- Load User Data ----
   async function loadUserData(user) {
     const userRef = ref(db, 'users/'+user.uid);
     const snap = await get(userRef);
@@ -1052,12 +898,12 @@
     $('profileUid').textContent = 'UID: '+user.uid;
   }
 
-  // ---- Complete coin data with all tokens ----
+  // ---- Coin Data ----
   const ALL_COINS = {
     MXR: { price:13.00, change:0, symbol:'MXR', name:'Maxora', min:10, max:20, auto:true, status:'active', color:'#f0b90b' },
     QTR: { price:27.00, change:0, symbol:'QTR', name:'Quantrara', min:22, max:35, auto:true, status:'active', color:'#22c55e' },
     VLX: { price:42.00, change:0, symbol:'VLX', name:'Veltrix', min:38, max:50, auto:true, status:'active', color:'#3b82f6' },
-    AVQ: { price:8.50, change:0, symbol:'AVQ', name:'Avenqor', min:657, max:1782, auto:true, status:'active', color:'#a855f7' },
+    AVQ: { price:8.50, change:0, symbol:'AVQ', name:'Avenqor', min:6, max:12, auto:true, status:'active', color:'#a855f7' },
     ZVT: { price:65.00, change:0, symbol:'ZVT', name:'Zorvanta', min:55, max:75, auto:true, status:'active', color:'#ec4899' },
     NXL: { price:18.00, change:0, symbol:'NXL', name:'Nexalune', min:14, max:22, auto:true, status:'active', color:'#f59e0b' },
     ORV: { price:31.00, change:0, symbol:'ORV', name:'Orvion', min:26, max:38, auto:true, status:'active', color:'#06b6d4' },
@@ -1112,18 +958,19 @@
     SVR: { price:17.43, change:0, symbol:'SVR', name:'Sevora', min:14.50, max:20.50, auto:true, status:'active', color:'#06b6d4' }
   };
 
-  // ---- load coins ----
   async function loadCoins() {
     const coinsRef = ref(db, 'coins');
     const snap = await get(coinsRef);
     if(snap.exists()) {
       coinsData = snap.val();
-      let needsUpdate = false;
       for(const [sym, data] of Object.entries(ALL_COINS)) {
         if(!coinsData[sym]) {
           coinsData[sym] = data;
           await set(ref(db, 'coins/'+sym), data);
-          needsUpdate = true;
+        } else {
+          // Ensure min/max exist
+          if (coinsData[sym].min === undefined) coinsData[sym].min = data.min || 0;
+          if (coinsData[sym].max === undefined) coinsData[sym].max = data.max || 999;
         }
       }
     } else {
@@ -1135,8 +982,8 @@
   async function updateCoinPrice(symbol, newPrice, updateDb=true) {
     if(newPrice < 0.01) return toast('Price too low','error');
     const coin = coinsData[symbol];
-    if(coin.min && newPrice < coin.min) return toast(`Price below minimum ${formatUSD(coin.min)}`,'error');
-    if(coin.max && newPrice > coin.max) return toast(`Price above maximum ${formatUSD(coin.max)}`,'error');
+    if(coin.min !== undefined && newPrice < coin.min) return toast(`Price below minimum ${formatUSD(coin.min)}`,'error');
+    if(coin.max !== undefined && newPrice > coin.max) return toast(`Price above maximum ${formatUSD(coin.max)}`,'error');
     coin.price = newPrice;
     if(updateDb) {
       const coinRef = ref(db, 'coins/'+symbol);
@@ -1146,28 +993,42 @@
     toast(`${symbol} price updated to ${formatUSD(newPrice)}`,'success');
   }
 
-  // ---- load deposits ----
+  async function updateCoinFull(symbol, data) {
+    const coin = coinsData[symbol];
+    if(!coin) return toast('Coin not found','error');
+    // Validate
+    if (data.min > data.max) return toast('Minimum cannot be greater than Maximum','error');
+    if (data.current < data.min) return toast('Current price cannot be below Minimum','error');
+    if (data.current > data.max) return toast('Current price cannot be above Maximum','error');
+    if (data.min < 0 || data.max < 0 || data.current < 0) return toast('Prices cannot be negative','error');
+    coin.min = data.min;
+    coin.max = data.max;
+    coin.price = data.current;
+    coin.change = data.change || 0;
+    const coinRef = ref(db, 'coins/'+symbol);
+    await update(coinRef, { min: data.min, max: data.max, price: data.current, change: coin.change });
+    renderAll();
+    toast(`${symbol} updated successfully`,'success');
+  }
+
   async function loadDeposits() {
     const depRef = ref(db, 'deposits');
     const snap = await get(depRef);
     allDeposits = snap.exists() ? Object.values(snap.val()) : [];
   }
 
-  // ---- load withdrawals ----
   async function loadWithdrawals() {
     const wdRef = ref(db, 'withdrawals');
     const snap = await get(wdRef);
     allWithdrawals = snap.exists() ? Object.values(snap.val()) : [];
   }
 
-  // ---- load transactions ----
   async function loadTransactions() {
     const txRef = ref(db, 'transactions');
     const snap = await get(txRef);
     allTransactions = snap.exists() ? Object.values(snap.val()) : [];
   }
 
-  // ---- admin check ----
   async function checkAdmin() {
     const adminRef = ref(db, 'settings/admins');
     const snap = await get(adminRef);
@@ -1181,65 +1042,20 @@
     }
   }
 
-  // ---- load all users ----
   async function loadAllUsers() {
     const usersRef = ref(db, 'users');
     const snap = await get(usersRef);
     if(snap.exists()) allUsers = snap.val();
   }
 
-  // ---- long press handler ----
-  function setupLongPress() {
-    const area = document.getElementById('adminEntryArea');
-    let pressTimer = null;
-    
-    const startPress = () => {
-      pressTimer = setTimeout(() => {
-        if (isAdmin) {
-          toast('Admin access already granted', 'success');
-          navigate('admin');
-        } else {
-          checkAdmin().then(() => {
-            if (isAdmin) {
-              toast('Admin access granted!', 'success');
-              document.getElementById('adminPanelCard').style.display = 'block';
-              navigate('admin');
-            } else {
-              toast('Admin access denied. Contact administrator.', 'error');
-            }
-          });
-        }
-      }, 5000);
-    };
-    
-    const endPress = () => {
-      if (pressTimer) {
-        clearTimeout(pressTimer);
-        pressTimer = null;
-      }
-    };
-    
-    area.addEventListener('mousedown', startPress);
-    area.addEventListener('mouseup', endPress);
-    area.addEventListener('mouseleave', endPress);
-    area.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      startPress();
-    });
-    area.addEventListener('touchend', endPress);
-    area.addEventListener('touchcancel', endPress);
-  }
-
-  // ---- status helper ----
   function getDisplayStatus(status) {
     const map = {
       'PENDING': 'Pending Review',
       'APPROVED': 'Approved',
       'REJECTED': 'Rejected',
-      'CONFIRMED': 'Completed',
+      'COMPLETED': 'Completed',
       'CANCELLED': 'Cancelled',
-      'FAILED': 'Failed',
-      'COMPLETED': 'Completed'
+      'FAILED': 'Failed'
     };
     return map[status] || status || 'Pending Review';
   }
@@ -1250,7 +1066,6 @@
       'PENDING': 'badge-pending',
       'APPROVED': 'badge-approved',
       'REJECTED': 'badge-rejected',
-      'CONFIRMED': 'badge-completed',
       'COMPLETED': 'badge-completed',
       'CANCELLED': 'badge-cancelled',
       'FAILED': 'badge-failed'
@@ -1258,7 +1073,7 @@
     return map[s] || 'badge-pending';
   }
 
-  // ---- render all ----
+  // ---- Render Functions ----
   function renderAll() {
     renderHome();
     renderMarkets();
@@ -1267,6 +1082,7 @@
     renderDepositHistory();
     renderWithdrawHistory();
     renderNotifications();
+    renderPaymentMethods();
     if(isAdmin) {
       const activeTab = document.querySelector('[data-admin-tab].btn-primary');
       if(activeTab) {
@@ -1276,6 +1092,7 @@
         else if(tab==='deposits') renderAdminDeposits();
         else if(tab==='withdrawals') renderAdminWithdrawals();
         else if(tab==='coins') renderAdminCoins();
+        else if(tab==='payments') renderAdminPayments();
         else if(tab==='transactions') renderAdminTransactions();
         else if(tab==='settings') renderAdminSettings();
       }
@@ -1406,12 +1223,11 @@
     } else {
       userDeps.forEach(d => {
         const status = d.status || 'PENDING';
-        const displayStatus = getDisplayStatus(status);
         const badgeClass = getBadgeClass(status);
         html += `<div class="flex-between deposit-item">
           <span style="font-size:12px;">${d.requestId || d.orderId || '—'}</span>
           <span>${formatUSD(d.amount)}</span>
-          <span class="badge ${badgeClass}">${displayStatus}</span>
+          <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
           <span class="text-muted" style="font-size:11px;">${new Date(d.createdAt || Date.now()).toLocaleDateString()}</span>
         </div>`;
       });
@@ -1427,12 +1243,11 @@
     } else {
       userWds.forEach(d => {
         const status = d.status || 'PENDING';
-        const displayStatus = getDisplayStatus(status);
         const badgeClass = getBadgeClass(status);
         html += `<div class="flex-between deposit-item">
           <span style="font-size:12px;">${d.requestId || d.withdrawalId || '—'}</span>
           <span>${formatUSD(d.amount)}</span>
-          <span class="badge ${badgeClass}">${displayStatus}</span>
+          <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
           <span class="text-muted" style="font-size:11px;">${new Date(d.createdAt || Date.now()).toLocaleDateString()}</span>
         </div>`;
       });
@@ -1459,19 +1274,65 @@
     container.innerHTML = html;
   }
 
-  // ---- deposit amount change handler ----
+  function renderPaymentMethods() {
+    const container = document.getElementById('depositPaymentMethods');
+    if (!container) return;
+    const methods = getPaymentMethods();
+    const activeMethods = methods.filter(m => m.status !== 'disabled');
+    if (activeMethods.length === 0) {
+      container.innerHTML = '<div class="text-muted">No active payment methods</div>';
+      return;
+    }
+    let html = '';
+    activeMethods.forEach(m => {
+      const address = m.address || m.id || '';
+      html += `<div class="payment-method-card" data-method="${m.name}">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <strong>${m.name}</strong>
+          <span class="badge badge-confirmed">Active</span>
+        </div>
+        ${address ? `<div class="address">${address}</div>` : ''}
+        ${address ? `<button class="copy-btn" data-copy="${address}"><i class="fas fa-copy"></i> Copy ${m.name.includes('Binance') ? 'ID' : 'Address'}</button>` : ''}
+        <div style="margin-top:6px;font-size:12px;color:#7f92a8;">${m.description || ''}</div>
+      </div>`;
+    });
+    container.innerHTML = html;
+    container.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = btn.dataset.copy;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => toast('Address copied!', 'success'));
+        } else {
+          // Fallback
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+          toast('Address copied!', 'success');
+        }
+      });
+    });
+  }
+
+  // ---- Deposit Amount Change ----
   document.getElementById('depositAmount').addEventListener('input', function() {
     const val = parseFloat(this.value);
+    const methodSelector = document.getElementById('methodSelector');
+    const orderIdField = document.getElementById('orderIdField');
     if (val && val >= 1) {
-      document.getElementById('methodSelector').style.display = 'block';
+      methodSelector.style.display = 'block';
+      orderIdField.style.display = 'block';
     } else {
-      document.getElementById('methodSelector').style.display = 'none';
+      methodSelector.style.display = 'none';
+      orderIdField.style.display = 'none';
       document.getElementById('selectedMethod').value = '';
       document.querySelectorAll('.method-option').forEach(m => m.classList.remove('selected'));
     }
   });
 
-  // ---- buy modal ----
+  // ---- Buy Modal ----
   function openBuyModal(symbol) {
     const coin = coinsData[symbol];
     if(!coin) return toast('Coin not found','error');
@@ -1520,7 +1381,7 @@
     });
   }
 
-  // ---- sell modal ----
+  // ---- Sell Modal ----
   function openSellModal(symbol) {
     const coin = coinsData[symbol];
     if(!coin) return toast('Coin not found','error');
@@ -1552,7 +1413,7 @@
     });
   }
 
-  // ---- deposit request ----
+  // ---- Deposit Request ----
   document.getElementById('submitDepositBtn').addEventListener('click', async ()=>{
     if(!currentUser) return toast('Login required','error');
     if(isSubmittingDeposit) return;
@@ -1561,6 +1422,8 @@
     if(!amount || amount<1) return toast('Enter amount (min $1)','error');
     const method = document.getElementById('selectedMethod').value;
     if(!method) return toast('Please select a payment method','error');
+    const orderId = document.getElementById('depositOrderId').value.trim();
+    if(!orderId) return toast('Payment Order ID is required.','error');
     
     isSubmittingDeposit = true;
     document.getElementById('submitDepositBtn').disabled = true;
@@ -1572,6 +1435,7 @@
       const body = `
         <div class="field"><label>Method</label><div><strong>${method}</strong></div></div>
         <div class="field"><label>Amount</label><div>${formatUSD(amount)}</div></div>
+        <div class="field"><label>Order ID</label><div><strong>${orderId}</strong></div></div>
         <div class="field"><label>Request ID</label><div><strong>${requestId}</strong></div></div>
         <div class="field"><label>Status</label><div><span class="badge badge-pending">Pending Review</span></div></div>
         <div class="deposit-success-message">
@@ -1590,13 +1454,16 @@
         userEmail: userData.email || '',
         amount, 
         method, 
+        paymentOrderId: orderId,
         status: 'PENDING', 
         createdAt: serverTimestamp()
       });
       
       toast('Deposit request submitted. Awaiting approval.', 'success');
       document.getElementById('depositAmount').value = '';
+      document.getElementById('depositOrderId').value = '';
       document.getElementById('methodSelector').style.display = 'none';
+      document.getElementById('orderIdField').style.display = 'none';
       document.querySelectorAll('.method-option').forEach(m=>m.classList.remove('selected'));
       document.getElementById('selectedMethod').value = '';
       
@@ -1611,7 +1478,7 @@
     }
   });
 
-  // ---- withdrawal request ----
+  // ---- Withdrawal Request ----
   document.getElementById('submitWithdrawBtn').addEventListener('click', async ()=>{
     if(!currentUser) return toast('Login required','error');
     const amount = parseFloat(document.getElementById('withdrawAmount').value);
@@ -1640,7 +1507,6 @@
     openModal('Confirm Withdrawal', 'Virtual withdrawal request', body, actions);
     
     document.getElementById('confirmWithdrawRequest').addEventListener('click', async ()=>{
-      // Reserve funds (deduct from available, hold as reserved in localStorage)
       const newBalance = getBalance(currentUser.uid) - amount;
       if (newBalance < 0) {
         toast('Insufficient balance','error');
@@ -1673,7 +1539,7 @@
     });
   });
 
-  // ---- admin render functions (existing) ----
+  // ---- Admin Render Functions ----
   function renderAdminOverview() {
     const container = document.getElementById('adminContent');
     const totalUsers = Object.keys(allUsers).length || 0;
@@ -1688,7 +1554,6 @@
     const pendingWithdrawals = allWithdrawals.filter(d=>d.status==='PENDING').length;
     const totalTrades = allTransactions.filter(t=>t.type==='BUY'||t.type==='SELL').length;
     const totalTx = allTransactions.length;
-    const totalCoins = Object.keys(coinsData).length;
     const activeCoins = Object.values(coinsData).filter(c=>c.status !== 'disabled').length;
     
     let html = `<div class="stat-grid">
@@ -1731,10 +1596,9 @@
     } else {
       for(const dep of allDeposits.slice().reverse()) {
         const status = dep.status || 'PENDING';
-        const displayStatus = getDisplayStatus(status);
         const badgeClass = getBadgeClass(status);
         const isPending = status === 'PENDING';
-        html += `<div class="item flex-between"><span>${dep.requestId || dep.orderId || '—'}</span><span>${dep.userName||'User'}</span><span>${formatUSD(dep.amount)}</span><span class="badge ${badgeClass}">${displayStatus}</span>
+        html += `<div class="item flex-between"><span>${dep.requestId || dep.orderId || '—'}</span><span>${dep.userName||'User'}</span><span>${formatUSD(dep.amount)}</span><span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
           ${isPending ? `<button class="btn btn-sm btn-success" data-approve-dep="${dep.requestId || dep.orderId}">Approve</button><button class="btn btn-sm btn-danger" data-reject-dep="${dep.requestId || dep.orderId}">Reject</button>` : ''}
         </div>`;
       }
@@ -1745,12 +1609,16 @@
       el.addEventListener('click', async ()=>{
         const requestId = el.dataset.approveDep;
         await processDeposit(requestId, 'APPROVED');
+        renderAdminDeposits();
+        renderAll();
       });
     });
     document.querySelectorAll('[data-reject-dep]').forEach(el=>{
       el.addEventListener('click', async ()=>{
         const requestId = el.dataset.rejectDep;
         await processDeposit(requestId, 'REJECTED');
+        renderAdminDeposits();
+        renderAll();
       });
     });
   }
@@ -1785,7 +1653,6 @@
         if(dep.uid === currentUser?.uid) {
           userData.virtualBalance = newBalance;
         }
-        // Add notification
         addNotification(dep.uid, `Deposit of ${formatUSD(dep.amount)} approved.`);
       }
     } else {
@@ -1796,7 +1663,6 @@
     await loadTransactions();
     await loadAllUsers();
     renderAll();
-    renderAdminDeposits();
     updateAdminStats();
   }
 
@@ -1809,10 +1675,9 @@
     } else {
       for(const wd of allWithdrawals.slice().reverse()) {
         const status = wd.status || 'PENDING';
-        const displayStatus = getDisplayStatus(status);
         const badgeClass = getBadgeClass(status);
         const isPending = status === 'PENDING';
-        html += `<div class="item flex-between"><span>${wd.requestId || wd.withdrawalId || '—'}</span><span>${wd.userName||'User'}</span><span>${formatUSD(wd.amount)}</span><span class="badge ${badgeClass}">${displayStatus}</span>
+        html += `<div class="item flex-between"><span>${wd.requestId || wd.withdrawalId || '—'}</span><span>${wd.userName||'User'}</span><span>${formatUSD(wd.amount)}</span><span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
           ${isPending ? `<button class="btn btn-sm btn-success" data-approve-wd="${wd.requestId || wd.withdrawalId}">Approve</button><button class="btn btn-sm btn-danger" data-reject-wd="${wd.requestId || wd.withdrawalId}">Reject</button>` : ''}
         </div>`;
       }
@@ -1823,12 +1688,16 @@
       el.addEventListener('click', async ()=>{
         const requestId = el.dataset.approveWd;
         await processWithdrawal(requestId, 'APPROVED');
+        renderAdminWithdrawals();
+        renderAll();
       });
     });
     document.querySelectorAll('[data-reject-wd]').forEach(el=>{
       el.addEventListener('click', async ()=>{
         const requestId = el.dataset.rejectWd;
         await processWithdrawal(requestId, 'REJECTED');
+        renderAdminWithdrawals();
+        renderAll();
       });
     });
   }
@@ -1851,9 +1720,6 @@
       const userRef = ref(db, 'users/'+wd.uid);
       const userSnap = await get(userRef);
       if(userSnap.exists()) {
-        const user = userSnap.val();
-        // Funds already deducted when request was made (reserved)
-        // Just create transaction record
         const txRef = push(ref(db, 'transactions'));
         await set(txRef, { uid: wd.uid, type: 'WITHDRAWAL', amount: wd.amount, coin: 'USD', status: 'COMPLETED', timestamp: serverTimestamp() });
         toast(`Withdrawal ${requestId} approved, ${formatUSD(wd.amount)} deducted`, 'success');
@@ -1878,71 +1744,39 @@
     await loadTransactions();
     await loadAllUsers();
     renderAll();
-    renderAdminWithdrawals();
     updateAdminStats();
   }
 
   function renderAdminCoins() {
     const container = document.getElementById('adminContent');
-    let html = '<div class="admin-list">';
+    let html = `<div class="table-responsive"><table><thead><tr><th>Coin</th><th>Min</th><th>Current</th><th>Max</th><th>24H</th><th>Status</th><th>Action</th></tr></thead><tbody>`;
     for(const [sym, coin] of Object.entries(coinsData)) {
       const status = coin.status || 'active';
-      html += `<div class="item flex-between" style="flex-wrap:wrap;gap:6px;">
-        <span>${getCoinLogo(sym)} <strong>${coin.name}</strong> (${sym})</span>
-        <span>${formatUSD(coin.price)}</span>
-        <span style="font-size:11px;color:#7f92a8;">Min: ${formatUSD(coin.min||0)} Max: ${formatUSD(coin.max||999)}</span>
-        <span style="font-size:11px;color:#7f92a8;">Status: ${status}</span>
-        <span><input type="number" id="priceInput_${sym}" value="${coin.price}" step="0.01" min="0.01" style="width:70px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:12px;" /></span>
-        <button class="btn btn-sm btn-outline" data-set-price="${sym}">Set</button>
-        <button class="btn btn-sm btn-outline" data-inc-price="${sym}" data-pct="1">+1%</button>
-        <button class="btn btn-sm btn-outline" data-inc-price="${sym}" data-pct="5">+5%</button>
-        <button class="btn btn-sm btn-outline" data-inc-price="${sym}" data-pct="-1">-1%</button>
-        <button class="btn btn-sm btn-outline" data-inc-price="${sym}" data-pct="-5">-5%</button>
-        <button class="btn btn-sm ${status === 'disabled' ? 'btn-success' : 'btn-outline'}" data-toggle-status="${sym}">${status === 'disabled' ? 'Enable' : 'Disable'}</button>
-        <button class="btn btn-sm btn-danger" data-delete-coin="${sym}">×</button>
-      </div>`;
+      html += `<tr>
+        <td><strong>${coin.name}</strong> (${sym})</td>
+        <td>${formatUSD(coin.min||0)}</td>
+        <td class="text-gold">${formatUSD(coin.price)}</td>
+        <td>${formatUSD(coin.max||999)}</td>
+        <td class="${(coin.change||0)>=0?'text-green':'text-red'}">${(coin.change||0)>=0?'+':''}${(coin.change||0).toFixed(2)}%</td>
+        <td><span class="badge ${status==='disabled'?'badge-pending':'badge-confirmed'}">${status}</span></td>
+        <td>
+          <button class="btn btn-sm btn-primary" data-edit-coin="${sym}"><i class="fas fa-edit"></i></button>
+          <button class="btn btn-sm ${status==='disabled'?'btn-success':'btn-outline'}" data-toggle-status="${sym}">${status==='disabled'?'Enable':'Disable'}</button>
+          <button class="btn btn-sm btn-danger" data-delete-coin="${sym}"><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>`;
     }
-    html += `<div class="item" style="border-left-color:#f0b90b;">
-      <button class="btn btn-primary btn-sm" onclick="document.getElementById('addCoinForm').style.display='block'">+ Add Coin</button>
-      <div id="addCoinForm" style="display:none;width:100%;margin-top:10px;">
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <input type="text" id="newCoinName" placeholder="Name" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:120px;" />
-          <input type="text" id="newCoinSymbol" placeholder="Symbol" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:80px;" />
-          <input type="number" id="newCoinPrice" placeholder="Price" step="0.01" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:80px;" />
-          <input type="number" id="newCoinMin" placeholder="Min" step="0.01" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:70px;" />
-          <input type="number" id="newCoinMax" placeholder="Max" step="0.01" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:70px;" />
-          <button class="btn btn-sm btn-success" id="confirmAddCoin">Add</button>
-          <button class="btn btn-sm btn-outline" onclick="document.getElementById('addCoinForm').style.display='none'">Cancel</button>
-        </div>
-      </div>
-    </div>`;
-    html += '</div>';
+    html += `<tr><td colspan="7"><button class="btn btn-primary" id="addCoinBtn"><i class="fas fa-plus"></i> Add Coin</button></td></tr>`;
+    html += '</tbody></table></div>';
     container.innerHTML = html;
-    
-    document.querySelectorAll('[data-set-price]').forEach(el=>{
+
+    document.querySelectorAll('[data-edit-coin]').forEach(el=>{
       el.addEventListener('click', ()=>{
-        const sym = el.dataset.setPrice;
-        const input = document.getElementById('priceInput_'+sym);
-        const val = parseFloat(input.value);
-        if(!val || val<=0) return toast('Invalid price','error');
-        updateCoinPrice(sym, val);
-        renderAdminCoins();
+        const sym = el.dataset.editCoin;
+        openEditCoinModal(sym);
       });
     });
-    
-    document.querySelectorAll('[data-inc-price]').forEach(el=>{
-      el.addEventListener('click', async ()=>{
-        const sym = el.dataset.incPrice;
-        const pct = parseFloat(el.dataset.pct);
-        const coin = coinsData[sym];
-        if(!coin) return;
-        const newPrice = coin.price * (1 + pct/100);
-        if (newPrice < 0.01) return toast('Price too low','error');
-        await updateCoinPrice(sym, newPrice);
-        renderAdminCoins();
-      });
-    });
-    
+
     document.querySelectorAll('[data-toggle-status]').forEach(el=>{
       el.addEventListener('click', async ()=>{
         const sym = el.dataset.toggleStatus;
@@ -1957,37 +1791,260 @@
         renderAll();
       });
     });
-    
+
     document.querySelectorAll('[data-delete-coin]').forEach(el=>{
       el.addEventListener('click', async ()=>{
         const sym = el.dataset.deleteCoin;
-        if(!confirm(`Are you sure you want to remove ${sym}? This will not delete user holdings.`)) return;
+        if(!confirm(`Are you sure you want to remove ${sym}?`)) return;
         const coinRef = ref(db, 'coins/'+sym);
         await set(coinRef, null);
         delete coinsData[sym];
         toast(`${sym} removed`,'success');
-        renderAll();
         renderAdminCoins();
+        renderAll();
       });
     });
-    
-    document.getElementById('confirmAddCoin')?.addEventListener('click', async ()=>{
-      const name = document.getElementById('newCoinName').value.trim();
-      const symbol = document.getElementById('newCoinSymbol').value.trim().toUpperCase();
-      const price = parseFloat(document.getElementById('newCoinPrice').value);
-      const min = parseFloat(document.getElementById('newCoinMin').value) || 0;
-      const max = parseFloat(document.getElementById('newCoinMax').value) || 999;
-      if(!name || !symbol || !price || price<=0) return toast('Invalid coin data','error');
-      if(coinsData[symbol]) return toast('Symbol already exists','error');
-      const newCoin = { price, change:0, symbol, name, min, max, auto:true, status:'active', color:'#f0b90b' };
-      const coinRef = ref(db, 'coins/'+symbol);
-      await set(coinRef, newCoin);
-      coinsData[symbol] = newCoin;
-      toast(`Coin ${name} (${symbol}) added`,'success');
-      document.getElementById('addCoinForm').style.display = 'none';
-      renderAll();
-      renderAdminCoins();
+
+    document.getElementById('addCoinBtn')?.addEventListener('click', ()=>{
+      openEditCoinModal(null);
     });
+  }
+
+  function openEditCoinModal(symbol) {
+    const isEdit = symbol !== null;
+    const coin = isEdit ? coinsData[symbol] : null;
+    const title = isEdit ? `Edit ${symbol}` : 'Add New Coin';
+    const body = `
+      <div class="field"><label>Coin Name</label><input type="text" id="ec_name" value="${isEdit ? coin.name : ''}" placeholder="e.g. Bitcoin" /></div>
+      <div class="field"><label>Symbol</label><input type="text" id="ec_symbol" value="${isEdit ? symbol : ''}" placeholder="e.g. BTC" ${isEdit ? 'readonly' : ''} /></div>
+      <div class="field"><label>Minimum Price</label><input type="number" id="ec_min" value="${isEdit ? coin.min : 0}" step="0.01" min="0" /></div>
+      <div class="field"><label>Current Price</label><input type="number" id="ec_current" value="${isEdit ? coin.price : 0}" step="0.01" min="0" /></div>
+      <div class="field"><label>Maximum Price</label><input type="number" id="ec_max" value="${isEdit ? coin.max : 999}" step="0.01" min="0" /></div>
+      <div class="field"><label>24H Change (%)</label><input type="number" id="ec_change" value="${isEdit ? coin.change : 0}" step="0.01" /></div>
+      <div class="field"><label>Status</label>
+        <select id="ec_status">
+          <option value="active" ${isEdit && coin.status==='active' ? 'selected' : ''}>Active</option>
+          <option value="disabled" ${isEdit && coin.status==='disabled' ? 'selected' : ''}>Disabled</option>
+        </select>
+      </div>
+      ${isEdit ? `<div class="field"><label>Range Slider</label>
+        <div class="range-control">
+          <span style="font-size:12px;color:#7f92a8;">${formatUSD(parseFloat(document.getElementById('ec_min')?.value || 0))}</span>
+          <input type="range" id="ec_range" min="${coin.min||0}" max="${coin.max||999}" step="0.01" value="${coin.price}" />
+          <span style="font-size:12px;color:#7f92a8;">${formatUSD(parseFloat(document.getElementById('ec_max')?.value || 999))}</span>
+        </div>
+      </div>` : ''}
+      <div class="field" style="display:flex;gap:8px;flex-wrap:wrap;">
+        ${isEdit ? `<button class="btn btn-sm btn-outline" data-pct="-10">-10%</button><button class="btn btn-sm btn-outline" data-pct="-5">-5%</button><button class="btn btn-sm btn-outline" data-pct="-1">-1%</button>` : ''}
+        ${isEdit ? `<span style="padding:6px 12px;color:#f0b90b;font-weight:600;">${formatUSD(parseFloat(document.getElementById('ec_current')?.value || 0))}</span>` : ''}
+        ${isEdit ? `<button class="btn btn-sm btn-outline" data-pct="1">+1%</button><button class="btn btn-sm btn-outline" data-pct="5">+5%</button><button class="btn btn-sm btn-outline" data-pct="10">+10%</button>` : ''}
+      </div>
+    `;
+    const actions = `<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="ec_save">${isEdit ? 'Save Changes' : 'Add Coin'}</button>`;
+    openModal(title, isEdit ? 'Edit coin configuration' : 'Add a new cryptocurrency', body, actions);
+
+    // Range slider sync
+    if (isEdit) {
+      const range = document.getElementById('ec_range');
+      const currentInput = document.getElementById('ec_current');
+      const minInput = document.getElementById('ec_min');
+      const maxInput = document.getElementById('ec_max');
+      if (range && currentInput) {
+        range.addEventListener('input', () => {
+          const val = parseFloat(range.value);
+          currentInput.value = val;
+        });
+        currentInput.addEventListener('input', () => {
+          let val = parseFloat(currentInput.value);
+          const min = parseFloat(minInput.value) || 0;
+          const max = parseFloat(maxInput.value) || 999;
+          if (val < min) val = min;
+          if (val > max) val = max;
+          currentInput.value = val;
+          range.value = val;
+        });
+        minInput.addEventListener('input', () => {
+          const min = parseFloat(minInput.value) || 0;
+          range.min = min;
+        });
+        maxInput.addEventListener('input', () => {
+          const max = parseFloat(maxInput.value) || 999;
+          range.max = max;
+        });
+        // Quick price buttons
+        document.querySelectorAll('[data-pct]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const pct = parseFloat(btn.dataset.pct);
+            const current = parseFloat(currentInput.value) || 0;
+            const min = parseFloat(minInput.value) || 0;
+            const max = parseFloat(maxInput.value) || 999;
+            let newPrice = current * (1 + pct/100);
+            if (newPrice < min) newPrice = min;
+            if (newPrice > max) newPrice = max;
+            currentInput.value = newPrice;
+            range.value = newPrice;
+          });
+        });
+      }
+    }
+
+    document.getElementById('ec_save').addEventListener('click', async ()=>{
+      const name = document.getElementById('ec_name').value.trim();
+      const sym = document.getElementById('ec_symbol').value.trim().toUpperCase();
+      const min = parseFloat(document.getElementById('ec_min').value) || 0;
+      const current = parseFloat(document.getElementById('ec_current').value) || 0;
+      const max = parseFloat(document.getElementById('ec_max').value) || 999;
+      const change = parseFloat(document.getElementById('ec_change').value) || 0;
+      const status = document.getElementById('ec_status').value;
+
+      if (!name) return toast('Coin name is required','error');
+      if (!sym) return toast('Symbol is required','error');
+      if (min < 0 || current < 0 || max < 0) return toast('Prices cannot be negative','error');
+      if (min > max) return toast('Minimum cannot be greater than Maximum','error');
+      if (current < min) return toast('Current price cannot be below Minimum','error');
+      if (current > max) return toast('Current price cannot be above Maximum','error');
+
+      if (!isEdit && coinsData[sym]) return toast('Symbol already exists','error');
+
+      const coinData = { name, min, price: current, max, change, status, auto: true, color: '#f0b90b' };
+
+      if (!isEdit) {
+        const coinRef = ref(db, 'coins/'+sym);
+        await set(coinRef, { ...coinData, symbol: sym });
+        coinsData[sym] = coinData;
+        toast(`Coin ${name} (${sym}) added`,'success');
+      } else {
+        await updateCoinFull(sym, { min, current, max, change });
+      }
+      closeModal();
+      renderAdminCoins();
+      renderAll();
+    });
+  }
+
+  function renderAdminPayments() {
+    const container = document.getElementById('adminContent');
+    const methods = getPaymentMethods();
+    let html = `<div style="margin-bottom:16px;"><button class="btn btn-primary" id="addPaymentBtn"><i class="fas fa-plus"></i> Add Payment Method</button></div>`;
+    html += '<div class="admin-list">';
+    if (methods.length === 0) {
+      html += '<div class="text-muted">No payment methods configured</div>';
+    } else {
+      methods.forEach((m, idx) => {
+        html += `<div class="item flex-between">
+          <span><strong>${m.name}</strong></span>
+          <span style="font-size:12px;color:#7f92a8;">${m.address || m.id || ''}</span>
+          <span class="badge ${m.status === 'disabled' ? 'badge-pending' : 'badge-confirmed'}">${m.status || 'active'}</span>
+          <div>
+            <button class="btn btn-sm btn-outline" data-edit-payment="${idx}"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm ${m.status === 'disabled' ? 'btn-success' : 'btn-outline'}" data-toggle-payment="${idx}">${m.status === 'disabled' ? 'Enable' : 'Disable'}</button>
+            <button class="btn btn-sm btn-danger" data-delete-payment="${idx}"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>`;
+      });
+    }
+    html += '</div>';
+    container.innerHTML = html;
+
+    document.querySelectorAll('[data-edit-payment]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const idx = parseInt(el.dataset.editPayment);
+        openEditPaymentModal(idx);
+      });
+    });
+
+    document.querySelectorAll('[data-toggle-payment]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const idx = parseInt(el.dataset.togglePayment);
+        const methods = getPaymentMethods();
+        const m = methods[idx];
+        if (!m) return;
+        m.status = m.status === 'disabled' ? 'active' : 'disabled';
+        savePaymentMethods(methods);
+        renderAdminPayments();
+        renderPaymentMethods();
+        toast(`${m.name} ${m.status === 'active' ? 'enabled' : 'disabled'}`,'success');
+      });
+    });
+
+    document.querySelectorAll('[data-delete-payment]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const idx = parseInt(el.dataset.deletePayment);
+        if (!confirm('Remove this payment method?')) return;
+        const methods = getPaymentMethods();
+        methods.splice(idx, 1);
+        savePaymentMethods(methods);
+        renderAdminPayments();
+        renderPaymentMethods();
+        toast('Payment method removed','success');
+      });
+    });
+
+    document.getElementById('addPaymentBtn')?.addEventListener('click', ()=>{
+      openEditPaymentModal(-1);
+    });
+  }
+
+  function openEditPaymentModal(index) {
+    const methods = getPaymentMethods();
+    const isEdit = index >= 0;
+    const m = isEdit ? methods[index] : { name: '', address: '', id: '', description: '', status: 'active' };
+    const title = isEdit ? 'Edit Payment Method' : 'Add Payment Method';
+    const body = `
+      <div class="field"><label>Name</label><input type="text" id="pm_name" value="${m.name || ''}" placeholder="e.g. USDT TRC20" /></div>
+      <div class="field"><label>Address / ID</label><input type="text" id="pm_address" value="${m.address || m.id || ''}" placeholder="e.g. TXXXXXXXXXX" /></div>
+      <div class="field"><label>Description (optional)</label><input type="text" id="pm_desc" value="${m.description || ''}" placeholder="e.g. Send USDT via TRC20" /></div>
+      <div class="field"><label>Status</label>
+        <select id="pm_status">
+          <option value="active" ${m.status === 'active' ? 'selected' : ''}>Active</option>
+          <option value="disabled" ${m.status === 'disabled' ? 'selected' : ''}>Disabled</option>
+        </select>
+      </div>
+    `;
+    const actions = `<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="pm_save">${isEdit ? 'Save' : 'Add'}</button>`;
+    openModal(title, 'Configure payment method', body, actions);
+
+    document.getElementById('pm_save').addEventListener('click', ()=>{
+      const name = document.getElementById('pm_name').value.trim();
+      const address = document.getElementById('pm_address').value.trim();
+      const description = document.getElementById('pm_desc').value.trim();
+      const status = document.getElementById('pm_status').value;
+      if (!name) return toast('Name is required','error');
+      if (!address) return toast('Address/ID is required','error');
+      
+      const methods = getPaymentMethods();
+      const newMethod = { name, address, id: address, description, status };
+      if (isEdit) {
+        methods[index] = newMethod;
+      } else {
+        methods.push(newMethod);
+      }
+      savePaymentMethods(methods);
+      closeModal();
+      renderAdminPayments();
+      renderPaymentMethods();
+      toast(`Payment method ${isEdit ? 'updated' : 'added'}`,'success');
+    });
+  }
+
+  // ---- Payment Methods Storage ----
+  function getPaymentMethods() {
+    const key = 'bcg_payment_methods';
+    try {
+      const data = localStorage.getItem(key);
+      if (data) return JSON.parse(data);
+    } catch(e) {}
+    // Defaults
+    const defaults = [
+      { name: 'USDT TRC20', address: 'TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', id: 'TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', description: 'Send USDT via TRC20 network', status: 'active' },
+      { name: 'Binance Pay', address: '123456789', id: '123456789', description: 'Binance Pay merchant ID', status: 'active' }
+    ];
+    localStorage.setItem(key, JSON.stringify(defaults));
+    return defaults;
+  }
+
+  function savePaymentMethods(methods) {
+    localStorage.setItem('bcg_payment_methods', JSON.stringify(methods));
   }
 
   async function renderAdminTransactions() {
@@ -2106,13 +2163,14 @@
       else if(tab==='deposits') renderAdminDeposits();
       else if(tab==='withdrawals') renderAdminWithdrawals();
       else if(tab==='coins') renderAdminCoins();
+      else if(tab==='payments') renderAdminPayments();
       else if(tab==='transactions') renderAdminTransactions();
       else if(tab==='settings') renderAdminSettings();
     });
   });
   document.querySelector('[data-admin-tab="overview"]')?.classList.add('btn-primary');
 
-  // ---- price engine ----
+  // ---- Price Engine ----
   function startPriceEngine() {
     if(priceInterval) clearInterval(priceInterval);
     priceInterval = setInterval(async ()=>{
@@ -2121,8 +2179,8 @@
         if(!coin.auto || coin.status === 'disabled') continue;
         const change = (Math.random()*2 - 1) * 0.6;
         let newPrice = coin.price * (1 + change/100);
-        if(coin.min && newPrice < coin.min) newPrice = coin.min + Math.random() * 0.3;
-        if(coin.max && newPrice > coin.max) newPrice = coin.max - Math.random() * 0.3;
+        if(coin.min !== undefined && newPrice < coin.min) newPrice = coin.min + Math.random() * 0.3;
+        if(coin.max !== undefined && newPrice > coin.max) newPrice = coin.max - Math.random() * 0.3;
         if(newPrice > 0.01) {
           coin.price = newPrice;
           coin.change = Math.min(10, Math.max(-10, (coin.change||0) + change*0.1));
@@ -2134,12 +2192,10 @@
     }, 10000);
   }
 
-  // ---- support link ----
   document.getElementById('contactSupportBtn')?.addEventListener('click', () => {
     toast('Support: support@binancecoinget.com', 'success');
   });
 
-  // ---- FAQ accordion ----
   document.querySelectorAll('.faq-item .q').forEach(q => {
     q.addEventListener('click', () => {
       const item = q.parentElement;
@@ -2147,9 +2203,7 @@
     });
   });
 
-  // ============================================================
-  //  NOTIFICATION SYSTEM
-  // ============================================================
+  // ---- Notification System ----
   function getNotifications(uid) {
     const key = 'bcg_notifications_' + uid;
     try {
@@ -2162,13 +2216,11 @@
     const notifs = getNotifications(uid);
     notifs.push({ message, timestamp: Date.now(), read: false });
     localStorage.setItem(key, JSON.stringify(notifs));
-    // If current user, render
     if (currentUser && currentUser.uid === uid) {
       renderNotifications();
     }
   }
 
-  // ---- Update admin stats ----
   function updateAdminStats() {
     if (!document.getElementById('adminTotalUsers')) return;
     const totalUsers = Object.keys(allUsers).length || 0;
@@ -2186,16 +2238,12 @@
     document.getElementById('adminActiveCoins').textContent = activeCoins;
   }
 
-  // ============================================================
-  //  ADMIN PANEL — Ctrl+P ACCESS
-  // ============================================================
+  // ---- Admin Panel Ctrl+P ----
   const ADMIN_PASSWORD = '308580';
   let adminSessionActive = false;
 
-  // Check for existing admin session in sessionStorage
   function checkAdminSession() {
-    const session = sessionStorage.getItem('adminSession');
-    if (session === 'active') {
+    if (sessionStorage.getItem('adminSession') === 'active') {
       adminSessionActive = true;
       openAdminPanel();
       return true;
@@ -2203,7 +2251,6 @@
     return false;
   }
 
-  // Open admin login modal
   function openAdminLoginModal() {
     adminLoginModal.classList.add('open');
     adminPwdInput.value = '';
@@ -2211,14 +2258,12 @@
     adminPwdInput.focus();
   }
 
-  // Close admin login modal
   function closeAdminLoginModal() {
     adminLoginModal.classList.remove('open');
     adminPwdInput.value = '';
     adminPwdError.textContent = '';
   }
 
-  // Handle admin login
   function handleAdminLogin() {
     const pwd = adminPwdInput.value.trim();
     if (pwd === ADMIN_PASSWORD) {
@@ -2235,31 +2280,26 @@
     }
   }
 
-  // Open admin panel
   function openAdminPanel() {
     adminPanelOverlay.classList.add('open');
     renderAdminPanelDashboard();
-    // Set active tab
     document.querySelectorAll('#adminPanelTabs .btn').forEach(b => b.classList.remove('btn-primary'));
     const firstTab = document.querySelector('#adminPanelTabs .btn');
     if (firstTab) firstTab.classList.add('btn-primary');
     updateAdminStats();
   }
 
-  // Close admin panel
   function closeAdminPanel() {
     adminPanelOverlay.classList.remove('open');
     adminSessionActive = false;
     sessionStorage.removeItem('adminSession');
   }
 
-  // Admin logout
   function adminLogout() {
     closeAdminPanel();
     toast('Admin logged out', 'success');
   }
 
-  // ---- Render Admin Panel Dashboard ----
   function renderAdminPanelDashboard() {
     const totalUsers = Object.keys(allUsers).length || 0;
     const totalBalance = Object.values(allUsers).reduce((s,u)=>s+(u.virtualBalance||0),0);
@@ -2275,11 +2315,9 @@
     document.getElementById('adminPendingWithdrawals').textContent = pendingWithdrawals;
     document.getElementById('adminActiveCoins').textContent = activeCoins;
 
-    // Render default tab content (Dashboard)
     renderAdminPanelTab('dashboard');
   }
 
-  // ---- Render Admin Panel Tab Content ----
   function renderAdminPanelTab(tab) {
     const content = adminPanelContent;
     let html = '';
@@ -2300,7 +2338,6 @@
           </div>
         `;
         break;
-
       case 'deposits':
         let depHtml = '<div class="admin-list">';
         const deps = allDeposits.slice().reverse();
@@ -2318,13 +2355,13 @@
         }
         depHtml += '</div>';
         html = depHtml;
-        // Attach events
         setTimeout(() => {
           document.querySelectorAll('[data-ap-dep]').forEach(el => {
             el.addEventListener('click', async () => {
               const id = el.dataset.apDep;
               await processDeposit(id, 'APPROVED');
               renderAdminPanelTab('deposits');
+              renderAll();
             });
           });
           document.querySelectorAll('[data-rj-dep]').forEach(el => {
@@ -2332,11 +2369,11 @@
               const id = el.dataset.rjDep;
               await processDeposit(id, 'REJECTED');
               renderAdminPanelTab('deposits');
+              renderAll();
             });
           });
         }, 50);
         break;
-
       case 'withdrawals':
         let wdHtml = '<div class="admin-list">';
         const wds = allWithdrawals.slice().reverse();
@@ -2360,6 +2397,7 @@
               const id = el.dataset.apWd;
               await processWithdrawal(id, 'APPROVED');
               renderAdminPanelTab('withdrawals');
+              renderAll();
             });
           });
           document.querySelectorAll('[data-rj-wd]').forEach(el => {
@@ -2367,11 +2405,11 @@
               const id = el.dataset.rjWd;
               await processWithdrawal(id, 'REJECTED');
               renderAdminPanelTab('withdrawals');
+              renderAll();
             });
           });
         }, 50);
         break;
-
       case 'users':
         let usersHtml = '<div class="admin-list">';
         if (Object.keys(allUsers).length === 0) {
@@ -2390,42 +2428,27 @@
         usersHtml += '</div>';
         html = usersHtml;
         break;
-
       case 'coins':
         let coinsHtml = '<div class="admin-list">';
         for (const [sym, coin] of Object.entries(coinsData)) {
           const status = coin.status || 'active';
           coinsHtml += `<div class="item flex-between" style="flex-wrap:wrap;gap:6px;">
             <span>${getCoinLogo(sym)} <strong>${coin.name}</strong> (${sym})</span>
-            <span>${formatUSD(coin.price)}</span>
-            <span style="font-size:11px;color:#7f92a8;">Status: ${status}</span>
-            <span><input type="number" id="ap_price_${sym}" value="${coin.price}" step="0.01" min="0.01" style="width:70px;background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:4px 6px;color:#e8edf5;font-size:12px;" /></span>
-            <button class="btn btn-sm btn-outline" data-ap-setprice="${sym}">Set</button>
+            <span>Min: ${formatUSD(coin.min||0)}</span>
+            <span class="text-gold">${formatUSD(coin.price)}</span>
+            <span>Max: ${formatUSD(coin.max||999)}</span>
+            <span class="badge ${status === 'disabled' ? 'badge-pending' : 'badge-confirmed'}">${status}</span>
+            <button class="btn btn-sm btn-primary" data-ap-edit="${sym}"><i class="fas fa-edit"></i></button>
             <button class="btn btn-sm ${status === 'disabled' ? 'btn-success' : 'btn-outline'}" data-ap-status="${sym}">${status === 'disabled' ? 'Enable' : 'Disable'}</button>
           </div>`;
         }
-        coinsHtml += `<div class="item"><button class="btn btn-primary btn-sm" id="apAddCoinBtn">+ Add Coin</button>
-          <div id="apAddCoinForm" style="display:none;width:100%;margin-top:10px;">
-            <div style="display:flex;gap:6px;flex-wrap:wrap;">
-              <input type="text" id="ap_newName" placeholder="Name" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:120px;" />
-              <input type="text" id="ap_newSymbol" placeholder="Symbol" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:80px;" />
-              <input type="number" id="ap_newPrice" placeholder="Price" step="0.01" style="background:#0d141e;border:1px solid #2f3b4a;border-radius:8px;padding:6px 10px;color:#e8edf5;width:80px;" />
-              <button class="btn btn-sm btn-success" id="apConfirmAddCoin">Add</button>
-              <button class="btn btn-sm btn-outline" onclick="document.getElementById('apAddCoinForm').style.display='none'">Cancel</button>
-            </div>
-          </div>
-        </div>`;
         coinsHtml += '</div>';
         html = coinsHtml;
         setTimeout(() => {
-          document.querySelectorAll('[data-ap-setprice]').forEach(el => {
-            el.addEventListener('click', async () => {
-              const sym = el.dataset.apSetprice;
-              const input = document.getElementById('ap_price_'+sym);
-              const val = parseFloat(input.value);
-              if(!val || val<=0) return toast('Invalid price','error');
-              await updateCoinPrice(sym, val);
-              renderAdminPanelTab('coins');
+          document.querySelectorAll('[data-ap-edit]').forEach(el => {
+            el.addEventListener('click', () => {
+              const sym = el.dataset.apEdit;
+              openEditCoinModal(sym);
             });
           });
           document.querySelectorAll('[data-ap-status]').forEach(el => {
@@ -2442,28 +2465,52 @@
               renderAll();
             });
           });
-          document.getElementById('apAddCoinBtn')?.addEventListener('click', () => {
-            const form = document.getElementById('apAddCoinForm');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }, 50);
+        break;
+      case 'payments':
+        let payHtml = '<div class="admin-list">';
+        const methods = getPaymentMethods();
+        if (methods.length === 0) {
+          payHtml += '<div class="text-muted">No payment methods</div>';
+        } else {
+          methods.forEach((m, idx) => {
+            payHtml += `<div class="item flex-between">
+              <span><strong>${m.name}</strong></span>
+              <span style="font-size:12px;color:#7f92a8;">${m.address || m.id || ''}</span>
+              <span class="badge ${m.status === 'disabled' ? 'badge-pending' : 'badge-confirmed'}">${m.status || 'active'}</span>
+              <button class="btn btn-sm btn-outline" data-ap-payedit="${idx}"><i class="fas fa-edit"></i></button>
+              <button class="btn btn-sm ${m.status === 'disabled' ? 'btn-success' : 'btn-outline'}" data-ap-paytoggle="${idx}">${m.status === 'disabled' ? 'Enable' : 'Disable'}</button>
+            </div>`;
           });
-          document.getElementById('apConfirmAddCoin')?.addEventListener('click', async () => {
-            const name = document.getElementById('ap_newName').value.trim();
-            const symbol = document.getElementById('ap_newSymbol').value.trim().toUpperCase();
-            const price = parseFloat(document.getElementById('ap_newPrice').value);
-            if(!name || !symbol || !price || price<=0) return toast('Invalid coin data','error');
-            if(coinsData[symbol]) return toast('Symbol already exists','error');
-            const newCoin = { price, change:0, symbol, name, min:0, max:999, auto:true, status:'active', color:'#f0b90b' };
-            const coinRef = ref(db, 'coins/'+symbol);
-            await set(coinRef, newCoin);
-            coinsData[symbol] = newCoin;
-            toast(`Coin ${name} (${symbol}) added`,'success');
-            document.getElementById('apAddCoinForm').style.display = 'none';
-            renderAll();
-            renderAdminPanelTab('coins');
+        }
+        payHtml += `<div class="item"><button class="btn btn-primary btn-sm" id="apAddPayBtn"><i class="fas fa-plus"></i> Add Payment Method</button></div>`;
+        payHtml += '</div>';
+        html = payHtml;
+        setTimeout(() => {
+          document.querySelectorAll('[data-ap-payedit]').forEach(el => {
+            el.addEventListener('click', () => {
+              const idx = parseInt(el.dataset.apPayedit);
+              openEditPaymentModal(idx);
+            });
+          });
+          document.querySelectorAll('[data-ap-paytoggle]').forEach(el => {
+            el.addEventListener('click', () => {
+              const idx = parseInt(el.dataset.apPaytoggle);
+              const methods = getPaymentMethods();
+              const m = methods[idx];
+              if (!m) return;
+              m.status = m.status === 'disabled' ? 'active' : 'disabled';
+              savePaymentMethods(methods);
+              renderAdminPanelTab('payments');
+              renderPaymentMethods();
+              toast(`${m.name} ${m.status === 'active' ? 'enabled' : 'disabled'}`,'success');
+            });
+          });
+          document.getElementById('apAddPayBtn')?.addEventListener('click', () => {
+            openEditPaymentModal(-1);
           });
         }, 50);
         break;
-
       case 'transactions':
         let txHtml = '<div class="admin-list">';
         const recentTx = allTransactions.slice(-30).reverse();
@@ -2484,43 +2531,25 @@
         txHtml += '</div>';
         html = txHtml;
         break;
-
       case 'settings':
         html = `
           <div class="admin-list">
-            <div class="item"><span class="label">Admin Session</span>
-              <span class="value text-green">● Active</span>
-            </div>
-            <div class="item"><span class="label">Session Storage</span>
-              <span class="value">${sessionStorage.getItem('adminSession') === 'active' ? 'Active' : 'Inactive'}</span>
-            </div>
-            <div class="item"><span class="label">Authentication Method</span>
-              <span class="value">Password (Client-side)</span>
-            </div>
-            <div class="item"><span class="label">Security Note</span>
-              <span class="value" style="color:#7f92a8;font-size:12px;">This is a client-side implementation. For production, move authentication to server/backend.</span>
-            </div>
-            <div class="item"><span class="label">Actions</span>
-              <button class="btn btn-danger btn-sm" id="adminPanelLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout Admin</button>
-            </div>
+            <div class="item"><span class="label">Admin Session</span><span class="value text-green">● Active</span></div>
+            <div class="item"><span class="label">Session Storage</span><span class="value">${sessionStorage.getItem('adminSession') === 'active' ? 'Active' : 'Inactive'}</span></div>
+            <div class="item"><span class="label">Authentication Method</span><span class="value">Password (Client-side)</span></div>
+            <div class="item"><span class="label">Security Note</span><span class="value" style="color:#7f92a8;font-size:12px;">This is a client-side implementation. For production, move authentication to server/backend.</span></div>
+            <div class="item"><span class="label">Actions</span><button class="btn btn-danger btn-sm" id="adminPanelLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout Admin</button></div>
           </div>
         `;
         break;
-
       default:
         html = '<div class="text-muted">Select a tab</div>';
     }
-
     content.innerHTML = html;
-
-    // Attach admin logout from security tab
     const panelLogoutBtn = document.getElementById('adminPanelLogoutBtn');
-    if (panelLogoutBtn) {
-      panelLogoutBtn.addEventListener('click', adminLogout);
-    }
+    if (panelLogoutBtn) panelLogoutBtn.addEventListener('click', adminLogout);
   }
 
-  // ---- Admin Panel Tab Switching ----
   document.querySelectorAll('#adminPanelTabs .btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#adminPanelTabs .btn').forEach(b => b.classList.remove('btn-primary'));
@@ -2530,21 +2559,14 @@
     });
   });
 
-  // ---- Admin Login Modal Events ----
   adminLoginSubmit.addEventListener('click', handleAdminLogin);
   adminLoginCancel.addEventListener('click', closeAdminLoginModal);
 
   adminPwdInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAdminLogin();
-    }
-    if (e.key === 'Escape') {
-      closeAdminLoginModal();
-    }
+    if (e.key === 'Enter') { e.preventDefault(); handleAdminLogin(); }
+    if (e.key === 'Escape') closeAdminLoginModal();
   });
 
-  // Toggle password visibility
   let pwdVisible = false;
   toggleAdminPwd.addEventListener('click', () => {
     pwdVisible = !pwdVisible;
@@ -2552,17 +2574,11 @@
     toggleAdminPwd.innerHTML = pwdVisible ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
   });
 
-  // ---- Ctrl+P Handler ----
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
       e.preventDefault();
       e.stopPropagation();
-
-      if (adminPanelOverlay.classList.contains('open')) {
-        toast('Admin panel already open', '');
-        return;
-      }
-
+      if (adminPanelOverlay.classList.contains('open')) { toast('Admin panel already open', ''); return; }
       if (adminSessionActive || sessionStorage.getItem('adminSession') === 'active') {
         adminSessionActive = true;
         sessionStorage.setItem('adminSession', 'active');
@@ -2574,20 +2590,46 @@
     }
   });
 
-  // ---- Admin Logout Button (header) ----
   adminLogoutBtn.addEventListener('click', adminLogout);
 
-  // ---- Check for existing admin session on load ----
   setTimeout(() => {
     if (sessionStorage.getItem('adminSession') === 'active') {
       adminSessionActive = true;
     }
   }, 100);
 
-  // ---- init ----
-  setupLongPress();
-  console.log('✅ Binance Coin Get · Simulator loaded (Full Deposit/Withdraw/Coin Mgmt)');
-  console.log('📊 Total coins available: ' + Object.keys(ALL_COINS).length);
+  // ---- Long Press Admin Entry ----
+  let longPressTimer = null;
+  const adminEntryArea = document.getElementById('adminEntryArea');
+  if (adminEntryArea) {
+    const startPress = () => {
+      longPressTimer = setTimeout(() => {
+        if (isAdmin) {
+          toast('Admin access already granted', 'success');
+          navigate('admin');
+        } else {
+          checkAdmin().then(() => {
+            if (isAdmin) {
+              toast('Admin access granted!', 'success');
+              document.getElementById('adminPanelCard').style.display = 'block';
+              navigate('admin');
+            } else {
+              toast('Admin access denied. Contact administrator.', 'error');
+            }
+          });
+        }
+      }, 5000);
+    };
+    const endPress = () => { if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; } };
+    adminEntryArea.addEventListener('mousedown', startPress);
+    adminEntryArea.addEventListener('mouseup', endPress);
+    adminEntryArea.addEventListener('mouseleave', endPress);
+    adminEntryArea.addEventListener('touchstart', (e) => { e.preventDefault(); startPress(); });
+    adminEntryArea.addEventListener('touchend', endPress);
+    adminEntryArea.addEventListener('touchcancel', endPress);
+  }
+
+  console.log('✅ Binance Coin Get · Simulator loaded (Full Coin Mgmt + Deposit/Withdraw + Payments)');
   console.log('🔒 Admin password: 308580 (Ctrl+P)');
   console.log('📝 Deposit/Withdraw: Pending → Admin Approve/Reject');
   console.log('ℹ️ Press Ctrl+P to open admin panel');
