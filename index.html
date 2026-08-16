@@ -441,7 +441,7 @@
             <input type="number" id="depositAmount" placeholder="Enter amount (min $1)" min="1" step="0.01" />
           </div>
           <div class="field" id="methodSelector" style="display:none;">
-            <label>Payment Method</label>
+            <label>Payment Methods</label>
             <div id="depositPaymentMethods"></div>
             <input type="hidden" id="selectedMethod" value="" />
           </div>
@@ -527,6 +527,7 @@
           <button class="btn btn-outline btn-sm" data-admin-tab="withdrawals">Withdrawals</button>
           <button class="btn btn-outline btn-sm" data-admin-tab="users">Users</button>
           <button class="btn btn-outline btn-sm" data-admin-tab="coins">Coins</button>
+          <button class="btn btn-outline btn-sm" data-admin-tab="payments">Payments</button>
           <button class="btn btn-outline btn-sm" data-admin-tab="transactions">Transactions</button>
           <button class="btn btn-outline btn-sm" data-admin-tab="settings">Settings</button>
         </div>
@@ -968,7 +969,6 @@
           coinsData[sym] = data;
           await set(ref(db, 'coins/'+sym), data);
         } else {
-          // Ensure min/max exist
           if (coinsData[sym].min === undefined) coinsData[sym].min = data.min || 0;
           if (coinsData[sym].max === undefined) coinsData[sym].max = data.max || 999;
         }
@@ -996,7 +996,6 @@
   async function updateCoinFull(symbol, data) {
     const coin = coinsData[symbol];
     if(!coin) return toast('Coin not found','error');
-    // Validate
     if (data.min > data.max) return toast('Minimum cannot be greater than Maximum','error');
     if (data.current < data.min) return toast('Current price cannot be below Minimum','error');
     if (data.current > data.max) return toast('Current price cannot be above Maximum','error');
@@ -1274,6 +1273,32 @@
     container.innerHTML = html;
   }
 
+  // ---- Payment Methods with exact values ----
+  const DEFAULT_BINANCE_PAY_ID = "894307667";
+  const DEFAULT_TRC20_ADDRESS = "TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7";
+
+  function getPaymentMethods() {
+    const key = 'bcg_payment_methods';
+    try {
+      const data = localStorage.getItem(key);
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (parsed && parsed.length > 0) return parsed;
+      }
+    } catch(e) {}
+    // Initialize with exact values
+    const defaults = [
+      { name: 'Binance Pay', address: DEFAULT_BINANCE_PAY_ID, id: DEFAULT_BINANCE_PAY_ID, description: 'Binance Pay merchant ID', status: 'active' },
+      { name: 'USDT TRC20', address: DEFAULT_TRC20_ADDRESS, id: DEFAULT_TRC20_ADDRESS, description: 'Send USDT via TRC20 network', status: 'active' }
+    ];
+    localStorage.setItem(key, JSON.stringify(defaults));
+    return defaults;
+  }
+
+  function savePaymentMethods(methods) {
+    localStorage.setItem('bcg_payment_methods', JSON.stringify(methods));
+  }
+
   function renderPaymentMethods() {
     const container = document.getElementById('depositPaymentMethods');
     if (!container) return;
@@ -1286,13 +1311,14 @@
     let html = '';
     activeMethods.forEach(m => {
       const address = m.address || m.id || '';
+      const label = m.name.includes('Binance') ? 'Copy ID' : 'Copy Address';
       html += `<div class="payment-method-card" data-method="${m.name}">
         <div style="display:flex;justify-content:space-between;align-items:center;">
           <strong>${m.name}</strong>
           <span class="badge badge-confirmed">Active</span>
         </div>
         ${address ? `<div class="address">${address}</div>` : ''}
-        ${address ? `<button class="copy-btn" data-copy="${address}"><i class="fas fa-copy"></i> Copy ${m.name.includes('Binance') ? 'ID' : 'Address'}</button>` : ''}
+        ${address ? `<button class="copy-btn" data-copy="${address}"><i class="fas fa-copy"></i> ${label}</button>` : ''}
         <div style="margin-top:6px;font-size:12px;color:#7f92a8;">${m.description || ''}</div>
       </div>`;
     });
@@ -1301,16 +1327,15 @@
       btn.addEventListener('click', () => {
         const text = btn.dataset.copy;
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(() => toast('Address copied!', 'success'));
+          navigator.clipboard.writeText(text).then(() => toast('Copied successfully', 'success'));
         } else {
-          // Fallback
           const ta = document.createElement('textarea');
           ta.value = text;
           document.body.appendChild(ta);
           ta.select();
           document.execCommand('copy');
           ta.remove();
-          toast('Address copied!', 'success');
+          toast('Copied successfully', 'success');
         }
       });
     });
@@ -1726,7 +1751,6 @@
         addNotification(wd.uid, `Withdrawal request of ${formatUSD(wd.amount)} approved.`);
       }
     } else {
-      // Rejected - return funds
       const userRef = ref(db, 'users/'+wd.uid);
       const userSnap = await get(userRef);
       if(userSnap.exists()) {
@@ -1843,7 +1867,6 @@
     const actions = `<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" id="ec_save">${isEdit ? 'Save Changes' : 'Add Coin'}</button>`;
     openModal(title, isEdit ? 'Edit coin configuration' : 'Add a new cryptocurrency', body, actions);
 
-    // Range slider sync
     if (isEdit) {
       const range = document.getElementById('ec_range');
       const currentInput = document.getElementById('ec_current');
@@ -1871,7 +1894,6 @@
           const max = parseFloat(maxInput.value) || 999;
           range.max = max;
         });
-        // Quick price buttons
         document.querySelectorAll('[data-pct]').forEach(btn => {
           btn.addEventListener('click', () => {
             const pct = parseFloat(btn.dataset.pct);
@@ -1933,7 +1955,7 @@
       methods.forEach((m, idx) => {
         html += `<div class="item flex-between">
           <span><strong>${m.name}</strong></span>
-          <span style="font-size:12px;color:#7f92a8;">${m.address || m.id || ''}</span>
+          <span style="font-size:12px;color:#7f92a8;font-family:monospace;">${m.address || m.id || ''}</span>
           <span class="badge ${m.status === 'disabled' ? 'badge-pending' : 'badge-confirmed'}">${m.status || 'active'}</span>
           <div>
             <button class="btn btn-sm btn-outline" data-edit-payment="${idx}"><i class="fas fa-edit"></i></button>
@@ -2025,26 +2047,6 @@
       renderPaymentMethods();
       toast(`Payment method ${isEdit ? 'updated' : 'added'}`,'success');
     });
-  }
-
-  // ---- Payment Methods Storage ----
-  function getPaymentMethods() {
-    const key = 'bcg_payment_methods';
-    try {
-      const data = localStorage.getItem(key);
-      if (data) return JSON.parse(data);
-    } catch(e) {}
-    // Defaults
-    const defaults = [
-      { name: 'USDT TRC20', address: 'TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', id: 'TXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', description: 'Send USDT via TRC20 network', status: 'active' },
-      { name: 'Binance Pay', address: '123456789', id: '123456789', description: 'Binance Pay merchant ID', status: 'active' }
-    ];
-    localStorage.setItem(key, JSON.stringify(defaults));
-    return defaults;
-  }
-
-  function savePaymentMethods(methods) {
-    localStorage.setItem('bcg_payment_methods', JSON.stringify(methods));
   }
 
   async function renderAdminTransactions() {
@@ -2476,7 +2478,7 @@
           methods.forEach((m, idx) => {
             payHtml += `<div class="item flex-between">
               <span><strong>${m.name}</strong></span>
-              <span style="font-size:12px;color:#7f92a8;">${m.address || m.id || ''}</span>
+              <span style="font-size:12px;color:#7f92a8;font-family:monospace;">${m.address || m.id || ''}</span>
               <span class="badge ${m.status === 'disabled' ? 'badge-pending' : 'badge-confirmed'}">${m.status || 'active'}</span>
               <button class="btn btn-sm btn-outline" data-ap-payedit="${idx}"><i class="fas fa-edit"></i></button>
               <button class="btn btn-sm ${m.status === 'disabled' ? 'btn-success' : 'btn-outline'}" data-ap-paytoggle="${idx}">${m.status === 'disabled' ? 'Enable' : 'Disable'}</button>
@@ -2629,10 +2631,10 @@
     adminEntryArea.addEventListener('touchcancel', endPress);
   }
 
-  console.log('✅ Binance Coin Get · Simulator loaded (Full Coin Mgmt + Deposit/Withdraw + Payments)');
+  console.log('✅ Binance Coin Get · Simulator loaded');
   console.log('🔒 Admin password: 308580 (Ctrl+P)');
-  console.log('📝 Deposit/Withdraw: Pending → Admin Approve/Reject');
-  console.log('ℹ️ Press Ctrl+P to open admin panel');
+  console.log('💳 Binance Pay ID: 894307667');
+  console.log('💳 TRC20 Address: TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7');
 </script>
 </body>
 </html>
