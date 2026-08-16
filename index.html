@@ -239,6 +239,47 @@
     th { text-align:left; padding:8px 6px; color:#7f92a8; font-weight:500; border-bottom:1px solid #1f2937; }
     td { padding:8px 6px; border-bottom:1px solid #1f2937; }
     tr:hover td { background:#0d141e; }
+
+    /* ===== ADMIN LOGIN MODAL ===== */
+    .admin-login-modal .modal { max-width: 380px; text-align: center; }
+    .admin-login-modal .admin-icon { font-size: 48px; color: #f0b90b; margin-bottom: 4px; }
+    .admin-login-modal .field { text-align: left; }
+    .admin-login-modal .password-wrapper { position: relative; }
+    .admin-login-modal .password-wrapper input { padding-right: 44px; }
+    .admin-login-modal .toggle-pwd { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #7f92a8; cursor: pointer; font-size: 16px; padding: 4px; }
+    .admin-login-modal .toggle-pwd:hover { color: #f0b90b; }
+    .admin-login-modal .error-msg { color: #ef4444; font-size: 13px; min-height: 24px; margin-top: 4px; }
+
+    /* ===== ADMIN PANEL OVERLAY ===== */
+    #adminPanelOverlay {
+      position: fixed; inset: 0; background: #0b0e14; z-index: 500; display: none; flex-direction: column; overflow-y: auto;
+      background: radial-gradient(ellipse at 30% 20%, rgba(240, 185, 11, 0.06) 0%, transparent 60%), #0b0e14;
+    }
+    #adminPanelOverlay.open { display: flex; }
+    .admin-panel-header {
+      display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: #11171f; border-bottom: 1px solid #252d3a; position: sticky; top: 0; z-index: 10; flex-wrap: wrap; gap: 12px;
+    }
+    .admin-panel-header .brand { font-weight: 700; font-size: 20px; color: #f0b90b; }
+    .admin-panel-header .brand span { color: #e8edf5; }
+    .admin-panel-header .admin-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .admin-panel-header .admin-actions .btn { padding: 6px 16px; font-size: 13px; }
+    .admin-panel-body { padding: 20px 24px 40px; flex: 1; max-width: 1400px; width: 100%; margin: 0 auto; }
+    .admin-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .admin-stat-card { background: #131b24; border-radius: 16px; padding: 16px; border: 1px solid #1f2937; text-align: center; }
+    .admin-stat-card .num { font-size: 28px; font-weight: 700; color: #f0b90b; }
+    .admin-stat-card .label { font-size: 13px; color: #7f92a8; margin-top: 4px; }
+    .admin-panel-body .admin-tab-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; border-bottom: 1px solid #1f2937; padding-bottom: 12px; }
+    .admin-panel-body .admin-tab-bar .btn { flex: 0 1 auto; min-width: 80px; justify-content: center; font-size: 12px; padding: 6px 14px; }
+    .admin-panel-body .admin-tab-content { min-height: 200px; }
+    .admin-panel-body .admin-tab-content .admin-list .item { background: #0d141e; padding: 10px 14px; border-radius: 12px; margin-bottom: 6px; border-left: 2px solid #2f3b4a; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font-size: 13px; }
+    .admin-panel-body .admin-tab-content .admin-list .item .label { color: #7f92a8; min-width: 80px; }
+    .admin-panel-body .admin-tab-content .admin-list .item .value { color: #b0c4d9; }
+    .admin-panel-body .admin-tab-content .admin-list .item .badge { font-size: 11px; }
+    @media (max-width: 600px) {
+      .admin-panel-header { padding: 12px 16px; }
+      .admin-panel-body { padding: 12px 16px 30px; }
+      .admin-stat-grid { grid-template-columns: 1fr 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -362,7 +403,7 @@
       </div>
     </div>
 
-    <!-- Live Markets (placeholder - will be shown when logged in) -->
+    <!-- Live Markets (placeholder) -->
     <div class="section" id="landing-live-markets">
       <h2 class="section-title">Live Markets</h2>
       <p class="section-sub" style="margin-bottom:20px;">Market data will appear here when connected.</p>
@@ -612,6 +653,58 @@
   </div>
 </div>
 
+<!-- ===== ADMIN LOGIN MODAL (Ctrl+P) ===== -->
+<div class="modal-overlay admin-login-modal" id="adminLoginModal">
+  <div class="modal">
+    <div class="admin-icon"><i class="fas fa-shield-alt"></i></div>
+    <h3 style="margin-top:0;">Admin Access</h3>
+    <div class="sub">Enter administrator password</div>
+    <div class="field">
+      <label>Password</label>
+      <div class="password-wrapper">
+        <input type="password" id="adminPwdInput" placeholder="Enter admin password" autocomplete="off" />
+        <button class="toggle-pwd" id="toggleAdminPwd" type="button" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+      </div>
+      <div class="error-msg" id="adminPwdError"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-outline" id="adminLoginCancel">Cancel</button>
+      <button class="btn btn-primary" id="adminLoginSubmit"><i class="fas fa-lock"></i> Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN PANEL OVERLAY ===== -->
+<div id="adminPanelOverlay">
+  <div class="admin-panel-header">
+    <div class="brand">BINANCE<span>COIN</span> · Admin</div>
+    <div class="admin-actions">
+      <span style="color:#7f92a8;font-size:13px;" id="adminSessionStatus">Session: Active</span>
+      <button class="btn btn-danger btn-sm" id="adminLogoutBtn"><i class="fas fa-sign-out-alt"></i> Admin Logout</button>
+    </div>
+  </div>
+  <div class="admin-panel-body">
+    <div class="admin-stat-grid" id="adminStatsGrid">
+      <div class="admin-stat-card"><div class="num" id="adminTotalUsers">0</div><div class="label">Total Users</div></div>
+      <div class="admin-stat-card"><div class="num gold" id="adminTotalBalance">$0.00</div><div class="label">Total Balance</div></div>
+      <div class="admin-stat-card"><div class="num" id="adminTotalTrades">0</div><div class="label">Total Trades</div></div>
+      <div class="admin-stat-card"><div class="num" id="adminPendingDeposits">0</div><div class="label">Pending Deposits</div></div>
+      <div class="admin-stat-card"><div class="num" id="adminPendingWithdrawals">0</div><div class="label">Pending Withdrawals</div></div>
+    </div>
+    <div class="admin-tab-bar" id="adminPanelTabs">
+      <button class="btn btn-primary btn-sm" data-admin-tab="dashboard">Dashboard</button>
+      <button class="btn btn-outline btn-sm" data-admin-tab="users">Users</button>
+      <button class="btn btn-outline btn-sm" data-admin-tab="trading">Trading</button>
+      <button class="btn btn-outline btn-sm" data-admin-tab="transactions">Transactions</button>
+      <button class="btn btn-outline btn-sm" data-admin-tab="controls">Controls</button>
+      <button class="btn btn-outline btn-sm" data-admin-tab="security">Security</button>
+    </div>
+    <div class="admin-tab-content" id="adminPanelContent">
+      <div class="text-muted">Loading admin dashboard...</div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal" id="modalContent">
@@ -668,6 +761,18 @@
   const toastContainer = $('toastContainer');
   const modalOverlay = $('modalOverlay');
   const dashboardWrapper = $('dashboard-wrapper');
+
+  // ---- Admin Panel refs ----
+  const adminLoginModal = $('adminLoginModal');
+  const adminPwdInput = $('adminPwdInput');
+  const adminPwdError = $('adminPwdError');
+  const adminLoginSubmit = $('adminLoginSubmit');
+  const adminLoginCancel = $('adminLoginCancel');
+  const toggleAdminPwd = $('toggleAdminPwd');
+  const adminPanelOverlay = $('adminPanelOverlay');
+  const adminLogoutBtn = $('adminLogoutBtn');
+  const adminPanelTabs = $('adminPanelTabs');
+  const adminPanelContent = $('adminPanelContent');
 
   // ---- helpers ----
   function toast(msg, type='') { 
@@ -1503,7 +1608,7 @@
     });
   });
 
-  // ---- admin render functions ----
+  // ---- admin render functions (existing) ----
   function renderAdminOverview() {
     const container = document.getElementById('adminContent');
     const totalUsers = Object.keys(allUsers).length || 0;
@@ -1910,7 +2015,6 @@
     });
   }
 
-  // ---- admin tabs ----
   document.querySelectorAll('[data-admin-tab]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       document.querySelectorAll('[data-admin-tab]').forEach(b=>b.classList.remove('btn-primary'));
@@ -1962,15 +2066,305 @@
     });
   });
 
+  // ============================================================
+  //  ADMIN PANEL — Ctrl+P ACCESS
+  // ============================================================
+  const ADMIN_PASSWORD = '308580';
+  let adminSessionActive = false;
+
+  // Check for existing admin session in sessionStorage
+  function checkAdminSession() {
+    const session = sessionStorage.getItem('adminSession');
+    if (session === 'active') {
+      adminSessionActive = true;
+      openAdminPanel();
+      return true;
+    }
+    return false;
+  }
+
+  // Open admin login modal
+  function openAdminLoginModal() {
+    adminLoginModal.classList.add('open');
+    adminPwdInput.value = '';
+    adminPwdError.textContent = '';
+    adminPwdInput.focus();
+  }
+
+  // Close admin login modal
+  function closeAdminLoginModal() {
+    adminLoginModal.classList.remove('open');
+    adminPwdInput.value = '';
+    adminPwdError.textContent = '';
+  }
+
+  // Handle admin login
+  function handleAdminLogin() {
+    const pwd = adminPwdInput.value.trim();
+    if (pwd === ADMIN_PASSWORD) {
+      adminSessionActive = true;
+      sessionStorage.setItem('adminSession', 'active');
+      closeAdminLoginModal();
+      openAdminPanel();
+      toast('Admin access granted', 'success');
+    } else {
+      adminPwdError.textContent = 'Invalid admin password';
+      adminPwdInput.value = '';
+      adminPwdInput.focus();
+      toast('Invalid admin password', 'error');
+    }
+  }
+
+  // Open admin panel
+  function openAdminPanel() {
+    adminPanelOverlay.classList.add('open');
+    renderAdminPanelDashboard();
+    // Set active tab
+    document.querySelectorAll('#adminPanelTabs .btn').forEach(b => b.classList.remove('btn-primary'));
+    const firstTab = document.querySelector('#adminPanelTabs .btn');
+    if (firstTab) firstTab.classList.add('btn-primary');
+  }
+
+  // Close admin panel
+  function closeAdminPanel() {
+    adminPanelOverlay.classList.remove('open');
+    adminSessionActive = false;
+    sessionStorage.removeItem('adminSession');
+  }
+
+  // Admin logout
+  function adminLogout() {
+    closeAdminPanel();
+    toast('Admin logged out', 'success');
+  }
+
+  // ---- Render Admin Panel Dashboard ----
+  function renderAdminPanelDashboard() {
+    const totalUsers = Object.keys(allUsers).length || 0;
+    const totalBalance = Object.values(allUsers).reduce((s,u)=>s+(u.virtualBalance||0),0);
+    const totalTrades = allTransactions.filter(t=>t.type==='BUY'||t.type==='SELL').length;
+    const pendingDeposits = allDeposits.filter(d=>d.status==='PENDING').length;
+    const pendingWithdrawals = allWithdrawals.filter(d=>d.status==='PENDING').length;
+
+    document.getElementById('adminTotalUsers').textContent = totalUsers;
+    document.getElementById('adminTotalBalance').textContent = formatUSD(totalBalance);
+    document.getElementById('adminTotalTrades').textContent = totalTrades;
+    document.getElementById('adminPendingDeposits').textContent = pendingDeposits;
+    document.getElementById('adminPendingWithdrawals').textContent = pendingWithdrawals;
+
+    // Render default tab content (Dashboard)
+    renderAdminPanelTab('dashboard');
+  }
+
+  // ---- Render Admin Panel Tab Content ----
+  function renderAdminPanelTab(tab) {
+    const content = adminPanelContent;
+    let html = '';
+
+    switch(tab) {
+      case 'dashboard':
+        html = `
+          <div class="admin-list">
+            <div class="item"><span class="label">Platform Status</span><span class="value text-gold">● Online</span></div>
+            <div class="item"><span class="label">Total Users</span><span class="value">${Object.keys(allUsers).length || 0}</span></div>
+            <div class="item"><span class="label">Total Balance</span><span class="value gold">${formatUSD(Object.values(allUsers).reduce((s,u)=>s+(u.virtualBalance||0),0))}</span></div>
+            <div class="item"><span class="label">Total Coins</span><span class="value">${Object.keys(coinsData).length}</span></div>
+            <div class="item"><span class="label">Total Trades</span><span class="value">${allTransactions.filter(t=>t.type==='BUY'||t.type==='SELL').length}</span></div>
+            <div class="item"><span class="label">Pending Deposits</span><span class="value gold">${allDeposits.filter(d=>d.status==='PENDING').length}</span></div>
+            <div class="item"><span class="label">Pending Withdrawals</span><span class="value gold">${allWithdrawals.filter(d=>d.status==='PENDING').length}</span></div>
+            <div class="item"><span class="label">Admin Session</span><span class="value text-green">● Active</span></div>
+          </div>
+        `;
+        break;
+
+      case 'users':
+        let usersHtml = '<div class="admin-list">';
+        if (Object.keys(allUsers).length === 0) {
+          usersHtml += '<div class="text-muted">No users registered</div>';
+        } else {
+          for (const [uid, data] of Object.entries(allUsers)) {
+            const portVal = (data.holdings) ? Object.entries(data.holdings).reduce((sum,[sym,qty])=>{ const c=coinsData[sym]; return sum + (c?qty*c.price:0); },0) : 0;
+            usersHtml += `<div class="item"><span class="label">${data.displayName || 'User'}</span>
+              <span>${data.email || ''}</span>
+              <span class="value">Balance: ${formatUSD(data.virtualBalance||0)}</span>
+              <span class="value">Holdings: ${formatUSD(portVal)}</span>
+              <span style="font-size:11px;color:#7f92a8;">${uid.slice(0,10)}...</span>
+            </div>`;
+          }
+        }
+        usersHtml += '</div>';
+        html = usersHtml;
+        break;
+
+      case 'trading':
+        const trades = allTransactions.filter(t=>t.type==='BUY'||t.type==='SELL').slice(-20).reverse();
+        let tradesHtml = '<div class="admin-list">';
+        if (trades.length === 0) {
+          tradesHtml += '<div class="text-muted">No trading activity</div>';
+        } else {
+          trades.forEach(t => {
+            tradesHtml += `<div class="item"><span class="label">${t.type}</span>
+              <span>${t.coin || ''}</span>
+              <span class="value">${formatUSD(t.amount||0)}</span>
+              <span style="font-size:11px;color:#7f92a8;">${new Date(t.timestamp||Date.now()).toLocaleString()}</span>
+            </div>`;
+          });
+        }
+        tradesHtml += '</div>';
+        html = tradesHtml;
+        break;
+
+      case 'transactions':
+        let txHtml = '<div class="admin-list">';
+        const recentTx = allTransactions.slice(-30).reverse();
+        if (recentTx.length === 0) {
+          txHtml += '<div class="text-muted">No transactions</div>';
+        } else {
+          recentTx.forEach(t => {
+            txHtml += `<div class="item"><span class="label">${t.type}</span>
+              <span>${t.coin || 'USD'}</span>
+              <span class="value">${formatUSD(t.amount||0)}</span>
+              <span style="font-size:11px;color:#7f92a8;">${new Date(t.timestamp||Date.now()).toLocaleString()}</span>
+            </div>`;
+          });
+        }
+        txHtml += '</div>';
+        html = txHtml;
+        break;
+
+      case 'controls':
+        html = `
+          <div class="admin-list">
+            <div class="item"><span class="label">Platform Status</span>
+              <span class="value text-green">● Online</span>
+              <button class="btn btn-sm btn-outline">Toggle Status</button>
+            </div>
+            <div class="item"><span class="label">Maintenance Mode</span>
+              <span class="value">Disabled</span>
+              <button class="btn btn-sm btn-outline">Enable</button>
+            </div>
+            <div class="item"><span class="label">UI Theme</span>
+              <span class="value">Dark</span>
+              <button class="btn btn-sm btn-outline">Switch</button>
+            </div>
+            <div class="item"><span class="label">Refresh Data</span>
+              <button class="btn btn-sm btn-primary" onclick="location.reload()">Refresh</button>
+            </div>
+          </div>
+        `;
+        break;
+
+      case 'security':
+        html = `
+          <div class="admin-list">
+            <div class="item"><span class="label">Admin Session</span>
+              <span class="value text-green">● Active</span>
+            </div>
+            <div class="item"><span class="label">Session Storage</span>
+              <span class="value">${sessionStorage.getItem('adminSession') === 'active' ? 'Active' : 'Inactive'}</span>
+            </div>
+            <div class="item"><span class="label">Authentication Method</span>
+              <span class="value">Password (Client-side)</span>
+            </div>
+            <div class="item"><span class="label">Security Note</span>
+              <span class="value" style="color:#7f92a8;font-size:12px;">This is a client-side implementation. For production, move authentication to server/backend.</span>
+            </div>
+            <div class="item"><span class="label">Actions</span>
+              <button class="btn btn-danger btn-sm" id="adminPanelLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout Admin</button>
+            </div>
+          </div>
+        `;
+        break;
+
+      default:
+        html = '<div class="text-muted">Select a tab</div>';
+    }
+
+    content.innerHTML = html;
+
+    // Attach admin logout from security tab
+    const panelLogoutBtn = document.getElementById('adminPanelLogoutBtn');
+    if (panelLogoutBtn) {
+      panelLogoutBtn.addEventListener('click', adminLogout);
+    }
+  }
+
+  // ---- Admin Panel Tab Switching ----
+  document.querySelectorAll('#adminPanelTabs .btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#adminPanelTabs .btn').forEach(b => b.classList.remove('btn-primary'));
+      btn.classList.add('btn-primary');
+      const tab = btn.dataset.adminTab;
+      renderAdminPanelTab(tab);
+    });
+  });
+
+  // ---- Admin Login Modal Events ----
+  adminLoginSubmit.addEventListener('click', handleAdminLogin);
+  adminLoginCancel.addEventListener('click', closeAdminLoginModal);
+
+  adminPwdInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAdminLogin();
+    }
+    if (e.key === 'Escape') {
+      closeAdminLoginModal();
+    }
+  });
+
+  // Toggle password visibility
+  let pwdVisible = false;
+  toggleAdminPwd.addEventListener('click', () => {
+    pwdVisible = !pwdVisible;
+    adminPwdInput.type = pwdVisible ? 'text' : 'password';
+    toggleAdminPwd.innerHTML = pwdVisible ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+  });
+
+  // ---- Ctrl+P Handler ----
+  document.addEventListener('keydown', (e) => {
+    // Check for Ctrl+P (or Cmd+P on Mac)
+    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+      e.preventDefault();
+      e.stopPropagation();
+
+      // If admin panel is already open, bring it to focus or ignore
+      if (adminPanelOverlay.classList.contains('open')) {
+        toast('Admin panel already open', '');
+        return;
+      }
+
+      // If admin session is active, open panel directly
+      if (adminSessionActive || sessionStorage.getItem('adminSession') === 'active') {
+        adminSessionActive = true;
+        sessionStorage.setItem('adminSession', 'active');
+        openAdminPanel();
+        toast('Admin panel opened', 'success');
+      } else {
+        openAdminLoginModal();
+      }
+    }
+  });
+
+  // ---- Admin Logout Button (header) ----
+  adminLogoutBtn.addEventListener('click', adminLogout);
+
+  // ---- Check for existing admin session on load ----
+  // We check after auth state is resolved, but we can also check now.
+  setTimeout(() => {
+    if (sessionStorage.getItem('adminSession') === 'active') {
+      adminSessionActive = true;
+      // Don't auto-open on load, wait for user to press Ctrl+P
+    }
+  }, 100);
+
   // ---- init ----
   setupLongPress();
-  console.log('✅ Binance Coin Get · Simulator loaded (high-end landing)');
+  console.log('✅ Binance Coin Get · Simulator loaded (Ctrl+P Admin)');
   console.log('📊 Total coins available: ' + Object.keys(ALL_COINS).length);
-  console.log('💰 VBTC (VBcoin) added at $98.47');
-  console.log('📈 25+ new tokens added with decimal price support');
-  console.log('🔒 Starting balance = $0.00 (localStorage)');
+  console.log('🔒 Admin password: 308580 (Ctrl+P)');
   console.log('📝 Deposit status: Pending Review → Confirmed/Cancelled');
-  console.log('ℹ️ Long-press the empty area below transactions for 5 seconds to access admin');
+  console.log('ℹ️ Press Ctrl+P to open admin panel');
 </script>
 </body>
 </html>
