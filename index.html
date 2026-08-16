@@ -255,6 +255,18 @@
     .payment-method-card .address { font-family:monospace; font-size:14px; color:#b0c4d9; word-break:break-all; padding:8px; background:#1a1f2a; border-radius:8px; margin:6px 0; }
     .payment-method-card .copy-btn { background:#1f2937; border:none; color:#e8edf5; padding:4px 12px; border-radius:40px; font-size:12px; cursor:pointer; transition:0.2s; }
     .payment-method-card .copy-btn:hover { background:#2f3b4a; color:#f0b90b; }
+
+    /* Token logo styles */
+    .token-logo { display:inline-flex; align-items:center; justify-content:center; border-radius:50%; flex-shrink:0; font-weight:600; font-size:12px; color:#0b0e14; }
+    .token-logo svg { width:100%; height:100%; display:block; }
+    .token-logo-sm { width:24px; height:24px; font-size:9px; }
+    .token-logo-md { width:32px; height:32px; font-size:11px; }
+    .token-logo-lg { width:40px; height:40px; font-size:14px; }
+    .token-logo-xl { width:48px; height:48px; font-size:16px; }
+    .token-logo-xxl { width:64px; height:64px; font-size:20px; }
+    .token-name { font-weight:600; font-size:15px; }
+    .token-symbol { font-size:12px; color:#7f92a8; }
+    .flex-token { display:flex; align-items:center; gap:10px; }
   </style>
 </head>
 <body>
@@ -434,8 +446,8 @@
       <!-- DEPOSIT -->
       <section class="page" id="page-deposit">
         <div class="card">
-          <h3 style="margin-bottom:4px;">Deposit Virtual Credits</h3>
-          <div class="text-muted" style="margin-bottom:12px;font-size:13px;">Request credits — admin approval required</div>
+          <h3 style="margin-bottom:4px;">Create Deposit Order</h3>
+          <div class="text-muted" style="margin-bottom:12px;font-size:13px;">Submit a deposit order for admin verification</div>
           
           <!-- PAYMENT INFORMATION - VISIBLE TO USER -->
           <div style="margin-bottom:16px;background:#0d141e;border-radius:12px;padding:16px;border:1px solid #1f2937;">
@@ -464,7 +476,7 @@
           </div>
           
           <div class="field">
-            <label>Amount (USD)</label>
+            <label>Deposit Amount (USD)</label>
             <input type="number" id="depositAmount" placeholder="Enter amount (min $1)" min="1" step="0.01" />
           </div>
           <div class="field" id="methodSelector" style="display:none;">
@@ -479,7 +491,7 @@
             <input type="text" id="depositOrderId" placeholder="Enter your payment order ID" />
             <div style="font-size:12px;color:#7f92a8;margin-top:4px;">Required — Enter the order ID from your payment</div>
           </div>
-          <button class="btn btn-primary btn-block" id="submitDepositBtn"><i class="fas fa-paper-plane"></i> Submit Deposit Request</button>
+          <button class="btn btn-primary btn-block" id="submitDepositBtn"><i class="fas fa-paper-plane"></i> Submit Order</button>
         </div>
         <div class="card"><div class="card-header"><span class="card-title">Deposit History</span></div><div id="depositHistoryList"></div></div>
         <div style="display:flex;justify-content:center;margin:16px 0 8px;" class="mobile-logout-wrap"><button class="btn-logout" id="mobileLogoutBtn4"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
@@ -713,85 +725,491 @@
     return prefix + '-' + ds + '-' + rand;
   }
 
-  function getCoinLogo(symbol) {
-    const colors = {
-      MXR:'#f0b90b', QTR:'#22c55e', VLX:'#3b82f6', AVQ:'#a855f7', ZVT:'#ec4899',
-      NXL:'#f59e0b', ORV:'#06b6d4', KVX:'#8b5cf6', TVR:'#ef4444', LMT:'#14b8a6',
-      VYR:'#f472b6', AXT:'#6366f1', NVX:'#22d3ee', QVX:'#fb923c', ELV:'#a3e635',
-      ZTH:'#d946ef', MRX:'#f43f5e', VLT:'#2dd4bf', OXV:'#facc15', RVT:'#60a5fa',
-      CYV:'#34d399', NX2:'#f0b90b', VMR:'#22c55e', QVA:'#3b82f6', TVX:'#a855f7',
-      AVX:'#ec4899', ZYR:'#f59e0b', LMR:'#ec4899', ZTA:'#f59e0b', FLX:'#8b5cf6',
-      VBTC:'#f0b90b', NXA:'#8b5cf6', CLA:'#06b6d4', KSA:'#f59e0b', SKA:'#ec4899',
-      SGA:'#22c55e', RSN:'#3b82f6', PRK:'#f472b6', VLR:'#14b8a6', ZCR:'#a855f7',
-      KVX2:'#ef4444', MRV:'#f0b90b', NXV:'#2dd4bf', SLV:'#60a5fa', KRV:'#facc15',
-      VRX:'#d946ef', ZNR:'#34d399', QVX2:'#6366f1', RVR:'#f43f5e', DXR:'#f59e0b',
-      LMX:'#22d3ee', KVR:'#a3e635', XVR:'#fb923c', VRX2:'#ec4899', NVX2:'#8b5cf6',
-      SVR:'#06b6d4'
+  // ---- Token Logo System ----
+  function getTokenLogoSvg(symbol, name) {
+    // Deterministic color based on symbol
+    const hash = symbol.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+    const hue = (hash * 37) % 360;
+    const colors = [
+      `hsl(${hue}, 80%, 55%)`,
+      `hsl(${(hue + 40) % 360}, 70%, 45%)`,
+      `hsl(${(hue + 80) % 360}, 75%, 50%)`
+    ];
+    const bg = colors[0];
+    const fg = '#0b0e14';
+    
+    // Create a geometric logo based on symbol
+    const letters = symbol.slice(0, 2).toUpperCase();
+    const size = 64;
+    return `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <rect width="64" height="64" rx="32" fill="${bg}"/>
+      <text x="32" y="40" font-family="Inter, system-ui, sans-serif" font-size="24" font-weight="700" fill="${fg}" text-anchor="middle" dominant-baseline="central">${letters}</text>
+      <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+    </svg>`;
+  }
+
+  function getTokenLogo(symbol, name, size = 'md') {
+    const svg = getTokenLogoSvg(symbol, name);
+    const sizeClass = size === 'sm' ? 'token-logo-sm' : size === 'md' ? 'token-logo-md' : size === 'lg' ? 'token-logo-lg' : size === 'xl' ? 'token-logo-xl' : 'token-logo-xxl';
+    return `<div class="token-logo ${sizeClass}" style="background:transparent;">${svg}</div>`;
+  }
+
+  function getTokenDisplay(symbol, name, size = 'md') {
+    return `<div class="flex-token">
+      ${getTokenLogo(symbol, name, size)}
+      <div>
+        <div class="token-name">${name}</div>
+        <div class="token-symbol">${symbol}</div>
+      </div>
+    </div>`;
+  }
+
+  function getTokenLogoHtml(symbol, name, size = 'md') {
+    const sizeClass = size === 'sm' ? 'token-logo-sm' : size === 'md' ? 'token-logo-md' : size === 'lg' ? 'token-logo-lg' : size === 'xl' ? 'token-logo-xl' : 'token-logo-xxl';
+    return `<div class="token-logo ${sizeClass}" style="background:transparent;">${getTokenLogoSvg(symbol, name)}</div>`;
+  }
+
+  // ---- Coin Data with logos ----
+  const ALL_COINS = {
+    BTC: { price:65000.00, change:0, symbol:'BTC', name:'Bitcoin', min:50000, max:80000, auto:true, status:'active', color:'#f7931a' },
+    ETH: { price:3500.00, change:0, symbol:'ETH', name:'Ethereum', min:2800, max:4500, auto:true, status:'active', color:'#627eea' },
+    USDT: { price:1.00, change:0, symbol:'USDT', name:'Tether', min:0.95, max:1.05, auto:false, status:'active', color:'#26a17b' },
+    VBTC: { price:98.47, change:0, symbol:'VBTC', name:'VBcoin', min:85.00, max:115.00, auto:true, status:'active', color:'#f0b90b' },
+    SOL: { price:180.00, change:0, symbol:'SOL', name:'Solana', min:140, max:220, auto:true, status:'active', color:'#9945ff' },
+    ADA: { price:0.45, change:0, symbol:'ADA', name:'Cardano', min:0.35, max:0.60, auto:true, status:'active', color:'#0033ad' },
+    DOT: { price:7.50, change:0, symbol:'DOT', name:'Polkadot', min:6.00, max:9.50, auto:true, status:'active', color:'#e6007a' },
+    AVAX: { price:38.00, change:0, symbol:'AVAX', name:'Avalanche', min:30, max:48, auto:true, status:'active', color:'#e84142' },
+    MATIC: { price:0.75, change:0, symbol:'MATIC', name:'Polygon', min:0.60, max:0.95, auto:true, status:'active', color:'#8247e5' },
+    LINK: { price:14.50, change:0, symbol:'LINK', name:'Chainlink', min:12, max:18, auto:true, status:'active', color:'#2a5ada' },
+    UNI: { price:7.20, change:0, symbol:'UNI', name:'Uniswap', min:6, max:9, auto:true, status:'active', color:'#ff007a' },
+    ATOM: { price:8.90, change:0, symbol:'ATOM', name:'Cosmos', min:7, max:11, auto:true, status:'active', color:'#2e3148' },
+    FIL: { price:5.30, change:0, symbol:'FIL', name:'Filecoin', min:4, max:7, auto:true, status:'active', color:'#0090ff' },
+    NEAR: { price:4.80, change:0, symbol:'NEAR', name:'NEAR Protocol', min:3.8, max:6.0, auto:true, status:'active', color:'#000000' },
+    APT: { price:9.20, change:0, symbol:'APT', name:'Aptos', min:7, max:12, auto:true, status:'active', color:'#00bfa5' },
+    ARB: { price:1.80, change:0, symbol:'ARB', name:'Arbitrum', min:1.4, max:2.2, auto:true, status:'active', color:'#2d374b' },
+    OP: { price:2.50, change:0, symbol:'OP', name:'Optimism', min:2.0, max:3.2, auto:true, status:'active', color:'#ff0420' },
+    SUI: { price:0.95, change:0, symbol:'SUI', name:'Sui', min:0.75, max:1.20, auto:true, status:'active', color:'#4da2ff' },
+    SEI: { price:0.42, change:0, symbol:'SEI', name:'Sei', min:0.32, max:0.55, auto:true, status:'active', color:'#00d4aa' },
+    INJ: { price:28.00, change:0, symbol:'INJ', name:'Injective', min:22, max:35, auto:true, status:'active', color:'#00f2fe' },
+    TIA: { price:12.50, change:0, symbol:'TIA', name:'Celestia', min:10, max:16, auto:true, status:'active', color:'#7b61ff' },
+    BONK: { price:0.000025, change:0, symbol:'BONK', name:'Bonk', min:0.000018, max:0.000035, auto:true, status:'active', color:'#ff8a00' },
+    WIF: { price:2.80, change:0, symbol:'WIF', name:'Dogwifhat', min:2.0, max:3.5, auto:true, status:'active', color:'#ff6b6b' },
+    POPCAT: { price:0.65, change:0, symbol:'POPCAT', name:'Popcat', min:0.50, max:0.85, auto:true, status:'active', color:'#ff9a9e' },
+    MEW: { price:0.008, change:0, symbol:'MEW', name:'Cat in a Dogs World', min:0.006, max:0.011, auto:true, status:'active', color:'#ffb347' },
+  };
+
+  async function loadCoins() {
+    const coinsRef = ref(db, 'coins');
+    const snap = await get(coinsRef);
+    if(snap.exists()) {
+      coinsData = snap.val();
+      for(const [sym, data] of Object.entries(ALL_COINS)) {
+        if(!coinsData[sym]) {
+          coinsData[sym] = data;
+          await set(ref(db, 'coins/'+sym), data);
+        } else {
+          if (coinsData[sym].min === undefined) coinsData[sym].min = data.min || 0;
+          if (coinsData[sym].max === undefined) coinsData[sym].max = data.max || 999;
+          if (!coinsData[sym].color) coinsData[sym].color = data.color || '#f0b90b';
+        }
+      }
+    } else {
+      await set(coinsRef, ALL_COINS);
+      coinsData = ALL_COINS;
+    }
+  }
+
+  async function updateCoinPrice(symbol, newPrice, updateDb=true) {
+    if(newPrice < 0.01) return toast('Price too low','error');
+    const coin = coinsData[symbol];
+    if(coin.min !== undefined && newPrice < coin.min) return toast(`Price below minimum ${formatUSD(coin.min)}`,'error');
+    if(coin.max !== undefined && newPrice > coin.max) return toast(`Price above maximum ${formatUSD(coin.max)}`,'error');
+    coin.price = newPrice;
+    if(updateDb) {
+      const coinRef = ref(db, 'coins/'+symbol);
+      await update(coinRef, { price: newPrice, change: coin.change || 0 });
+    }
+    renderAll();
+    toast(`${symbol} price updated to ${formatUSD(newPrice)}`,'success');
+  }
+
+  async function updateCoinFull(symbol, data) {
+    const coin = coinsData[symbol];
+    if(!coin) return toast('Coin not found','error');
+    if (data.min > data.max) return toast('Minimum cannot be greater than Maximum','error');
+    if (data.current < data.min) return toast('Current price cannot be below Minimum','error');
+    if (data.current > data.max) return toast('Current price cannot be above Maximum','error');
+    if (data.min < 0 || data.max < 0 || data.current < 0) return toast('Prices cannot be negative','error');
+    coin.min = data.min;
+    coin.max = data.max;
+    coin.price = data.current;
+    coin.change = data.change || 0;
+    const coinRef = ref(db, 'coins/'+symbol);
+    await update(coinRef, { min: data.min, max: data.max, price: data.current, change: coin.change });
+    renderAll();
+    toast(`${symbol} updated successfully`,'success');
+  }
+
+  async function loadDeposits() {
+    const depRef = ref(db, 'deposits');
+    const snap = await get(depRef);
+    allDeposits = snap.exists() ? Object.values(snap.val()) : [];
+  }
+
+  async function loadWithdrawals() {
+    const wdRef = ref(db, 'withdrawals');
+    const snap = await get(wdRef);
+    allWithdrawals = snap.exists() ? Object.values(snap.val()) : [];
+  }
+
+  async function loadTransactions() {
+    const txRef = ref(db, 'transactions');
+    const snap = await get(txRef);
+    allTransactions = snap.exists() ? Object.values(snap.val()) : [];
+  }
+
+  async function checkAdmin() {
+    const adminRef = ref(db, 'settings/admins');
+    const snap = await get(adminRef);
+    const admins = snap.exists() ? snap.val() : [];
+    if(admins.includes(currentUser?.uid)) {
+      isAdmin = true;
+      document.getElementById('adminPanelCard').style.display = 'block';
+    } else {
+      isAdmin = false;
+      document.getElementById('adminPanelCard').style.display = 'none';
+    }
+  }
+
+  async function loadAllUsers() {
+    const usersRef = ref(db, 'users');
+    const snap = await get(usersRef);
+    if(snap.exists()) allUsers = snap.val();
+  }
+
+  function getDisplayStatus(status) {
+    const map = {
+      'PENDING': 'Pending',
+      'APPROVED': 'Confirmed',
+      'REJECTED': 'Rejected',
+      'COMPLETED': 'Completed',
+      'CANCELLED': 'Cancelled',
+      'FAILED': 'Failed'
     };
-    return `<div class="coin-logo-svg" style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;background:${colors[symbol]||'#1f2937'};color:#0b0e14;">${symbol.slice(0,2)}</div>`;
+    return map[status] || status || 'Pending';
   }
 
-  function playClickSound() {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.value = 800;
-      osc.type = 'sine';
-      gain.gain.setValueAtTime(0.1, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.1);
-    } catch(e) { /* silent */ }
+  function getBadgeClass(status) {
+    const s = status?.toUpperCase() || 'PENDING';
+    const map = {
+      'PENDING': 'badge-pending',
+      'APPROVED': 'badge-approved',
+      'REJECTED': 'badge-rejected',
+      'COMPLETED': 'badge-completed',
+      'CANCELLED': 'badge-cancelled',
+      'FAILED': 'badge-failed'
+    };
+    return map[s] || 'badge-pending';
   }
 
-  function navigate(page) {
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    const target = document.getElementById('page-'+page);
-    if(target) target.classList.add('active');
-    document.querySelectorAll('.sidebar nav a, .bottom-nav a:not(#bottomLogoutBtn)').forEach(el=>{
-      el.classList.toggle('active', el.dataset.page===page);
+  // ---- Render Functions ----
+  function renderAll() {
+    renderHome();
+    renderMarkets();
+    renderPortfolio();
+    renderProfile();
+    renderDepositHistory();
+    renderWithdrawHistory();
+    renderNotifications();
+    renderPaymentMethods();
+    if(isAdmin) {
+      const activeTab = document.querySelector('[data-admin-tab].btn-primary');
+      if(activeTab) {
+        const tab = activeTab.dataset.adminTab;
+        if(tab==='overview') renderAdminOverview();
+        else if(tab==='users') renderAdminUsers();
+        else if(tab==='deposits') renderAdminDeposits();
+        else if(tab==='withdrawals') renderAdminWithdrawals();
+        else if(tab==='coins') renderAdminCoins();
+        else if(tab==='payments') renderAdminPayments();
+        else if(tab==='transactions') renderAdminTransactions();
+        else if(tab==='settings') renderAdminSettings();
+      }
+    }
+    updateBalanceUI();
+    updateAdminStats();
+  }
+
+  function renderHome() {
+    const balance = getBalance(currentUser?.uid || '');
+    const portfolioVal = calcPortfolioValue();
+    const total = balance + portfolioVal;
+    $('totalBalance').textContent = formatUSD(total);
+    $('portfolioValue').textContent = formatUSD(portfolioVal);
+    const pl = portfolioVal * 0.02;
+    $('todayPL').textContent = (pl>=0?'+':'')+formatUSD(pl);
+    $('coinCount').textContent = Object.keys(coinsData).length;
+
+    let html = '';
+    const activeCoins = Object.entries(coinsData).filter(([sym, coin]) => coin.status !== 'disabled');
+    const sorted = activeCoins.slice(0, 12);
+    for(const [sym, coin] of sorted) {
+      const change = coin.change || 0;
+      const cls = change>=0?'up':'down';
+      html += `<div class="coin-row">
+        ${getTokenLogoHtml(sym, coin.name, 'md')}
+        <div class="coin-info"><div class="coin-name">${coin.name}</div><div class="coin-symbol">${sym}</div></div>
+        <div><span class="coin-price">${formatUSD(coin.price)}</span><span class="coin-change ${cls}">${change>=0?'+':''}${change.toFixed(2)}%</span></div>
+        <div class="coin-actions"><button class="btn btn-primary btn-sm" data-buy="${sym}">Buy</button></div>
+      </div>`;
+    }
+    $('homeCoinList').innerHTML = html;
+    document.querySelectorAll('[data-buy]').forEach(el=>{
+      el.addEventListener('click', ()=>openBuyModal(el.dataset.buy));
     });
-    if(page==='admin' && !isAdmin) { toast('Admin access required','error'); return; }
-    if(page==='admin' && isAdmin) renderAdminOverview();
   }
-  window.navigate = navigate;
 
-  document.querySelectorAll('.sidebar nav a, .bottom-nav a:not(#bottomLogoutBtn)').forEach(el=>{
-    el.addEventListener('click', (e)=>{
-      e.preventDefault();
-      const page = el.dataset.page;
-      if(page==='admin' && !isAdmin) { toast('Admin access required','error'); return; }
-      navigate(page);
+  function renderMarkets() {
+    let html = '';
+    const activeCoins = Object.entries(coinsData).filter(([sym, coin]) => coin.status !== 'disabled');
+    const sorted = activeCoins.sort((a,b) => a[1].name.localeCompare(b[1].name));
+    for(const [sym, coin] of sorted) {
+      const change = coin.change || 0;
+      const cls = change>=0?'up':'down';
+      html += `<div class="coin-row">
+        ${getTokenLogoHtml(sym, coin.name, 'md')}
+        <div class="coin-info"><div class="coin-name">${coin.name}</div><div class="coin-symbol">${sym}</div></div>
+        <div><span class="coin-price">${formatUSD(coin.price)}</span><span class="coin-change ${cls}">${change>=0?'+':''}${change.toFixed(2)}%</span></div>
+        <div class="coin-actions"><button class="btn btn-primary btn-sm" data-buy-market="${sym}">Buy</button></div>
+      </div>`;
+    }
+    $('marketCoinList').innerHTML = html;
+    document.querySelectorAll('[data-buy-market]').forEach(el=>{
+      el.addEventListener('click', ()=>openBuyModal(el.dataset.buyMarket));
+    });
+  }
+
+  function calcPortfolioValue() {
+    let val=0;
+    for(const [sym, qty] of Object.entries(holdings)) {
+      if(coinsData[sym]) val += qty * coinsData[sym].price;
+    }
+    return val;
+  }
+
+  function renderPortfolio() {
+    const balance = getBalance(currentUser?.uid || '');
+    const portVal = calcPortfolioValue();
+    $('portfolioUsd').textContent = formatUSD(balance);
+    $('portfolioTotalValue').textContent = formatUSD(portVal);
+
+    let html = '';
+    for(const [sym, qty] of Object.entries(holdings)) {
+      if(qty===0) continue;
+      const coin = coinsData[sym];
+      if(!coin) continue;
+      const value = qty * coin.price;
+      const avgBuy = userData?.avgBuyPrices?.[sym] || coin.price;
+      const pl = value - (qty * avgBuy);
+      const plp = avgBuy>0 ? (pl/(qty*avgBuy))*100 : 0;
+      html += `<div class="coin-row">
+        ${getTokenLogoHtml(sym, coin.name, 'md')}
+        <div><div class="coin-name">${coin.name}</div><div class="coin-symbol">${qty.toFixed(4)} ${sym}</div></div>
+        <div><div>${formatUSD(value)}</div><div class="${pl>=0?'text-green':'text-red'}">${pl>=0?'+':''}${formatUSD(pl)} (${plp>=0?'+':''}${plp.toFixed(2)}%)</div></div>
+        <div class="coin-actions"><button class="btn btn-danger btn-sm" data-sell="${sym}">Sell</button></div>
+      </div>`;
+    }
+    if(!html) html = '<div class="text-muted">No holdings</div>';
+    $('portfolioHoldings').innerHTML = html;
+    document.querySelectorAll('[data-sell]').forEach(el=>{
+      el.addEventListener('click', ()=>openSellModal(el.dataset.sell));
+    });
+  }
+
+  function renderProfile() {
+    const balance = getBalance(currentUser?.uid || '');
+    const portVal = calcPortfolioValue();
+    $('profileBalance').textContent = formatUSD(balance);
+    $('profilePortfolio').textContent = formatUSD(portVal);
+    const trades = allTransactions.filter(t=>t.uid===currentUser?.uid && (t.type==='BUY'||t.type==='SELL')).length;
+    $('profileTrades').textContent = trades;
+    $('profilePL').textContent = '+$0.00';
+
+    let html = '';
+    for(const [sym, qty] of Object.entries(holdings)) {
+      if(qty===0) continue;
+      const coin = coinsData[sym];
+      if(!coin) continue;
+      html += `<div class="flex-between" style="font-size:13px;padding:4px 0;border-bottom:1px solid #1f2937;">
+        <span class="flex-token">${getTokenLogoHtml(sym, coin.name, 'sm')} ${sym}</span>
+        <span>${qty.toFixed(4)} (${formatUSD(qty*coin.price)})</span>
+      </div>`;
+    }
+    $('profileHoldings').innerHTML = html || '<div class="text-muted">No holdings</div>';
+
+    let txHtml = '';
+    const userTxs = allTransactions.filter(t=>t.uid===currentUser?.uid).slice(-15).reverse();
+    userTxs.forEach(t=>{
+      const status = t.status || 'COMPLETED';
+      const badgeClass = getBadgeClass(status);
+      const coin = coinsData[t.coin];
+      const logoHtml = coin ? getTokenLogoHtml(t.coin, coin.name, 'sm') : '';
+      txHtml += `<div class="flex-between tx-item">
+        <span class="flex-token">${logoHtml} ${t.coin||'USD'}</span>
+        <span>${t.type}</span>
+        <span>${formatUSD(t.amount||0)}</span>
+        <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
+        <span class="text-muted" style="font-size:11px;">${new Date(t.timestamp||Date.now()).toLocaleDateString()}</span>
+      </div>`;
+    });
+    $('profileTransactions').innerHTML = txHtml || '<div class="text-muted">No transactions</div>';
+  }
+
+  function renderDepositHistory() {
+    const userDeps = allDeposits.filter(d => d.uid === currentUser?.uid).slice(-15).reverse();
+    let html = '';
+    if(userDeps.length === 0) {
+      html = '<div class="text-muted">No deposits yet</div>';
+    } else {
+      userDeps.forEach(d => {
+        const status = d.status || 'PENDING';
+        const badgeClass = getBadgeClass(status);
+        const coin = d.currency ? coinsData[d.currency] : null;
+        const logoHtml = coin ? getTokenLogoHtml(d.currency, coin.name, 'sm') : '';
+        html += `<div class="flex-between deposit-item">
+          <span style="font-size:12px;">${d.requestId || d.orderId || '—'}</span>
+          <span class="flex-token">${logoHtml} ${formatUSD(d.amount)}</span>
+          <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
+          <span class="text-muted" style="font-size:11px;">${new Date(d.createdAt || Date.now()).toLocaleDateString()}</span>
+        </div>`;
+      });
+    }
+    document.getElementById('depositHistoryList').innerHTML = html;
+  }
+
+  function renderWithdrawHistory() {
+    const userWds = allWithdrawals.filter(d => d.uid === currentUser?.uid).slice(-15).reverse();
+    let html = '';
+    if(userWds.length === 0) {
+      html = '<div class="text-muted">No withdrawals yet</div>';
+    } else {
+      userWds.forEach(d => {
+        const status = d.status || 'PENDING';
+        const badgeClass = getBadgeClass(status);
+        html += `<div class="flex-between deposit-item">
+          <span style="font-size:12px;">${d.requestId || d.withdrawalId || '—'}</span>
+          <span>${formatUSD(d.amount)}</span>
+          <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
+          <span class="text-muted" style="font-size:11px;">${new Date(d.createdAt || Date.now()).toLocaleDateString()}</span>
+        </div>`;
+      });
+    }
+    document.getElementById('withdrawHistoryList').innerHTML = html;
+  }
+
+  function renderNotifications() {
+    const container = document.getElementById('profileNotifications');
+    if (!container) return;
+    const notifs = getNotifications(currentUser?.uid || '');
+    if (notifs.length === 0) {
+      container.innerHTML = '<div class="text-muted">No notifications</div>';
+      return;
+    }
+    let html = '';
+    notifs.slice(-10).reverse().forEach(n => {
+      html += `<div class="notification-item">
+        <div>${n.message}</div>
+        <div class="flex-between"><span class="time">${new Date(n.timestamp || Date.now()).toLocaleString()}</span>
+        <span class="badge ${n.read ? 'badge-confirmed' : 'badge-pending'}">${n.read ? 'Read' : 'New'}</span></div>
+      </div>`;
+    });
+    container.innerHTML = html;
+  }
+
+  // ---- Payment Methods ----
+  const DEFAULT_BINANCE_PAY_ID = "894307667";
+  const DEFAULT_TRC20_ADDRESS = "TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7";
+
+  function getPaymentMethods() {
+    const key = 'bcg_payment_methods';
+    try {
+      const data = localStorage.getItem(key);
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (parsed && parsed.length > 0) return parsed;
+      }
+    } catch(e) {}
+    const defaults = [
+      { name: 'Binance Pay', address: DEFAULT_BINANCE_PAY_ID, id: DEFAULT_BINANCE_PAY_ID, description: 'Binance Pay merchant ID', status: 'active' },
+      { name: 'USDT TRC20', address: DEFAULT_TRC20_ADDRESS, id: DEFAULT_TRC20_ADDRESS, description: 'Send USDT via TRC20 network', status: 'active' }
+    ];
+    localStorage.setItem(key, JSON.stringify(defaults));
+    return defaults;
+  }
+
+  function savePaymentMethods(methods) {
+    localStorage.setItem('bcg_payment_methods', JSON.stringify(methods));
+  }
+
+  function renderPaymentMethods() {
+    const container = document.getElementById('depositPaymentMethods');
+    if (!container) return;
+    const methods = getPaymentMethods();
+    const activeMethods = methods.filter(m => m.status !== 'disabled');
+    if (activeMethods.length === 0) {
+      container.innerHTML = '<div class="text-muted">No active payment methods</div>';
+      return;
+    }
+    let html = '';
+    activeMethods.forEach(m => {
+      const address = m.address || m.id || '';
+      const label = m.name.includes('Binance') ? 'Copy ID' : 'Copy Address';
+      html += `<div class="payment-method-card" data-method="${m.name}">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <strong>${m.name}</strong>
+          <span class="badge badge-confirmed">Active</span>
+        </div>
+        ${address ? `<div class="address">${address}</div>` : ''}
+        ${address ? `<button class="copy-btn" data-copy="${address}"><i class="fas fa-copy"></i> ${label}</button>` : ''}
+        <div style="margin-top:6px;font-size:12px;color:#7f92a8;">${m.description || ''}</div>
+      </div>`;
+    });
+    container.innerHTML = html;
+    container.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = btn.dataset.copy;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => toast('Copied successfully', 'success'));
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+          toast('Copied successfully', 'success');
+        }
+      });
+    });
+  }
+
+  // ---- Copy buttons for payment info ----
+  document.querySelectorAll('.copy-payment-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const text = btn.dataset.copy;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => toast('Copied successfully', 'success'));
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        toast('Copied successfully', 'success');
+      }
     });
   });
-
-  function openModal(title, sub, bodyHTML, actionsHTML) {
-    $('modalTitle').textContent=title;
-    $('modalSub').textContent=sub||'';
-    $('modalBody').innerHTML=bodyHTML;
-    $('modalActions').innerHTML=actionsHTML||'';
-    modalOverlay.classList.add('open');
-  }
-  function closeModal() { modalOverlay.classList.remove('open'); }
-  window.closeModal = closeModal;
-  modalOverlay.addEventListener('click', (e)=>{ if(e.target===modalOverlay) closeModal(); });
-
-  window.selectMethod = function(el) {
-    document.querySelectorAll('.method-option').forEach(m=>m.classList.remove('selected'));
-    el.classList.add('selected');
-    document.getElementById('selectedMethod').value = el.dataset.method;
-    playClickSound();
-  };
-
-  window.selectWithdrawMethod = function(el) {
-    document.querySelectorAll('.withdraw-method-item').forEach(m=>m.classList.remove('selected'));
-    el.classList.add('selected');
-    document.getElementById('selectedWithdrawMethod').value = el.dataset.method;
-    playClickSound();
-  };
 
   // ---- Balance Management ----
   function initializeBalance(uid) {
@@ -928,466 +1346,6 @@
     $('profileUid').textContent = 'UID: '+user.uid;
   }
 
-  // ---- Coin Data ----
-  const ALL_COINS = {
-    MXR: { price:13.00, change:0, symbol:'MXR', name:'Maxora', min:10, max:20, auto:true, status:'active', color:'#f0b90b' },
-    QTR: { price:27.00, change:0, symbol:'QTR', name:'Quantrara', min:22, max:35, auto:true, status:'active', color:'#22c55e' },
-    VLX: { price:42.00, change:0, symbol:'VLX', name:'Veltrix', min:38, max:50, auto:true, status:'active', color:'#3b82f6' },
-    AVQ: { price:8.50, change:0, symbol:'AVQ', name:'Avenqor', min:6, max:12, auto:true, status:'active', color:'#a855f7' },
-    ZVT: { price:65.00, change:0, symbol:'ZVT', name:'Zorvanta', min:55, max:75, auto:true, status:'active', color:'#ec4899' },
-    NXL: { price:18.00, change:0, symbol:'NXL', name:'Nexalune', min:14, max:22, auto:true, status:'active', color:'#f59e0b' },
-    ORV: { price:31.00, change:0, symbol:'ORV', name:'Orvion', min:26, max:38, auto:true, status:'active', color:'#06b6d4' },
-    KVX: { price:9.20, change:0, symbol:'KVX', name:'Kryvexa', min:7, max:12, auto:true, status:'active', color:'#8b5cf6' },
-    TVR: { price:55.00, change:0, symbol:'TVR', name:'Talveron', min:48, max:62, auto:true, status:'active', color:'#ef4444' },
-    LMT: { price:24.00, change:0, symbol:'LMT', name:'Lumetra', min:20, max:28, auto:true, status:'active', color:'#14b8a6' },
-    VYR: { price:47.00, change:0, symbol:'VYR', name:'Veyrona', min:40, max:55, auto:true, status:'active', color:'#f472b6' },
-    AXT: { price:11.50, change:0, symbol:'AXT', name:'Axentara', min:9, max:14, auto:true, status:'active', color:'#6366f1' },
-    NVX: { price:73.00, change:0, symbol:'NVX', name:'Novyrex', min:65, max:85, auto:true, status:'active', color:'#22d3ee' },
-    QVX: { price:15.00, change:0, symbol:'QVX', name:'Quorvex', min:12, max:18, auto:true, status:'active', color:'#fb923c' },
-    ELV: { price:39.00, change:0, symbol:'ELV', name:'Elvaris', min:34, max:45, auto:true, status:'active', color:'#a3e635' },
-    ZTH: { price:58.00, change:0, symbol:'ZTH', name:'Zenthor', min:52, max:65, auto:true, status:'active', color:'#d946ef' },
-    MRX: { price:7.80, change:0, symbol:'MRX', name:'Marovex', min:6, max:10, auto:true, status:'active', color:'#f43f5e' },
-    VLT: { price:33.00, change:0, symbol:'VLT', name:'Virelta', min:28, max:38, auto:true, status:'active', color:'#2dd4bf' },
-    OXV: { price:19.00, change:0, symbol:'OXV', name:'Oxyvara', min:16, max:22, auto:true, status:'active', color:'#facc15' },
-    RVT: { price:44.00, change:0, symbol:'RVT', name:'Raventra', min:38, max:50, auto:true, status:'active', color:'#60a5fa' },
-    CYV: { price:6.20, change:0, symbol:'CYV', name:'Calyvex', min:5, max:8, auto:true, status:'active', color:'#34d399' },
-    NX2: { price:25.00, change:0, symbol:'NX2', name:'Nexoria', min:20, max:30, auto:true, status:'active', color:'#f0b90b' },
-    VMR: { price:36.00, change:0, symbol:'VMR', name:'Velmora', min:30, max:42, auto:true, status:'active', color:'#22c55e' },
-    QVA: { price:49.00, change:0, symbol:'QVA', name:'Qelvanta', min:42, max:56, auto:true, status:'active', color:'#3b82f6' },
-    TVX: { price:14.50, change:0, symbol:'TVX', name:'Torvexa', min:12, max:17, auto:true, status:'active', color:'#a855f7' },
-    AVX: { price:28.00, change:0, symbol:'AVX', name:'Aurevex', min:24, max:32, auto:true, status:'active', color:'#ec4899' },
-    ZYR: { price:61.00, change:0, symbol:'ZYR', name:'Zyvora', min:55, max:70, auto:true, status:'active', color:'#f59e0b' },
-    LMR: { price:18.40, change:0, symbol:'LMR', name:'Lumora', min:15, max:22, auto:true, status:'active', color:'#ec4899' },
-    ZTA: { price:42.00, change:0, symbol:'ZTA', name:'Zentara', min:38, max:48, auto:true, status:'active', color:'#f59e0b' },
-    FLX: { price:91.00, change:0, symbol:'FLX', name:'Fluxora', min:80, max:100, auto:true, status:'active', color:'#8b5cf6' },
-    VBTC: { price:98.47, change:0, symbol:'VBTC', name:'VBcoin', min:85.00, max:115.00, auto:true, status:'active', color:'#f0b90b' },
-    NXA: { price:4.32, change:0, symbol:'NXA', name:'Nexora', min:3.50, max:5.50, auto:true, status:'active', color:'#8b5cf6' },
-    CLA: { price:7.89, change:0, symbol:'CLA', name:'Colara', min:6.50, max:9.50, auto:true, status:'active', color:'#06b6d4' },
-    KSA: { price:12.45, change:0, symbol:'KSA', name:'Kosa', min:10.00, max:15.00, auto:true, status:'active', color:'#f59e0b' },
-    SKA: { price:3.76, change:0, symbol:'SKA', name:'Seka', min:2.80, max:4.80, auto:true, status:'active', color:'#ec4899' },
-    SGA: { price:9.23, change:0, symbol:'SGA', name:'Siga', min:7.80, max:11.00, auto:true, status:'active', color:'#22c55e' },
-    RSN: { price:18.90, change:0, symbol:'RSN', name:'Resona', min:15.00, max:22.00, auto:true, status:'active', color:'#3b82f6' },
-    PRK: { price:5.67, change:0, symbol:'PRK', name:'Porksa', min:4.50, max:7.00, auto:true, status:'active', color:'#f472b6' },
-    VLR: { price:24.30, change:0, symbol:'VLR', name:'Velora', min:20.00, max:28.00, auto:true, status:'active', color:'#14b8a6' },
-    ZCR: { price:31.80, change:0, symbol:'ZCR', name:'Zecora', min:28.00, max:36.00, auto:true, status:'active', color:'#a855f7' },
-    KVX2: { price:16.55, change:0, symbol:'KVX2', name:'Kavex', min:14.00, max:19.00, auto:true, status:'active', color:'#ef4444' },
-    MRV: { price:22.40, change:0, symbol:'MRV', name:'Morvix', min:19.00, max:26.00, auto:true, status:'active', color:'#f0b90b' },
-    NXV: { price:8.15, change:0, symbol:'NXV', name:'Nexvia', min:6.80, max:9.80, auto:true, status:'active', color:'#2dd4bf' },
-    SLV: { price:11.72, change:0, symbol:'SLV', name:'Solvra', min:9.50, max:14.00, auto:true, status:'active', color:'#60a5fa' },
-    KRV: { price:27.60, change:0, symbol:'KRV', name:'Korvex', min:23.00, max:32.00, auto:true, status:'active', color:'#facc15' },
-    VRX: { price:6.34, change:0, symbol:'VRX', name:'Virexa', min:5.20, max:7.80, auto:true, status:'active', color:'#d946ef' },
-    ZNR: { price:19.85, change:0, symbol:'ZNR', name:'Zenora', min:16.00, max:24.00, auto:true, status:'active', color:'#34d399' },
-    QVX2: { price:13.28, change:0, symbol:'QVX2', name:'Qevix', min:11.00, max:16.00, auto:true, status:'active', color:'#6366f1' },
-    RVR: { price:4.91, change:0, symbol:'RVR', name:'Ravora', min:3.80, max:6.00, auto:true, status:'active', color:'#f43f5e' },
-    DXR: { price:29.14, change:0, symbol:'DXR', name:'Dexora', min:25.00, max:34.00, auto:true, status:'active', color:'#f59e0b' },
-    LMX: { price:15.37, change:0, symbol:'LMX', name:'Lumexa', min:12.50, max:18.50, auto:true, status:'active', color:'#22d3ee' },
-    KVR: { price:21.68, change:0, symbol:'KVR', name:'Kovira', min:18.00, max:25.00, auto:true, status:'active', color:'#a3e635' },
-    XVR: { price:7.52, change:0, symbol:'XVR', name:'Xavora', min:6.00, max:9.00, auto:true, status:'active', color:'#fb923c' },
-    VRX2: { price:33.90, change:0, symbol:'VRX2', name:'Verixa', min:29.00, max:39.00, auto:true, status:'active', color:'#ec4899' },
-    NVX2: { price:10.86, change:0, symbol:'NVX2', name:'Novexa', min:8.50, max:13.00, auto:true, status:'active', color:'#8b5cf6' },
-    SVR: { price:17.43, change:0, symbol:'SVR', name:'Sevora', min:14.50, max:20.50, auto:true, status:'active', color:'#06b6d4' }
-  };
-
-  async function loadCoins() {
-    const coinsRef = ref(db, 'coins');
-    const snap = await get(coinsRef);
-    if(snap.exists()) {
-      coinsData = snap.val();
-      for(const [sym, data] of Object.entries(ALL_COINS)) {
-        if(!coinsData[sym]) {
-          coinsData[sym] = data;
-          await set(ref(db, 'coins/'+sym), data);
-        } else {
-          if (coinsData[sym].min === undefined) coinsData[sym].min = data.min || 0;
-          if (coinsData[sym].max === undefined) coinsData[sym].max = data.max || 999;
-        }
-      }
-    } else {
-      await set(coinsRef, ALL_COINS);
-      coinsData = ALL_COINS;
-    }
-  }
-
-  async function updateCoinPrice(symbol, newPrice, updateDb=true) {
-    if(newPrice < 0.01) return toast('Price too low','error');
-    const coin = coinsData[symbol];
-    if(coin.min !== undefined && newPrice < coin.min) return toast(`Price below minimum ${formatUSD(coin.min)}`,'error');
-    if(coin.max !== undefined && newPrice > coin.max) return toast(`Price above maximum ${formatUSD(coin.max)}`,'error');
-    coin.price = newPrice;
-    if(updateDb) {
-      const coinRef = ref(db, 'coins/'+symbol);
-      await update(coinRef, { price: newPrice, change: coin.change || 0 });
-    }
-    renderAll();
-    toast(`${symbol} price updated to ${formatUSD(newPrice)}`,'success');
-  }
-
-  async function updateCoinFull(symbol, data) {
-    const coin = coinsData[symbol];
-    if(!coin) return toast('Coin not found','error');
-    if (data.min > data.max) return toast('Minimum cannot be greater than Maximum','error');
-    if (data.current < data.min) return toast('Current price cannot be below Minimum','error');
-    if (data.current > data.max) return toast('Current price cannot be above Maximum','error');
-    if (data.min < 0 || data.max < 0 || data.current < 0) return toast('Prices cannot be negative','error');
-    coin.min = data.min;
-    coin.max = data.max;
-    coin.price = data.current;
-    coin.change = data.change || 0;
-    const coinRef = ref(db, 'coins/'+symbol);
-    await update(coinRef, { min: data.min, max: data.max, price: data.current, change: coin.change });
-    renderAll();
-    toast(`${symbol} updated successfully`,'success');
-  }
-
-  async function loadDeposits() {
-    const depRef = ref(db, 'deposits');
-    const snap = await get(depRef);
-    allDeposits = snap.exists() ? Object.values(snap.val()) : [];
-  }
-
-  async function loadWithdrawals() {
-    const wdRef = ref(db, 'withdrawals');
-    const snap = await get(wdRef);
-    allWithdrawals = snap.exists() ? Object.values(snap.val()) : [];
-  }
-
-  async function loadTransactions() {
-    const txRef = ref(db, 'transactions');
-    const snap = await get(txRef);
-    allTransactions = snap.exists() ? Object.values(snap.val()) : [];
-  }
-
-  async function checkAdmin() {
-    const adminRef = ref(db, 'settings/admins');
-    const snap = await get(adminRef);
-    const admins = snap.exists() ? snap.val() : [];
-    if(admins.includes(currentUser?.uid)) {
-      isAdmin = true;
-      document.getElementById('adminPanelCard').style.display = 'block';
-    } else {
-      isAdmin = false;
-      document.getElementById('adminPanelCard').style.display = 'none';
-    }
-  }
-
-  async function loadAllUsers() {
-    const usersRef = ref(db, 'users');
-    const snap = await get(usersRef);
-    if(snap.exists()) allUsers = snap.val();
-  }
-
-  function getDisplayStatus(status) {
-    const map = {
-      'PENDING': 'Pending Review',
-      'APPROVED': 'Approved',
-      'REJECTED': 'Rejected',
-      'COMPLETED': 'Completed',
-      'CANCELLED': 'Cancelled',
-      'FAILED': 'Failed'
-    };
-    return map[status] || status || 'Pending Review';
-  }
-
-  function getBadgeClass(status) {
-    const s = status?.toUpperCase() || 'PENDING';
-    const map = {
-      'PENDING': 'badge-pending',
-      'APPROVED': 'badge-approved',
-      'REJECTED': 'badge-rejected',
-      'COMPLETED': 'badge-completed',
-      'CANCELLED': 'badge-cancelled',
-      'FAILED': 'badge-failed'
-    };
-    return map[s] || 'badge-pending';
-  }
-
-  // ---- Render Functions ----
-  function renderAll() {
-    renderHome();
-    renderMarkets();
-    renderPortfolio();
-    renderProfile();
-    renderDepositHistory();
-    renderWithdrawHistory();
-    renderNotifications();
-    renderPaymentMethods();
-    if(isAdmin) {
-      const activeTab = document.querySelector('[data-admin-tab].btn-primary');
-      if(activeTab) {
-        const tab = activeTab.dataset.adminTab;
-        if(tab==='overview') renderAdminOverview();
-        else if(tab==='users') renderAdminUsers();
-        else if(tab==='deposits') renderAdminDeposits();
-        else if(tab==='withdrawals') renderAdminWithdrawals();
-        else if(tab==='coins') renderAdminCoins();
-        else if(tab==='payments') renderAdminPayments();
-        else if(tab==='transactions') renderAdminTransactions();
-        else if(tab==='settings') renderAdminSettings();
-      }
-    }
-    updateBalanceUI();
-    updateAdminStats();
-  }
-
-  function renderHome() {
-    const balance = getBalance(currentUser?.uid || '');
-    const portfolioVal = calcPortfolioValue();
-    const total = balance + portfolioVal;
-    $('totalBalance').textContent = formatUSD(total);
-    $('portfolioValue').textContent = formatUSD(portfolioVal);
-    const pl = portfolioVal * 0.02;
-    $('todayPL').textContent = (pl>=0?'+':'')+formatUSD(pl);
-    $('coinCount').textContent = Object.keys(coinsData).length;
-
-    let html = '';
-    const activeCoins = Object.entries(coinsData).filter(([sym, coin]) => coin.status !== 'disabled');
-    const sorted = activeCoins.slice(0, 12);
-    for(const [sym, coin] of sorted) {
-      const change = coin.change || 0;
-      const cls = change>=0?'up':'down';
-      html += `<div class="coin-row">
-        ${getCoinLogo(sym)}
-        <div class="coin-info"><div class="coin-name">${coin.name}</div><div class="coin-symbol">${sym}</div></div>
-        <div><span class="coin-price">${formatUSD(coin.price)}</span><span class="coin-change ${cls}">${change>=0?'+':''}${change.toFixed(2)}%</span></div>
-        <div class="coin-actions"><button class="btn btn-primary btn-sm" data-buy="${sym}">Buy</button></div>
-      </div>`;
-    }
-    $('homeCoinList').innerHTML = html;
-    document.querySelectorAll('[data-buy]').forEach(el=>{
-      el.addEventListener('click', ()=>openBuyModal(el.dataset.buy));
-    });
-  }
-
-  function renderMarkets() {
-    let html = '';
-    const activeCoins = Object.entries(coinsData).filter(([sym, coin]) => coin.status !== 'disabled');
-    const sorted = activeCoins.sort((a,b) => a[1].name.localeCompare(b[1].name));
-    for(const [sym, coin] of sorted) {
-      const change = coin.change || 0;
-      const cls = change>=0?'up':'down';
-      html += `<div class="coin-row">
-        ${getCoinLogo(sym)}
-        <div class="coin-info"><div class="coin-name">${coin.name}</div><div class="coin-symbol">${sym}</div></div>
-        <div><span class="coin-price">${formatUSD(coin.price)}</span><span class="coin-change ${cls}">${change>=0?'+':''}${change.toFixed(2)}%</span></div>
-        <div class="coin-actions"><button class="btn btn-primary btn-sm" data-buy-market="${sym}">Buy</button></div>
-      </div>`;
-    }
-    $('marketCoinList').innerHTML = html;
-    document.querySelectorAll('[data-buy-market]').forEach(el=>{
-      el.addEventListener('click', ()=>openBuyModal(el.dataset.buyMarket));
-    });
-  }
-
-  function calcPortfolioValue() {
-    let val=0;
-    for(const [sym, qty] of Object.entries(holdings)) {
-      if(coinsData[sym]) val += qty * coinsData[sym].price;
-    }
-    return val;
-  }
-
-  function renderPortfolio() {
-    const balance = getBalance(currentUser?.uid || '');
-    const portVal = calcPortfolioValue();
-    $('portfolioUsd').textContent = formatUSD(balance);
-    $('portfolioTotalValue').textContent = formatUSD(portVal);
-
-    let html = '';
-    for(const [sym, qty] of Object.entries(holdings)) {
-      if(qty===0) continue;
-      const coin = coinsData[sym];
-      if(!coin) continue;
-      const value = qty * coin.price;
-      const avgBuy = userData?.avgBuyPrices?.[sym] || coin.price;
-      const pl = value - (qty * avgBuy);
-      const plp = avgBuy>0 ? (pl/(qty*avgBuy))*100 : 0;
-      html += `<div class="coin-row">
-        ${getCoinLogo(sym)}
-        <div><div class="coin-name">${coin.name}</div><div class="coin-symbol">${qty.toFixed(4)} ${sym}</div></div>
-        <div><div>${formatUSD(value)}</div><div class="${pl>=0?'text-green':'text-red'}">${pl>=0?'+':''}${formatUSD(pl)} (${plp>=0?'+':''}${plp.toFixed(2)}%)</div></div>
-        <div class="coin-actions"><button class="btn btn-danger btn-sm" data-sell="${sym}">Sell</button></div>
-      </div>`;
-    }
-    if(!html) html = '<div class="text-muted">No holdings</div>';
-    $('portfolioHoldings').innerHTML = html;
-    document.querySelectorAll('[data-sell]').forEach(el=>{
-      el.addEventListener('click', ()=>openSellModal(el.dataset.sell));
-    });
-  }
-
-  function renderProfile() {
-    const balance = getBalance(currentUser?.uid || '');
-    const portVal = calcPortfolioValue();
-    $('profileBalance').textContent = formatUSD(balance);
-    $('profilePortfolio').textContent = formatUSD(portVal);
-    const trades = allTransactions.filter(t=>t.uid===currentUser?.uid && (t.type==='BUY'||t.type==='SELL')).length;
-    $('profileTrades').textContent = trades;
-    $('profilePL').textContent = '+$0.00';
-
-    let html = '';
-    for(const [sym, qty] of Object.entries(holdings)) {
-      if(qty===0) continue;
-      const coin = coinsData[sym];
-      if(!coin) continue;
-      html += `<div class="flex-between" style="font-size:13px;padding:4px 0;border-bottom:1px solid #1f2937;"><span>${getCoinLogo(sym)} ${sym}</span><span>${qty.toFixed(4)} (${formatUSD(qty*coin.price)})</span></div>`;
-    }
-    $('profileHoldings').innerHTML = html || '<div class="text-muted">No holdings</div>';
-
-    let txHtml = '';
-    const userTxs = allTransactions.filter(t=>t.uid===currentUser?.uid).slice(-15).reverse();
-    userTxs.forEach(t=>{
-      const status = t.status || 'COMPLETED';
-      const badgeClass = getBadgeClass(status);
-      txHtml += `<div class="flex-between tx-item"><span>${t.type}</span><span>${t.coin||''}</span><span>${formatUSD(t.amount||0)}</span><span class="badge ${badgeClass}">${getDisplayStatus(status)}</span><span class="text-muted" style="font-size:11px;">${new Date(t.timestamp||Date.now()).toLocaleDateString()}</span></div>`;
-    });
-    $('profileTransactions').innerHTML = txHtml || '<div class="text-muted">No transactions</div>';
-  }
-
-  function renderDepositHistory() {
-    const userDeps = allDeposits.filter(d => d.uid === currentUser?.uid).slice(-15).reverse();
-    let html = '';
-    if(userDeps.length === 0) {
-      html = '<div class="text-muted">No deposits yet</div>';
-    } else {
-      userDeps.forEach(d => {
-        const status = d.status || 'PENDING';
-        const badgeClass = getBadgeClass(status);
-        html += `<div class="flex-between deposit-item">
-          <span style="font-size:12px;">${d.requestId || d.orderId || '—'}</span>
-          <span>${formatUSD(d.amount)}</span>
-          <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
-          <span class="text-muted" style="font-size:11px;">${new Date(d.createdAt || Date.now()).toLocaleDateString()}</span>
-        </div>`;
-      });
-    }
-    document.getElementById('depositHistoryList').innerHTML = html;
-  }
-
-  function renderWithdrawHistory() {
-    const userWds = allWithdrawals.filter(d => d.uid === currentUser?.uid).slice(-15).reverse();
-    let html = '';
-    if(userWds.length === 0) {
-      html = '<div class="text-muted">No withdrawals yet</div>';
-    } else {
-      userWds.forEach(d => {
-        const status = d.status || 'PENDING';
-        const badgeClass = getBadgeClass(status);
-        html += `<div class="flex-between deposit-item">
-          <span style="font-size:12px;">${d.requestId || d.withdrawalId || '—'}</span>
-          <span>${formatUSD(d.amount)}</span>
-          <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
-          <span class="text-muted" style="font-size:11px;">${new Date(d.createdAt || Date.now()).toLocaleDateString()}</span>
-        </div>`;
-      });
-    }
-    document.getElementById('withdrawHistoryList').innerHTML = html;
-  }
-
-  function renderNotifications() {
-    const container = document.getElementById('profileNotifications');
-    if (!container) return;
-    const notifs = getNotifications(currentUser?.uid || '');
-    if (notifs.length === 0) {
-      container.innerHTML = '<div class="text-muted">No notifications</div>';
-      return;
-    }
-    let html = '';
-    notifs.slice(-10).reverse().forEach(n => {
-      html += `<div class="notification-item">
-        <div>${n.message}</div>
-        <div class="flex-between"><span class="time">${new Date(n.timestamp || Date.now()).toLocaleString()}</span>
-        <span class="badge ${n.read ? 'badge-confirmed' : 'badge-pending'}">${n.read ? 'Read' : 'New'}</span></div>
-      </div>`;
-    });
-    container.innerHTML = html;
-  }
-
-  // ---- Payment Methods with exact values ----
-  const DEFAULT_BINANCE_PAY_ID = "894307667";
-  const DEFAULT_TRC20_ADDRESS = "TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7";
-
-  function getPaymentMethods() {
-    const key = 'bcg_payment_methods';
-    try {
-      const data = localStorage.getItem(key);
-      if (data) {
-        const parsed = JSON.parse(data);
-        if (parsed && parsed.length > 0) return parsed;
-      }
-    } catch(e) {}
-    // Initialize with exact values
-    const defaults = [
-      { name: 'Binance Pay', address: DEFAULT_BINANCE_PAY_ID, id: DEFAULT_BINANCE_PAY_ID, description: 'Binance Pay merchant ID', status: 'active' },
-      { name: 'USDT TRC20', address: DEFAULT_TRC20_ADDRESS, id: DEFAULT_TRC20_ADDRESS, description: 'Send USDT via TRC20 network', status: 'active' }
-    ];
-    localStorage.setItem(key, JSON.stringify(defaults));
-    return defaults;
-  }
-
-  function savePaymentMethods(methods) {
-    localStorage.setItem('bcg_payment_methods', JSON.stringify(methods));
-  }
-
-  function renderPaymentMethods() {
-    const container = document.getElementById('depositPaymentMethods');
-    if (!container) return;
-    const methods = getPaymentMethods();
-    const activeMethods = methods.filter(m => m.status !== 'disabled');
-    if (activeMethods.length === 0) {
-      container.innerHTML = '<div class="text-muted">No active payment methods</div>';
-      return;
-    }
-    let html = '';
-    activeMethods.forEach(m => {
-      const address = m.address || m.id || '';
-      const label = m.name.includes('Binance') ? 'Copy ID' : 'Copy Address';
-      html += `<div class="payment-method-card" data-method="${m.name}">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <strong>${m.name}</strong>
-          <span class="badge badge-confirmed">Active</span>
-        </div>
-        ${address ? `<div class="address">${address}</div>` : ''}
-        ${address ? `<button class="copy-btn" data-copy="${address}"><i class="fas fa-copy"></i> ${label}</button>` : ''}
-        <div style="margin-top:6px;font-size:12px;color:#7f92a8;">${m.description || ''}</div>
-      </div>`;
-    });
-    container.innerHTML = html;
-    container.querySelectorAll('.copy-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const text = btn.dataset.copy;
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(() => toast('Copied successfully', 'success'));
-        } else {
-          const ta = document.createElement('textarea');
-          ta.value = text;
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand('copy');
-          ta.remove();
-          toast('Copied successfully', 'success');
-        }
-      });
-    });
-  }
-
-  // ---- Copy buttons for payment info (static in HTML) ----
-  document.querySelectorAll('.copy-payment-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const text = btn.dataset.copy;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => toast('Copied successfully', 'success'));
-      } else {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        ta.remove();
-        toast('Copied successfully', 'success');
-      }
-    });
-  });
-
   // ---- Deposit Amount Change ----
   document.getElementById('depositAmount').addEventListener('input', function() {
     const val = parseFloat(this.value);
@@ -1410,7 +1368,7 @@
     if(!coin) return toast('Coin not found','error');
     if(coin.status === 'disabled') return toast('Trading disabled for this coin','error');
     const balance = getBalance(currentUser?.uid || '');
-    const body = `<div class="field"><label>Coin</label><div><strong>${coin.name} (${symbol})</strong></div></div>
+    const body = `<div class="field"><label>Coin</label><div>${getTokenDisplay(symbol, coin.name, 'md')}</div></div>
       <div class="field"><label>Price</label><div>${formatUSD(coin.price)}</div></div>
       <div class="field"><label>Available Balance</label><div>${formatUSD(balance)}</div></div>
       <div class="field"><label>Amount (USD)</label><input type="number" id="buyAmount" placeholder="Enter USD" min="0.01" step="0.01" value="10" /></div>
@@ -1461,7 +1419,7 @@
     const qty = holdings[symbol] || 0;
     if(qty<=0) return toast('No holdings to sell','error');
     const value = qty * coin.price;
-    const body = `<div class="field"><label>Coin</label><div><strong>${coin.name} (${symbol})</strong></div></div>
+    const body = `<div class="field"><label>Coin</label><div>${getTokenDisplay(symbol, coin.name, 'md')}</div></div>
       <div class="field"><label>Quantity</label><div>${qty.toFixed(4)}</div></div>
       <div class="field"><label>Current Price</label><div>${formatUSD(coin.price)}</div></div>
       <div class="field"><label>Total Value</label><div>${formatUSD(value)}</div></div>`;
@@ -1485,7 +1443,7 @@
     });
   }
 
-  // ---- Deposit Request ----
+  // ---- Deposit Request (Create Order) ----
   document.getElementById('submitDepositBtn').addEventListener('click', async ()=>{
     if(!currentUser) return toast('Login required','error');
     if(isSubmittingDeposit) return;
@@ -1505,18 +1463,18 @@
       const requestId = generateOrderId('DEP');
       
       const body = `
+        <div class="field"><label>Order ID</label><div><strong>${requestId}</strong></div></div>
         <div class="field"><label>Method</label><div><strong>${method}</strong></div></div>
         <div class="field"><label>Amount</label><div>${formatUSD(amount)}</div></div>
-        <div class="field"><label>Order ID</label><div><strong>${orderId}</strong></div></div>
-        <div class="field"><label>Request ID</label><div><strong>${requestId}</strong></div></div>
-        <div class="field"><label>Status</label><div><span class="badge badge-pending">Pending Review</span></div></div>
+        <div class="field"><label>Payment Order ID</label><div><strong>${orderId}</strong></div></div>
+        <div class="field"><label>Status</label><div><span class="badge badge-pending">Pending</span></div></div>
         <div class="deposit-success-message">
           <i class="fas fa-info-circle" style="color:#f0b90b;"></i>
-          Your deposit request has been submitted successfully. It will be reviewed by an administrator.
+          Your deposit order has been submitted successfully and is waiting for verification.
         </div>
       `;
       const actions = `<button class="btn btn-outline" onclick="closeModal()">Close</button>`;
-      openModal('Deposit Request Submitted', 'Pending approval', body, actions);
+      openModal('Deposit Order Submitted', 'Pending verification', body, actions);
       
       const depRef = push(ref(db, 'deposits'));
       await set(depRef, {
@@ -1527,11 +1485,12 @@
         amount, 
         method, 
         paymentOrderId: orderId,
+        currency: 'USDT',
         status: 'PENDING', 
         createdAt: serverTimestamp()
       });
       
-      toast('Deposit request submitted. Awaiting approval.', 'success');
+      toast('Deposit order submitted. Awaiting verification.', 'success');
       document.getElementById('depositAmount').value = '';
       document.getElementById('depositOrderId').value = '';
       document.getElementById('methodSelector').style.display = 'none';
@@ -1546,7 +1505,7 @@
     } finally {
       isSubmittingDeposit = false;
       document.getElementById('submitDepositBtn').disabled = false;
-      document.getElementById('submitDepositBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Submit Deposit Request';
+      document.getElementById('submitDepositBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Submit Order';
     }
   });
 
@@ -1664,19 +1623,51 @@
     await loadDeposits();
     let html = '<div class="admin-list">';
     if(allDeposits.length === 0) {
-      html += '<div class="text-muted">No deposits</div>';
+      html += '<div class="text-muted">No deposit orders</div>';
     } else {
       for(const dep of allDeposits.slice().reverse()) {
         const status = dep.status || 'PENDING';
         const badgeClass = getBadgeClass(status);
         const isPending = status === 'PENDING';
-        html += `<div class="item flex-between"><span>${dep.requestId || dep.orderId || '—'}</span><span>${dep.userName||'User'}</span><span>${formatUSD(dep.amount)}</span><span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
-          ${isPending ? `<button class="btn btn-sm btn-success" data-approve-dep="${dep.requestId || dep.orderId}">Approve</button><button class="btn btn-sm btn-danger" data-reject-dep="${dep.requestId || dep.orderId}">Reject</button>` : ''}
+        const coin = dep.currency ? coinsData[dep.currency] : null;
+        const logoHtml = coin ? getTokenLogoHtml(dep.currency, coin.name, 'sm') : '';
+        html += `<div class="item flex-between">
+          <span style="font-size:12px;">${dep.requestId || dep.orderId || '—'}</span>
+          <span>${dep.userName||'User'}</span>
+          <span class="flex-token">${logoHtml} ${formatUSD(dep.amount)}</span>
+          <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            ${isPending ? `
+              <button class="btn btn-sm btn-success" data-view-dep="${dep.requestId || dep.orderId}"><i class="fas fa-eye"></i></button>
+              <button class="btn btn-sm btn-success" data-approve-dep="${dep.requestId || dep.orderId}"><i class="fas fa-check"></i></button>
+              <button class="btn btn-sm btn-danger" data-reject-dep="${dep.requestId || dep.orderId}"><i class="fas fa-times"></i></button>
+            ` : ''}
+          </div>
         </div>`;
       }
     }
     html += '</div>';
     container.innerHTML = html;
+    
+    document.querySelectorAll('[data-view-dep]').forEach(el=>{
+      el.addEventListener('click', async ()=>{
+        const requestId = el.dataset.viewDep;
+        const dep = allDeposits.find(d => d.requestId === requestId || d.orderId === requestId);
+        if(!dep) return toast('Deposit not found','error');
+        const body = `
+          <div class="field"><label>Order ID</label><div><strong>${dep.requestId || dep.orderId}</strong></div></div>
+          <div class="field"><label>User</label><div>${dep.userName || 'User'} (${dep.userEmail || ''})</div></div>
+          <div class="field"><label>Amount</label><div>${formatUSD(dep.amount)}</div></div>
+          <div class="field"><label>Method</label><div>${dep.method || 'N/A'}</div></div>
+          <div class="field"><label>Payment Order ID</label><div><strong>${dep.paymentOrderId || 'N/A'}</strong></div></div>
+          <div class="field"><label>Status</label><div><span class="badge ${getBadgeClass(dep.status)}">${getDisplayStatus(dep.status)}</span></div></div>
+          <div class="field"><label>Created</label><div>${new Date(dep.createdAt || Date.now()).toLocaleString()}</div></div>
+        `;
+        const actions = `<button class="btn btn-outline" onclick="closeModal()">Close</button>`;
+        openModal('Deposit Order Details', '', body, actions);
+      });
+    });
+
     document.querySelectorAll('[data-approve-dep]').forEach(el=>{
       el.addEventListener('click', async ()=>{
         const requestId = el.dataset.approveDep;
@@ -1695,6 +1686,7 @@
     });
   }
 
+  // ---- Process Deposit (Approve/Reject with transaction) ----
   async function processDeposit(requestId, newStatus) {
     const depRef = ref(db, 'deposits');
     const snap = await get(depRef);
@@ -1705,32 +1697,78 @@
     }
     if(!foundKey) return toast('Deposit not found','error');
     const dep = deps[foundKey];
-    if(dep.status !== 'PENDING') return toast('Deposit already processed','error');
+    if(dep.status !== 'PENDING') return toast('This deposit has already been processed.','error');
     
-    await update(ref(db, 'deposits/'+foundKey), { status: newStatus, processedAt: serverTimestamp() });
-    
-    if(newStatus === 'APPROVED') {
-      const userRef = ref(db, 'users/'+dep.uid);
-      const userSnap = await get(userRef);
-      if(userSnap.exists()) {
-        const user = userSnap.val();
-        const newBalance = (user.virtualBalance||0) + dep.amount;
-        await update(userRef, { virtualBalance: newBalance });
-        if (dep.uid === currentUser?.uid) {
-          setBalance(dep.uid, newBalance);
-        }
-        const txRef = push(ref(db, 'transactions'));
-        await set(txRef, { uid: dep.uid, type: 'DEPOSIT', amount: dep.amount, coin: 'USD', status: 'COMPLETED', timestamp: serverTimestamp() });
-        toast(`Deposit ${requestId} approved, ${formatUSD(dep.amount)} added`, 'success');
-        if(dep.uid === currentUser?.uid) {
-          userData.virtualBalance = newBalance;
-        }
-        addNotification(dep.uid, `Deposit of ${formatUSD(dep.amount)} approved.`);
-      }
+    if (newStatus === 'APPROVED') {
+      // Show confirmation dialog
+      const confirmBody = `
+        <div class="field"><label>Order ID</label><div><strong>${dep.requestId || dep.orderId}</strong></div></div>
+        <div class="field"><label>User</label><div>${dep.userName || 'User'}</div></div>
+        <div class="field"><label>Amount</label><div>${formatUSD(dep.amount)}</div></div>
+        <div class="field"><label>Payment Order ID</label><div>${dep.paymentOrderId || 'N/A'}</div></div>
+        <div style="padding:12px;background:#1a1f2a;border-radius:8px;border-left:3px solid #f0b90b;margin-top:8px;">
+          <i class="fas fa-exclamation-triangle" style="color:#f0b90b;"></i> 
+          Are you sure you want to accept this deposit? The verified amount will be credited to the user's balance.
+        </div>
+      `;
+      const confirmActions = `
+        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-success" id="confirmAcceptDeposit">Accept Deposit</button>
+      `;
+      openModal('Confirm Accept Deposit', 'Please verify the deposit details', confirmBody, confirmActions);
+      
+      document.getElementById('confirmAcceptDeposit').addEventListener('click', async ()=>{
+        closeModal();
+        await executeDepositApproval(foundKey, dep);
+        renderAdminDeposits();
+        renderAll();
+      });
     } else {
+      // Reject
+      await update(ref(db, 'deposits/'+foundKey), { status: newStatus, processedAt: serverTimestamp() });
       toast(`Deposit ${requestId} rejected`, 'error');
       addNotification(dep.uid, `Deposit request of ${formatUSD(dep.amount)} rejected.`);
+      await loadDeposits();
+      await loadTransactions();
+      await loadAllUsers();
+      renderAll();
+      updateAdminStats();
     }
+  }
+
+  async function executeDepositApproval(foundKey, dep) {
+    const userRef = ref(db, 'users/'+dep.uid);
+    const userSnap = await get(userRef);
+    if(!userSnap.exists()) return toast('User not found','error');
+    
+    const user = userSnap.val();
+    const newBalance = (user.virtualBalance||0) + dep.amount;
+    
+    // Update deposit status
+    await update(ref(db, 'deposits/'+foundKey), { status: 'APPROVED', processedAt: serverTimestamp() });
+    
+    // Update user balance
+    await update(userRef, { virtualBalance: newBalance });
+    if (dep.uid === currentUser?.uid) {
+      setBalance(dep.uid, newBalance);
+      userData.virtualBalance = newBalance;
+    }
+    
+    // Create transaction record
+    const txRef = push(ref(db, 'transactions'));
+    await set(txRef, { 
+      uid: dep.uid, 
+      type: 'DEPOSIT', 
+      amount: dep.amount, 
+      coin: 'USD', 
+      status: 'COMPLETED', 
+      timestamp: serverTimestamp(),
+      depositId: dep.requestId || dep.orderId
+    });
+    
+    toast(`Deposit ${dep.requestId || dep.orderId} approved, ${formatUSD(dep.amount)} credited`, 'success');
+    addNotification(dep.uid, `Deposit of ${formatUSD(dep.amount)} approved and credited.`);
+    
     await loadDeposits();
     await loadTransactions();
     await loadAllUsers();
@@ -1824,7 +1862,7 @@
     for(const [sym, coin] of Object.entries(coinsData)) {
       const status = coin.status || 'active';
       html += `<tr>
-        <td><strong>${coin.name}</strong> (${sym})</td>
+        <td><div class="flex-token">${getTokenLogoHtml(sym, coin.name, 'sm')} <strong>${coin.name}</strong> (${sym})</div></td>
         <td>${formatUSD(coin.min||0)}</td>
         <td class="text-gold">${formatUSD(coin.price)}</td>
         <td>${formatUSD(coin.max||999)}</td>
@@ -2109,7 +2147,15 @@
       for(const tx of allTransactions.slice().reverse().slice(0,30)) {
         const status = tx.status || 'COMPLETED';
         const badgeClass = getBadgeClass(status);
-        html += `<div class="item flex-between"><span>${tx.type}</span><span>${tx.coin||''}</span><span>${formatUSD(tx.amount||0)}</span><span class="badge ${badgeClass}">${getDisplayStatus(status)}</span><span class="text-muted" style="font-size:11px;">${new Date(tx.timestamp||Date.now()).toLocaleDateString()}</span></div>`;
+        const coin = tx.coin ? coinsData[tx.coin] : null;
+        const logoHtml = coin ? getTokenLogoHtml(tx.coin, coin.name, 'sm') : '';
+        html += `<div class="item flex-between">
+          <span class="flex-token">${logoHtml} ${tx.coin||'USD'}</span>
+          <span>${tx.type}</span>
+          <span>${formatUSD(tx.amount||0)}</span>
+          <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
+          <span class="text-muted" style="font-size:11px;">${new Date(tx.timestamp||Date.now()).toLocaleDateString()}</span>
+        </div>`;
       }
     }
     html += '</div></div>';
@@ -2131,7 +2177,15 @@
             list.innerHTML = filtered.map(t=> {
               const status = t.status || 'COMPLETED';
               const badgeClass = getBadgeClass(status);
-              return `<div class="item flex-between"><span>${t.type}</span><span>${t.coin||''}</span><span>${formatUSD(t.amount||0)}</span><span class="badge ${badgeClass}">${getDisplayStatus(status)}</span><span class="text-muted" style="font-size:11px;">${new Date(t.timestamp||Date.now()).toLocaleDateString()}</span></div>`;
+              const coin = t.coin ? coinsData[t.coin] : null;
+              const logoHtml = coin ? getTokenLogoHtml(t.coin, coin.name, 'sm') : '';
+              return `<div class="item flex-between">
+                <span class="flex-token">${logoHtml} ${t.coin||'USD'}</span>
+                <span>${t.type}</span>
+                <span>${formatUSD(t.amount||0)}</span>
+                <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
+                <span class="text-muted" style="font-size:11px;">${new Date(t.timestamp||Date.now()).toLocaleDateString()}</span>
+              </div>`;
             }).join('');
           }
         }
@@ -2391,14 +2445,20 @@
         let depHtml = '<div class="admin-list">';
         const deps = allDeposits.slice().reverse();
         if (deps.length === 0) {
-          depHtml += '<div class="text-muted">No deposit requests</div>';
+          depHtml += '<div class="text-muted">No deposit orders</div>';
         } else {
           deps.forEach(d => {
             const status = d.status || 'PENDING';
             const badgeClass = getBadgeClass(status);
             const isPending = status === 'PENDING';
-            depHtml += `<div class="item flex-between"><span>${d.requestId || d.orderId || '—'}</span><span>${d.userName||'User'}</span><span>${formatUSD(d.amount)}</span><span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
-              ${isPending ? `<button class="btn btn-sm btn-success" data-ap-dep="${d.requestId || d.orderId}">Approve</button><button class="btn btn-sm btn-danger" data-rj-dep="${d.requestId || d.orderId}">Reject</button>` : ''}
+            const coin = d.currency ? coinsData[d.currency] : null;
+            const logoHtml = coin ? getTokenLogoHtml(d.currency, coin.name, 'sm') : '';
+            depHtml += `<div class="item flex-between">
+              <span style="font-size:12px;">${d.requestId || d.orderId || '—'}</span>
+              <span>${d.userName||'User'}</span>
+              <span class="flex-token">${logoHtml} ${formatUSD(d.amount)}</span>
+              <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
+              ${isPending ? `<div style="display:flex;gap:4px;"><button class="btn btn-sm btn-success" data-ap-dep="${d.requestId || d.orderId}">Accept</button><button class="btn btn-sm btn-danger" data-rj-dep="${d.requestId || d.orderId}">Reject</button></div>` : ''}
             </div>`;
           });
         }
@@ -2482,7 +2542,7 @@
         for (const [sym, coin] of Object.entries(coinsData)) {
           const status = coin.status || 'active';
           coinsHtml += `<div class="item flex-between" style="flex-wrap:wrap;gap:6px;">
-            <span>${getCoinLogo(sym)} <strong>${coin.name}</strong> (${sym})</span>
+            <span class="flex-token">${getTokenLogoHtml(sym, coin.name, 'sm')} <strong>${coin.name}</strong> (${sym})</span>
             <span>Min: ${formatUSD(coin.min||0)}</span>
             <span class="text-gold">${formatUSD(coin.price)}</span>
             <span>Max: ${formatUSD(coin.max||999)}</span>
@@ -2569,8 +2629,11 @@
           recentTx.forEach(t => {
             const status = t.status || 'COMPLETED';
             const badgeClass = getBadgeClass(status);
-            txHtml += `<div class="item"><span class="label">${t.type}</span>
-              <span>${t.coin || 'USD'}</span>
+            const coin = t.coin ? coinsData[t.coin] : null;
+            const logoHtml = coin ? getTokenLogoHtml(t.coin, coin.name, 'sm') : '';
+            txHtml += `<div class="item">
+              <span class="flex-token">${logoHtml} ${t.coin || 'USD'}</span>
+              <span>${t.type}</span>
               <span class="value">${formatUSD(t.amount||0)}</span>
               <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
               <span style="font-size:11px;color:#7f92a8;">${new Date(t.timestamp||Date.now()).toLocaleString()}</span>
@@ -2682,6 +2745,7 @@
   console.log('🔒 Admin password: 308580 (Ctrl+P)');
   console.log('💳 Binance Pay ID: 894307667');
   console.log('💳 TRC20 Address: TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7');
+  console.log('🪙 Token logo system active with deterministic SVG generation');
 </script>
 </body>
 </html>
