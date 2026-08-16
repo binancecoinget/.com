@@ -9,16 +9,16 @@
   <style>
     /* === RESET & BASE === */
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Inter', sans-serif; background:#0b0e14; color:#e8edf5; height:100vh; overflow:hidden; display:flex; }
+    body { font-family:'Inter', sans-serif; background:#0b0e14; color:#e8edf5; min-height:100vh; overflow-x:hidden; }
     ::-webkit-scrollbar { width:4px; }
     ::-webkit-scrollbar-track { background:#1a1f2a; }
     ::-webkit-scrollbar-thumb { background:#2f3b4a; border-radius:8px; }
 
     /* === APP LAYOUT === */
-    #app { display:flex; width:100%; height:100vh; overflow:hidden; }
+    #app { display:flex; width:100%; min-height:100vh; }
 
     /* === SIDEBAR === */
-    .sidebar { display:none; flex-direction:column; width:220px; background:#11171f; border-right:1px solid #252d3a; padding:24px 12px; height:100vh; position:sticky; top:0; }
+    .sidebar { display:none; flex-direction:column; width:220px; background:#11171f; border-right:1px solid #252d3a; padding:24px 12px; min-height:100vh; position:sticky; top:0; height:100vh; overflow-y:auto; }
     .sidebar .brand { font-weight:700; font-size:20px; letter-spacing:-0.3px; padding-bottom:28px; color:#f0b90b; }
     .sidebar .brand span { color:#e8edf5; }
     .sidebar nav { display:flex; flex-direction:column; gap:4px; flex:1; }
@@ -32,11 +32,11 @@
     .sidebar .logout-btn:hover { background:#2f3b4a; color:#f0b90b; }
 
     /* === MAIN === */
-    .main { flex:1; display:flex; flex-direction:column; height:100vh; overflow:hidden; background:#0b0e14; }
+    .main { flex:1; display:flex; flex-direction:column; min-height:100vh; background:#0b0e14; }
     .content { flex:1; overflow-y:auto; padding:16px 20px 100px; }
-    .page { display:none; animation:fadeIn 0.2s ease; }
+    .page { display:none; animation:fadeIn 0.3s ease; }
     .page.active { display:block; }
-    @keyframes fadeIn { from { opacity:0.4; } to { opacity:1; } }
+    @keyframes fadeIn { from { opacity:0.3; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 
     /* === BOTTOM NAV (mobile) === */
     .bottom-nav { display:flex; position:fixed; bottom:0; left:0; right:0; background:#11171f; border-top:1px solid #252d3a; justify-content:space-around; padding:8px 0 12px; z-index:50; }
@@ -75,7 +75,7 @@
     /* === BUTTONS === */
     .btn { background:#1f2937; border:none; color:#e8edf5; padding:7px 14px; border-radius:40px; font-weight:600; font-size:13px; cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:5px; }
     .btn-primary { background:#f0b90b; color:#0b0e14; }
-    .btn-primary:hover { background:#d9a70a; }
+    .btn-primary:hover { background:#d9a70a; transform:scale(1.02); }
     .btn-success { background:#22c55e; color:#0b0e14; }
     .btn-danger { background:#ef4444; color:#fff; }
     .btn-outline { background:transparent; border:1px solid #2f3b4a; }
@@ -122,21 +122,81 @@
     .gap-4 { gap:4px; }
     .gap-8 { gap:8px; }
 
-    /* === LOGIN OVERLAY === */
-    #login-overlay { position:fixed; inset:0; background:#0b0e14; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:300; }
-    #login-overlay .logo { font-size:36px; font-weight:700; color:#f0b90b; }
-    #login-overlay .logo span { color:#e8edf5; }
-    #login-overlay .sub { color:#7f92a8; margin:8px 0 32px; font-size:16px; }
-    #login-overlay .btn-google { background:#1f2937; border:1px solid #2f3b4a; padding:14px 32px; border-radius:60px; font-size:18px; font-weight:600; color:#e8edf5; display:flex; align-items:center; gap:12px; cursor:pointer; transition:0.2s; }
-    #login-overlay .btn-google:hover { background:#2f3b4a; }
-    #login-overlay .btn-google i { font-size:22px; }
-    .long-press-area { width:100%; height:40px; display:flex; align-items:center; justify-content:center; color:#1f2937; font-size:11px; user-select:none; cursor:default; border-radius:12px; transition:0.3s; }
+    /* ===== LANDING / LOGIN OVERLAY ===== */
+    #login-overlay {
+      position:fixed; inset:0; background:#0b0e14; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; z-index:300; overflow-y:auto;
+      background: radial-gradient(ellipse at 30% 20%, rgba(240, 185, 11, 0.07) 0%, transparent 60%),
+                  radial-gradient(ellipse at 70% 80%, rgba(240, 185, 11, 0.04) 0%, transparent 50%),
+                  #0b0e14;
+      padding: 40px 20px;
+    }
+    #login-overlay .landing-container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    /* Hero */
+    .landing-hero {
+      display:flex; flex-direction:column; align-items:center; text-align:center; padding: 20px 0 40px;
+    }
+    .landing-hero .logo {
+      font-size: 36px; font-weight: 700; color: #f0b90b; letter-spacing: -0.5px; margin-bottom: 8px;
+    }
+    .landing-hero .logo span { color: #e8edf5; }
+    .landing-hero h1 {
+      font-size: clamp(2rem, 5vw, 3.8rem); font-weight: 700; margin-top: 24px; line-height:1.1; max-width:800px;
+      background: linear-gradient(135deg, #e8edf5 0%, #f0b90b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .landing-hero p.sub {
+      font-size: clamp(1rem, 1.4vw, 1.4rem); color: #9aa9b9; max-width: 640px; margin: 16px auto 28px; line-height:1.6;
+    }
+    .landing-hero .btn-google {
+      background: #1f2937; border: 1px solid #2f3b4a; padding: 16px 36px; border-radius: 60px; font-size: 18px; font-weight: 600; color: #e8edf5;
+      display: inline-flex; align-items: center; justify-content: center; gap: 14px; cursor: pointer; transition: all 0.25s ease;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3); min-width: 240px;
+    }
+    .landing-hero .btn-google i { font-size: 22px; color: #f0b90b; }
+    .landing-hero .btn-google:hover { background: #2f3b4a; border-color: #f0b90b; transform: scale(1.02); box-shadow: 0 0 30px rgba(240,185,11,0.08); }
+    .landing-hero .secondary-text { margin-top: 20px; color: #6a7a8e; font-size: 15px; }
+    .landing-hero .feature-pills { display:flex; flex-wrap:wrap; justify-content:center; gap:12px 24px; margin-top:28px; }
+    .landing-hero .feature-pills span { display:flex; align-items:center; gap:8px; font-size:14px; color:#9aa9b9; background:rgba(255,255,255,0.03); padding:6px 16px; border-radius:40px; border:1px solid rgba(255,255,255,0.04); }
+    .landing-hero .feature-pills i { color:#f0b90b; }
 
-    /* === TOAST === */
-    .toast-container { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); z-index:200; display:flex; flex-direction:column; gap:6px; align-items:center; }
-    .toast { background:#1f2937; border:1px solid #2f3b4a; border-radius:40px; padding:8px 18px; font-weight:500; font-size:13px; box-shadow:0 8px 20px rgba(0,0,0,0.6); color:#e8edf5; max-width:92%; }
-    .toast.success { border-color:#22c55e; color:#22c55e; }
-    .toast.error { border-color:#ef4444; color:#ef4444; }
+    /* Sections */
+    .section { padding: 50px 0; border-top:1px solid rgba(255,255,255,0.04); }
+    .section-title { font-size: clamp(1.6rem, 3vw, 2.6rem); font-weight:700; text-align:center; margin-bottom:12px; }
+    .section-sub { text-align:center; color:#9aa9b9; max-width:700px; margin:0 auto 40px; font-size:1.05rem; line-height:1.6; }
+    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:24px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:20px; }
+    .grid-4 { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:16px; }
+    .info-card { background:rgba(19,27,36,0.6); backdrop-filter:blur(4px); border-radius:20px; padding:24px; border:1px solid rgba(255,255,255,0.04); transition:0.3s; }
+    .info-card:hover { border-color:rgba(240,185,11,0.2); transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.2); }
+    .info-card .icon { font-size:32px; color:#f0b90b; margin-bottom:12px; display:block; }
+    .info-card h4 { font-size:18px; font-weight:600; margin-bottom:6px; }
+    .info-card p { color:#9aa9b9; font-size:14px; line-height:1.6; }
+    .info-card .step-num { font-size:13px; color:#f0b90b; font-weight:600; margin-bottom:4px; display:block; }
+    .trust-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:16px; }
+    .trust-item { text-align:center; padding:16px; background:rgba(19,27,36,0.4); border-radius:16px; border:1px solid rgba(255,255,255,0.03); }
+    .trust-item i { font-size:28px; color:#f0b90b; margin-bottom:8px; }
+    .trust-item span { display:block; font-size:14px; color:#b0c4d9; }
+
+    /* FAQ */
+    .faq-item { border-bottom:1px solid rgba(255,255,255,0.06); padding:12px 0; cursor:pointer; }
+    .faq-item .q { display:flex; justify-content:space-between; align-items:center; font-weight:600; font-size:16px; }
+    .faq-item .q i { transition:0.3s; color:#f0b90b; }
+    .faq-item .a { max-height:0; overflow:hidden; transition:0.3s; color:#9aa9b9; font-size:14px; line-height:1.6; }
+    .faq-item.open .a { max-height:200px; padding-top:10px; }
+    .faq-item.open .q i { transform:rotate(180deg); }
+
+    /* Support / Footer */
+    .support-box { text-align:center; padding:30px; background:rgba(19,27,36,0.5); border-radius:24px; border:1px solid rgba(255,255,255,0.04); }
+    .support-box .btn { margin-top:12px; }
+    .footer { padding:30px 0 20px; border-top:1px solid rgba(255,255,255,0.04); margin-top:20px; }
+    .footer .links { display:flex; flex-wrap:wrap; justify-content:center; gap:16px 28px; margin-bottom:16px; }
+    .footer .links a { color:#7f92a8; text-decoration:none; font-size:14px; transition:0.2s; }
+    .footer .links a:hover { color:#f0b90b; }
+    .footer .copy { text-align:center; color:#4a5a6e; font-size:13px; }
+    .footer .disclaimer { text-align:center; color:#4a5a6e; font-size:12px; margin-top:8px; max-width:700px; margin-left:auto; margin-right:auto; }
 
     /* === RESPONSIVE === */
     @media(min-width:768px) {
@@ -144,24 +204,231 @@
       .bottom-nav { display:none; }
       .content { padding:24px 32px 40px; }
       .stat-grid { grid-template-columns:repeat(4,1fr); }
+      #login-overlay { padding:60px 40px; }
     }
     @media(max-width:767px) {
       .stat-grid { grid-template-columns:1fr 1fr; }
       .coin-row { flex-wrap:wrap; }
+      .landing-hero .btn-google { min-width:unset; width:100%; max-width:340px; }
+      .section { padding:30px 0; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
+      .trust-grid { grid-template-columns:1fr 1fr; }
     }
+    /* Keep dashboard hidden when logged out */
+    #dashboard-wrapper { display:none; }
+    .logged-in #dashboard-wrapper { display:flex; }
+    .logged-in #login-overlay { display:none !important; }
+    /* small fix */
+    .long-press-area { width:100%; height:40px; display:flex; align-items:center; justify-content:center; color:#1f2937; font-size:11px; user-select:none; cursor:default; border-radius:12px; transition:0.3s; }
+    .profile-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .profile-stat { background:#0d141e; border-radius:10px; padding:10px; text-align:center; }
+    .profile-stat .label { font-size:11px; color:#7f92a8; }
+    .profile-stat .value { font-size:18px; font-weight:700; margin-top:2px; }
+    .deposit-success-message { background:#0d141e; border:1px solid #22c55e; border-radius:12px; padding:12px 16px; margin:10px 0; font-size:13px; color:#b0c4d9; }
+    .deposit-success-message strong { color:#22c55e; }
+    .tx-item { border-bottom:1px solid #1f2937; padding:6px 0; font-size:13px; }
+    .deposit-item { border-bottom:1px solid #1f2937; padding:6px 0; font-size:13px; }
+    .withdraw-method-item { display:flex; align-items:center; gap:12px; padding:10px 14px; background:#0d141e; border:1px solid #2a3440; border-radius:12px; cursor:pointer; margin-bottom:6px; transition:0.2s; }
+    .withdraw-method-item:hover { border-color:#f0b90b; }
+    .withdraw-method-item.selected { border-color:#f0b90b; background:#1f2937; }
+    .method-option { display:flex; align-items:center; gap:12px; padding:10px 14px; background:#0d141e; border:1px solid #2a3440; border-radius:12px; cursor:pointer; margin-bottom:6px; transition:0.2s; }
+    .method-option:hover { border-color:#f0b90b; }
+    .method-option.selected { border-color:#f0b90b; background:#1f2937; }
+    .table-responsive { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th { text-align:left; padding:8px 6px; color:#7f92a8; font-weight:500; border-bottom:1px solid #1f2937; }
+    td { padding:8px 6px; border-bottom:1px solid #1f2937; }
+    tr:hover td { background:#0d141e; }
   </style>
 </head>
 <body>
 
-<div id="app">
-  <!-- LOGIN OVERLAY -->
-  <div id="login-overlay">
-    <div class="logo">BINANCE<span>COIN</span> GET</div>
-    <div class="sub">Virtual Trading Simulator</div>
-    <button class="btn-google" id="googleLoginBtn"><i class="fab fa-google"></i> Continue with Google</button>
-    <div style="margin-top:24px; font-size:13px; color:#4a5a6e;">demo · no real funds</div>
-  </div>
+<!-- ===== LOGIN / LANDING OVERLAY ===== -->
+<div id="login-overlay">
+  <div class="landing-container">
+    <!-- Hero -->
+    <div class="landing-hero">
+      <div class="logo">BINANCE<span>COIN</span></div>
+      <h1>Trade Crypto. Buy &amp; Sell With Confidence.</h1>
+      <p class="sub">A modern cryptocurrency trading interface designed for simple, fast and secure account access.</p>
+      <button class="btn-google" id="googleLoginBtn"><i class="fab fa-google"></i> Continue with Google</button>
+      <div class="secondary-text">Access your trading dashboard in seconds.</div>
+      <div class="feature-pills">
+        <span><i class="fas fa-chart-line"></i> Real-Time Interface</span>
+        <span><i class="fas fa-wallet"></i> Portfolio Monitoring</span>
+        <span><i class="fas fa-shield-alt"></i> Secure Access</span>
+        <span><i class="fas fa-bolt"></i> Fast &amp; Responsive</span>
+      </div>
+    </div>
 
+    <!-- What Is Crypto Trading? -->
+    <div class="section">
+      <h2 class="section-title">What Is Crypto Trading?</h2>
+      <p class="section-sub">Crypto trading means buying and selling digital assets based on their market price. Users can potentially buy crypto when they believe the price may increase, sell when they believe it may decrease, monitor market prices, manage their portfolio, and review trading activity.</p>
+      <div style="max-width:700px;margin:0 auto;text-align:center;color:#7f92a8;font-size:14px;background:rgba(19,27,36,0.4);padding:16px 20px;border-radius:16px;border:1px solid rgba(255,255,255,0.03);">
+        <i class="fas fa-exclamation-triangle" style="color:#f0b90b;margin-right:8px;"></i> Cryptocurrency prices can move quickly and trading involves risk.
+      </div>
+    </div>
+
+    <!-- How To Buy & Sell -->
+    <div class="section">
+      <h2 class="section-title">How To Buy &amp; Sell</h2>
+      <div class="grid-2">
+        <div class="info-card">
+          <span class="step-num">01 — Select a Coin</span>
+          <h4>Choose</h4>
+          <p>Select the cryptocurrency you want to trade from the available markets.</p>
+          <span class="step-num" style="margin-top:12px;">02 — Check the Market</span>
+          <h4>Review</h4>
+          <p>Check the current price and available market information.</p>
+          <span class="step-num" style="margin-top:12px;">03 — Enter Amount</span>
+          <h4>Amount</h4>
+          <p>Enter how much you want to buy in USD or crypto units.</p>
+          <span class="step-num" style="margin-top:12px;">04 — Review</span>
+          <h4>Review</h4>
+          <p>Check the order details before confirming.</p>
+          <span class="step-num" style="margin-top:12px;">05 — Confirm Buy</span>
+          <h4>Confirm</h4>
+          <p>Confirm the purchase to execute the trade.</p>
+        </div>
+        <div class="info-card">
+          <span class="step-num">01 — Select Your Asset</span>
+          <h4>Choose</h4>
+          <p>Select the cryptocurrency you currently hold from your portfolio.</p>
+          <span class="step-num" style="margin-top:12px;">02 — Enter Amount</span>
+          <h4>Amount</h4>
+          <p>Enter the amount you want to sell.</p>
+          <span class="step-num" style="margin-top:12px;">03 — Review Price</span>
+          <h4>Market</h4>
+          <p>Check the current market price for the asset.</p>
+          <span class="step-num" style="margin-top:12px;">04 — Review Order</span>
+          <h4>Review</h4>
+          <p>Confirm the order details and expected proceeds.</p>
+          <span class="step-num" style="margin-top:12px;">05 — Confirm Sell</span>
+          <h4>Confirm</h4>
+          <p>Confirm the sell action to complete the trade.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="section">
+      <h2 class="section-title">How It Works</h2>
+      <div class="grid-4">
+        <div class="info-card"><span class="icon"><i class="fas fa-user-plus"></i></span><h4>Create Account</h4><p>Sign in securely using your account.</p></div>
+        <div class="info-card"><span class="icon"><i class="fas fa-chart-simple"></i></span><h4>Explore Markets</h4><p>View available cryptocurrency markets and price information.</p></div>
+        <div class="info-card"><span class="icon"><i class="fas fa-arrow-right-arrow-left"></i></span><h4>Trade</h4><p>Use the Buy/Sell interface to place trades.</p></div>
+        <div class="info-card"><span class="icon"><i class="fas fa-wallet"></i></span><h4>Manage Portfolio</h4><p>Monitor your balance, assets and trading activity.</p></div>
+      </div>
+    </div>
+
+    <!-- Platform Features -->
+    <div class="section">
+      <h2 class="section-title">Built For Modern Traders</h2>
+      <div class="trust-grid">
+        <div class="trust-item"><i class="fas fa-chart-line"></i><span>Real-Time Market Interface</span></div>
+        <div class="trust-item"><i class="fas fa-cart-shopping"></i><span>Simple Buy &amp; Sell</span></div>
+        <div class="trust-item"><i class="fas fa-chart-pie"></i><span>Portfolio Monitoring</span></div>
+        <div class="trust-item"><i class="fas fa-clock-rotate-left"></i><span>Trading History</span></div>
+        <div class="trust-item"><i class="fas fa-display"></i><span>Responsive Dashboard</span></div>
+        <div class="trust-item"><i class="fas fa-lock"></i><span>Account Security</span></div>
+        <div class="trust-item"><i class="fas fa-gauge-high"></i><span>Fast Interface</span></div>
+        <div class="trust-item"><i class="fas fa-bullseye"></i><span>Market Tracking</span></div>
+      </div>
+    </div>
+
+    <!-- Security -->
+    <div class="section">
+      <h2 class="section-title">Security First</h2>
+      <div class="grid-3">
+        <div class="info-card"><span class="icon"><i class="fas fa-user-check"></i></span><h4>Secure Account Access</h4><p>Authentication is required before accessing the trading dashboard.</p></div>
+        <div class="info-card"><span class="icon"><i class="fas fa-right-from-bracket"></i></span><h4>Session Protection</h4><p>Users can securely sign out of their account.</p></div>
+        <div class="info-card"><span class="icon"><i class="fas fa-shield"></i></span><h4>Data Protection</h4><p>Appropriate security practices are used for account and application data.</p></div>
+        <div class="info-card"><span class="icon"><i class="fas fa-circle-check"></i></span><h4>Transparent Trading</h4><p>Users see clear order information before confirmation.</p></div>
+      </div>
+    </div>
+
+    <!-- Trust -->
+    <div class="section">
+      <h2 class="section-title">Why Users Choose A Modern Trading Interface</h2>
+      <div class="trust-grid" style="grid-template-columns:repeat(auto-fit, minmax(150px,1fr));">
+        <div class="trust-item"><i class="fas fa-hand-pointer"></i><span>Simple interface</span></div>
+        <div class="trust-item"><i class="fas fa-chart-simple"></i><span>Clear market info</span></div>
+        <div class="trust-item"><i class="fas fa-cart-plus"></i><span>Easy Buy/Sell</span></div>
+        <div class="trust-item"><i class="fas fa-user"></i><span>Account-based access</span></div>
+        <div class="trust-item"><i class="fas fa-check-double"></i><span>Transparent review</span></div>
+        <div class="trust-item"><i class="fas fa-display"></i><span>Responsive experience</span></div>
+        <div class="trust-item"><i class="fas fa-wallet"></i><span>Easy portfolio monitoring</span></div>
+      </div>
+    </div>
+
+    <!-- Live Markets (placeholder - will be shown when logged in) -->
+    <div class="section" id="landing-live-markets">
+      <h2 class="section-title">Live Markets</h2>
+      <p class="section-sub" style="margin-bottom:20px;">Market data will appear here when connected.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
+        <div class="info-card" style="text-align:center;opacity:0.6;"><span class="icon"><i class="fas fa-coins"></i></span><h4>BTC</h4><p>$—</p></div>
+        <div class="info-card" style="text-align:center;opacity:0.6;"><span class="icon"><i class="fas fa-coins"></i></span><h4>ETH</h4><p>$—</p></div>
+        <div class="info-card" style="text-align:center;opacity:0.6;"><span class="icon"><i class="fas fa-coins"></i></span><h4>BNB</h4><p>$—</p></div>
+        <div class="info-card" style="text-align:center;opacity:0.6;"><span class="icon"><i class="fas fa-coins"></i></span><h4>SOL</h4><p>$—</p></div>
+      </div>
+    </div>
+
+    <!-- Buy vs Sell -->
+    <div class="section">
+      <h2 class="section-title">Buy vs Sell</h2>
+      <div class="grid-2">
+        <div class="info-card" style="border-left:4px solid #22c55e;"><span class="icon" style="color:#22c55e;"><i class="fas fa-arrow-up"></i></span><h4>BUY</h4><p>You purchase an asset. You expect the market price may rise. Your position increases when the asset is purchased.</p></div>
+        <div class="info-card" style="border-left:4px solid #ef4444;"><span class="icon" style="color:#ef4444;"><i class="fas fa-arrow-down"></i></span><h4>SELL</h4><p>You sell an asset you hold. You may sell to reduce a position or exit a trade. The final result depends on the execution price and applicable fees.</p></div>
+      </div>
+      <div style="max-width:700px;margin:20px auto 0;text-align:center;color:#7f92a8;font-size:14px;background:rgba(19,27,36,0.4);padding:14px 18px;border-radius:16px;border:1px solid rgba(255,255,255,0.03);">
+        <i class="fas fa-triangle-exclamation" style="color:#f0b90b;margin-right:8px;"></i> Cryptocurrency markets are volatile. Trading involves risk and prices can rise or fall.
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="section">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <div style="max-width:700px;margin:0 auto;">
+        <div class="faq-item open"><div class="q"><span>What is cryptocurrency trading?</span><i class="fas fa-chevron-down"></i></div><div class="a">Crypto trading is the act of buying and selling digital assets based on their market price. It involves speculation on price movements.</div></div>
+        <div class="faq-item"><div class="q"><span>How do I buy a coin?</span><i class="fas fa-chevron-down"></i></div><div class="a">Select the coin from the markets, enter the amount you wish to buy, review the order and confirm.</div></div>
+        <div class="faq-item"><div class="q"><span>How do I sell a coin?</span><i class="fas fa-chevron-down"></i></div><div class="a">Go to your portfolio, select the coin you hold, enter the amount to sell, review and confirm.</div></div>
+        <div class="faq-item"><div class="q"><span>Where can I see my balance?</span><i class="fas fa-chevron-down"></i></div><div class="a">Your balance is displayed on the Home and Portfolio pages of the dashboard.</div></div>
+        <div class="faq-item"><div class="q"><span>Where can I see my trading history?</span><i class="fas fa-chevron-down"></i></div><div class="a">Trading history is available on the Profile page under Transactions.</div></div>
+        <div class="faq-item"><div class="q"><span>How do I log out?</span><i class="fas fa-chevron-down"></i></div><div class="a">Click the Logout button in the sidebar or on any page.</div></div>
+        <div class="faq-item"><div class="q"><span>Are crypto prices always changing?</span><i class="fas fa-chevron-down"></i></div><div class="a">Yes, cryptocurrency prices fluctuate continuously based on market supply and demand.</div></div>
+        <div class="faq-item"><div class="q"><span>Is cryptocurrency trading risk-free?</span><i class="fas fa-chevron-down"></i></div><div class="a"><strong>No.</strong> Cryptocurrency trading involves financial risk and losses are possible.</div></div>
+      </div>
+    </div>
+
+    <!-- Support -->
+    <div class="section">
+      <div class="support-box">
+        <h3 style="margin-bottom:6px;">Need Help?</h3>
+        <p style="color:#9aa9b9;max-width:500px;margin:0 auto 12px;">Have questions about your account or the trading interface? Contact support for assistance.</p>
+        <button class="btn btn-primary" id="contactSupportBtn"><i class="fas fa-headset"></i> Contact Support</button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="links">
+        <a href="#">About</a>
+        <a href="#">Trading</a>
+        <a href="#">Security</a>
+        <a href="#">FAQ</a>
+        <a href="#">Support</a>
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+      </div>
+      <div class="copy">© 2026 BINANCECOIN GET. All rights reserved.</div>
+      <div class="disclaimer">Cryptocurrency trading involves risk. Past performance does not guarantee future results.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD WRAPPER ===== -->
+<div id="dashboard-wrapper">
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="brand">BINANCE<span>COIN</span></div>
@@ -187,14 +454,13 @@
       <section class="page active" id="page-home">
         <div class="card">
           <div class="stat-grid">
-            <div class="stat-item"><div class="stat-label">Demo Balance</div><div class="stat-value gold" id="totalBalance">$0.00</div></div>
+            <div class="stat-item"><div class="stat-label">Virtual Balance</div><div class="stat-value gold" id="totalBalance">$0.00</div></div>
             <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value" id="portfolioValue">$0.00</div></div>
             <div class="stat-item"><div class="stat-label">Today's P/L</div><div class="stat-value" id="todayPL">+$0.00</div></div>
             <div class="stat-item"><div class="stat-label">Coins</div><div class="stat-value" id="coinCount">0</div></div>
           </div>
         </div>
         <div class="card"><div class="card-header"><span class="card-title">Markets</span></div><div id="homeCoinList"></div></div>
-        <!-- Mobile logout button -->
         <div style="display:flex; justify-content:center; margin:16px 0 8px;" class="mobile-logout-wrap">
           <button class="btn-logout" id="mobileLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
@@ -211,7 +477,7 @@
       <!-- PORTFOLIO -->
       <section class="page" id="page-portfolio">
         <div class="card"><div class="stat-grid">
-          <div class="stat-item"><div class="stat-label">Demo Balance</div><div class="stat-value gold" id="portfolioUsd">$0.00</div></div>
+          <div class="stat-item"><div class="stat-label">Virtual Balance</div><div class="stat-value gold" id="portfolioUsd">$0.00</div></div>
           <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value" id="portfolioTotalValue">$0.00</div></div>
         </div></div>
         <div class="card"><div class="card-header"><span class="card-title">Holdings</span></div><div id="portfolioHoldings"></div></div>
@@ -295,7 +561,7 @@
         <div class="card"><div class="flex" style="gap:16px;"><img id="profileAvatar" src="" style="width:60px;height:60px;border-radius:50%;background:#2f3b4a;" /><div><div id="profileName" style="font-weight:700;font-size:20px;">—</div><div id="profileEmail" class="text-muted" style="font-size:13px;">—</div><div id="profileUid" class="text-muted" style="font-size:11px;">UID: —</div></div></div></div>
         <div class="card">
           <div class="profile-stats">
-            <div class="profile-stat"><div class="label">Demo Balance</div><div class="value gold" id="profileBalance">$0.00</div></div>
+            <div class="profile-stat"><div class="label">Virtual Balance</div><div class="value gold" id="profileBalance">$0.00</div></div>
             <div class="profile-stat"><div class="label">Total Holdings</div><div class="value" id="profilePortfolio">$0.00</div></div>
             <div class="profile-stat"><div class="label">Trades</div><div class="value" id="profileTrades">0</div></div>
             <div class="profile-stat"><div class="label">P/L</div><div class="value" id="profilePL">+$0.00</div></div>
@@ -401,6 +667,7 @@
   const googleBtn = $('googleLoginBtn');
   const toastContainer = $('toastContainer');
   const modalOverlay = $('modalOverlay');
+  const dashboardWrapper = $('dashboard-wrapper');
 
   // ---- helpers ----
   function toast(msg, type='') { 
@@ -531,7 +798,6 @@
       const el = document.getElementById(id);
       if (el) el.textContent = formatted;
     });
-    // also update sidebar mini if needed
     const portVal = calcPortfolioValue();
     document.getElementById('portfolioValue').textContent = formatUSD(portVal);
     document.getElementById('profilePortfolio').textContent = formatUSD(portVal);
@@ -561,10 +827,10 @@
   // ---- logout ----
   function performLogout() {
     signOut(auth).then(() => {
-      // clear local session
       currentUser = null;
       userData = null;
       loginOverlay.style.display = 'flex';
+      dashboardWrapper.style.display = 'none';
       document.getElementById('adminPanelCard').style.display = 'none';
       isAdmin = false;
       if (priceInterval) clearInterval(priceInterval);
@@ -584,26 +850,18 @@
     if (user) {
       currentUser = user;
       loginOverlay.style.display = 'none';
+      dashboardWrapper.style.display = 'flex';
       
-      // Initialize or load balance from localStorage
       let balance = initializeBalance(user.uid);
-      // If balance is 0, keep it 0. No free money.
       
-      // Load user data from Firebase
       await loadUserData(user);
-      // Ensure Firebase balance matches localStorage (priority to localStorage)
       if (userData) {
         const fbBalance = userData.virtualBalance || 0;
         const lsBalance = getBalance(user.uid);
-        // If Firebase has a different balance, update localStorage to match Firebase only if Firebase > 0
-        // But we want localStorage to be the source of truth for starting balance 0.
-        // Actually, we want to use localStorage as the source of truth.
         if (fbBalance !== lsBalance) {
-          // Update Firebase to match localStorage
           await update(ref(db, 'users/'+user.uid), { virtualBalance: lsBalance });
           userData.virtualBalance = lsBalance;
         } else {
-          // ensure userData has the correct balance
           userData.virtualBalance = lsBalance;
         }
       }
@@ -621,12 +879,11 @@
       toast(`Welcome ${user.displayName || 'Trader'}!`, 'success');
     } else {
       loginOverlay.style.display = 'flex';
+      dashboardWrapper.style.display = 'none';
       currentUser = null;
       userData = null;
       if(priceInterval) clearInterval(priceInterval);
-      // hide admin panel
       document.getElementById('adminPanelCard').style.display = 'none';
-      // reset UI
       document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
       document.getElementById('page-home').classList.add('active');
     }
@@ -638,7 +895,6 @@
     const snap = await get(userRef);
     if(snap.exists()) {
       userData = snap.val();
-      // Ensure virtualBalance matches localStorage
       const lsBalance = getBalance(user.uid);
       if (userData.virtualBalance !== lsBalance) {
         userData.virtualBalance = lsBalance;
@@ -650,13 +906,12 @@
         email: user.email,
         photoURL: user.photoURL || '',
         createdAt: serverTimestamp(),
-        virtualBalance: 0, // start at 0
+        virtualBalance: 0,
         holdings: {},
         avgBuyPrices: {}
       };
       await set(userRef, newUser);
       userData = newUser;
-      // ensure localStorage is 0
       setBalance(user.uid, 0);
     }
     if(!userData.holdings) userData.holdings = {};
@@ -1096,7 +1351,6 @@
       const currentAvg = userData.avgBuyPrices?.[symbol] || 0;
       const totalCost = (holdings[symbol]||0) * currentAvg + amt;
       const newAvg = totalCost / newHoldings[symbol];
-      // Update Firebase
       const userRef = ref(db, 'users/'+currentUser.uid);
       await update(userRef, { virtualBalance: newBalance, holdings: newHoldings, avgBuyPrices: { ...userData.avgBuyPrices, [symbol]: newAvg } });
       const txRef = push(ref(db, 'transactions'));
@@ -1350,7 +1604,6 @@
         const user = userSnap.val();
         const newBalance = (user.virtualBalance||0) + dep.amount;
         await update(userRef, { virtualBalance: newBalance });
-        // update localStorage
         if (dep.uid === currentUser?.uid) {
           setBalance(dep.uid, newBalance);
         }
@@ -1696,9 +1949,22 @@
     }, 10000);
   }
 
+  // ---- support link ----
+  document.getElementById('contactSupportBtn')?.addEventListener('click', () => {
+    toast('Support: support@binancecoinget.com', 'success');
+  });
+
+  // ---- FAQ accordion ----
+  document.querySelectorAll('.faq-item .q').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.parentElement;
+      item.classList.toggle('open');
+    });
+  });
+
   // ---- init ----
   setupLongPress();
-  console.log('✅ Binance Coin Get · Simulator loaded');
+  console.log('✅ Binance Coin Get · Simulator loaded (high-end landing)');
   console.log('📊 Total coins available: ' + Object.keys(ALL_COINS).length);
   console.log('💰 VBTC (VBcoin) added at $98.47');
   console.log('📈 25+ new tokens added with decimal price support');
