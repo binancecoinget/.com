@@ -866,7 +866,6 @@
     if (!hasBinance) {
       stored.push({ name: 'Binance Pay', address: CORRECT_BINANCE_ID, id: CORRECT_BINANCE_ID, description: 'Binance Pay merchant ID', status: 'active' });
     } else {
-      // Ensure the correct address is used
       stored = stored.map(m => {
         if (m.name === 'Binance Pay') {
           m.address = CORRECT_BINANCE_ID;
@@ -1103,7 +1102,6 @@
     const firstTab = document.querySelector('#adminPanelTabs .btn');
     if (firstTab) firstTab.classList.add('btn-primary');
     updateAdminStats();
-    // Start listening for deposits
     startDepositListener();
   }
 
@@ -1111,7 +1109,6 @@
     adminPanelOverlay.classList.remove('open');
     adminSessionActive = false;
     sessionStorage.removeItem('adminSession');
-    // Stop deposit listeners
     depositListeners.forEach(({ ref, listener }) => {
       ref.off('value', listener);
     });
@@ -1125,7 +1122,6 @@
 
   // Real-time deposit listener for admin
   function startDepositListener() {
-    // Clear any existing listeners
     depositListeners.forEach(({ ref, listener }) => {
       ref.off('value', listener);
     });
@@ -1136,7 +1132,6 @@
       if (snapshot.exists()) {
         const data = snapshot.val();
         allDeposits = Object.values(data);
-        // Update admin deposit UI if admin panel is open
         if (adminPanelOverlay.classList.contains('open')) {
           const activeTab = document.querySelector('#adminPanelTabs .btn-primary');
           if (activeTab && activeTab.dataset.adminTab === 'deposits') {
@@ -1144,21 +1139,16 @@
           }
           updateAdminStats();
         }
-        // Update user deposit history if current user
         if (currentUser) {
           renderDepositHistory();
-          // Check if any deposits were approved for current user
           const userDeposits = allDeposits.filter(d => d.uid === currentUser.uid && d.status === 'APPROVED');
           userDeposits.forEach(d => {
-            // Check if we already processed this approval
             const key = 'bcg_deposit_processed_' + (d.requestId || d.orderId);
             if (!localStorage.getItem(key)) {
-              // Update balance
               const newBalance = getBalance(currentUser.uid) + d.amount;
               setBalance(currentUser.uid, newBalance);
               if (userData) userData.virtualBalance = newBalance;
               localStorage.setItem(key, 'true');
-              // Create transaction record if not exists
               const txKey = 'bcg_tx_deposit_' + (d.requestId || d.orderId);
               if (!localStorage.getItem(txKey)) {
                 const tx = { uid: currentUser.uid, type: 'DEPOSIT', amount: d.amount, coin: 'USD', status: 'COMPLETED', timestamp: Date.now(), depositId: d.requestId || d.orderId };
@@ -1492,7 +1482,6 @@
     html += '</div>';
     container.innerHTML = html;
 
-    // View deposit
     document.querySelectorAll('[data-view-dep]').forEach(el => {
       el.addEventListener('click', async () => {
         const requestId = el.dataset.viewDep;
@@ -1512,7 +1501,6 @@
       });
     });
 
-    // Approve deposit
     document.querySelectorAll('[data-approve-dep]').forEach(el => {
       el.addEventListener('click', async () => {
         const requestId = el.dataset.approveDep;
@@ -1522,7 +1510,6 @@
       });
     });
 
-    // Reject deposit
     document.querySelectorAll('[data-reject-dep]').forEach(el => {
       el.addEventListener('click', async () => {
         const requestId = el.dataset.rejectDep;
@@ -1546,7 +1533,6 @@
     if (dep.status !== 'PENDING') return toast('This deposit has already been processed.', 'error');
 
     if (newStatus === 'APPROVED') {
-      // Show confirmation dialog
       const confirmBody = `
         <div class="field"><label>Order ID</label><div><strong>${dep.requestId || dep.orderId}</strong></div></div>
         <div class="field"><label>User</label><div>${dep.userName || 'User'}</div></div>
@@ -1568,7 +1554,6 @@
         await executeDepositApproval(foundKey, dep);
         renderAdminDeposits();
         renderAll();
-        // Refresh admin panel deposits tab
         if (adminPanelOverlay.classList.contains('open')) {
           const activeTab = document.querySelector('#adminPanelTabs .btn-primary');
           if (activeTab && activeTab.dataset.adminTab === 'deposits') {
@@ -1577,7 +1562,6 @@
         }
       });
     } else {
-      // Reject
       await update(ref(db, 'deposits/' + foundKey), { status: newStatus, processedAt: serverTimestamp() });
       toast(`Deposit ${requestId} rejected`, 'error');
       addNotification(dep.uid, `Deposit request of ${formatUSD(dep.amount)} rejected.`);
@@ -2409,7 +2393,6 @@
       document.getElementById('adminPanelCard').style.display = 'none';
       isAdmin = false;
       if (priceInterval) clearInterval(priceInterval);
-      // Stop deposit listeners
       depositListeners.forEach(({ ref, listener }) => {
         ref.off('value', listener);
       });
@@ -2436,7 +2419,6 @@
       updateBalanceUI();
       startPriceEngine();
       if (isAdmin) document.getElementById('adminPanelCard').style.display = 'block';
-      // Start deposit listener for real-time updates
       startDepositListener();
       toast(`Welcome ${user.displayName || 'Trader'}!`, 'success');
     } else {
@@ -2448,7 +2430,6 @@
       document.getElementById('adminPanelCard').style.display = 'none';
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById('page-home').classList.add('active');
-      // Stop deposit listeners
       depositListeners.forEach(({ ref, listener }) => {
         ref.off('value', listener);
       });
@@ -2680,67 +2661,122 @@
     openModal('Deposit Order Submitted', '', body, actions);
   }
 
-  // ---- Deposit Submit ----
-  document.getElementById('submitDepositBtn').addEventListener('click', async () => {
-    if (!currentUser) return toast('Login required', 'error');
-    if (isSubmittingDeposit) return;
+  // ---- FIXED: Deposit Submit ----
+  console.log("🔧 Setting up Submit Order button...");
 
-    const amount = parseFloat(document.getElementById('depositAmount').value);
-    if (!amount || amount < 1) return toast('Enter amount (min $1)', 'error');
-    const method = document.getElementById('selectedMethod').value;
-    if (!method) return toast('Please select a payment method', 'error');
-    const orderId = document.getElementById('depositOrderId').value.trim();
-    if (!orderId) return toast('Payment Order ID is required.', 'error');
+  // Ensure the button exists before attaching listener
+  const submitBtn = document.getElementById('submitDepositBtn');
+  if (submitBtn) {
+    console.log("✅ Submit button found, attaching listener");
+    submitBtn.addEventListener('click', async function handler(e) {
+      console.log("🟢 SUBMIT ORDER CLICKED (handler fired)");
+      e.preventDefault();
 
-    isSubmittingDeposit = true;
-    document.getElementById('submitDepositBtn').disabled = true;
-    document.getElementById('submitDepositBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+      // Check login state
+      if (!currentUser) {
+        console.log("❌ No current user");
+        toast('Login required', 'error');
+        return;
+      }
+      if (isSubmittingDeposit) {
+        console.log("⏳ Already submitting");
+        return;
+      }
 
-    // Show processing popup
-    showProcessingPopup();
+      // Gather form values
+      const amount = parseFloat(document.getElementById('depositAmount').value);
+      const method = document.getElementById('selectedMethod').value;
+      const orderId = document.getElementById('depositOrderId').value.trim();
 
-    try {
-      const requestId = generateOrderId('DEP');
+      console.log("📝 Form values:", { amount, method, orderId });
 
-      // Create deposit request in Firebase
-      const depRef = push(ref(db, 'deposits'));
-      await set(depRef, {
-        requestId,
-        orderId: requestId,
-        uid: currentUser.uid,
-        userName: userData.displayName || 'User',
-        userEmail: userData.email || '',
-        amount,
-        method,
-        paymentOrderId: orderId,
-        currency: 'USD',
-        status: 'PENDING',
-        createdAt: serverTimestamp()
-      });
+      // Validation
+      if (!amount || amount < 1) {
+        console.log("❌ Invalid amount");
+        toast('Please enter a valid deposit amount (min $1).', 'error');
+        return;
+      }
+      if (!method) {
+        console.log("❌ No payment method selected");
+        toast('Please select a payment method.', 'error');
+        return;
+      }
+      if (!orderId) {
+        console.log("❌ No payment order ID");
+        toast('Payment Order ID is required.', 'error');
+        return;
+      }
 
-      // Close processing modal and show success
-      closeModal();
-      showSuccessPopup(requestId, amount, method, orderId);
+      console.log("✅ Validation passed");
 
-      toast('Deposit order submitted. Awaiting verification.', 'success');
-      document.getElementById('depositAmount').value = '';
-      document.getElementById('depositOrderId').value = '';
-      document.getElementById('methodSelector').style.display = 'none';
-      document.getElementById('orderIdField').style.display = 'none';
-      document.querySelectorAll('.method-option').forEach(m => m.classList.remove('selected'));
-      document.getElementById('selectedMethod').value = '';
+      isSubmittingDeposit = true;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
 
-      await loadDeposits();
-      renderDepositHistory();
-    } catch (err) {
-      closeModal();
-      toast('Error submitting deposit: ' + err.message, 'error');
-    } finally {
-      isSubmittingDeposit = false;
-      document.getElementById('submitDepositBtn').disabled = false;
-      document.getElementById('submitDepositBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Submit Order';
-    }
-  });
+      showProcessingPopup();
+
+      try {
+        const requestId = generateOrderId('DEP');
+        console.log("📦 Creating deposit request:", requestId);
+
+        // Save to Firebase (same location Admin Panel reads)
+        const depRef = push(ref(db, 'deposits'));
+        await set(depRef, {
+          requestId,
+          orderId: requestId,
+          uid: currentUser.uid,
+          userName: userData?.displayName || 'User',
+          userEmail: userData?.email || '',
+          amount,
+          method,
+          paymentOrderId: orderId,
+          currency: 'USD',
+          status: 'PENDING',
+          createdAt: serverTimestamp()
+        });
+        console.log("✅ Deposit request saved to Firebase");
+
+        // Close processing and show success
+        closeModal();
+        showSuccessPopup(requestId, amount, method, orderId);
+
+        toast('Deposit order submitted. Awaiting verification.', 'success');
+
+        // Reset form
+        document.getElementById('depositAmount').value = '';
+        document.getElementById('depositOrderId').value = '';
+        document.getElementById('methodSelector').style.display = 'none';
+        document.getElementById('orderIdField').style.display = 'none';
+        document.querySelectorAll('.method-option').forEach(m => m.classList.remove('selected'));
+        document.getElementById('selectedMethod').value = '';
+
+        // Refresh deposit history
+        await loadDeposits();
+        renderDepositHistory();
+
+        // If admin panel is open, refresh the deposits tab
+        if (adminPanelOverlay.classList.contains('open')) {
+          const activeTab = document.querySelector('#adminPanelTabs .btn-primary');
+          if (activeTab && activeTab.dataset.adminTab === 'deposits') {
+            renderAdminPanelTab('deposits');
+          }
+          updateAdminStats();
+        }
+
+      } catch (err) {
+        console.error("🔥 Error saving deposit:", err);
+        closeModal();
+        toast('Deposit request could not be submitted. Please try again.', 'error');
+      } finally {
+        isSubmittingDeposit = false;
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Order';
+        console.log("🔓 Submit button re-enabled");
+      }
+    });
+  } else {
+    console.error("❌ Submit button NOT found in DOM");
+  }
 
   // ---- Withdraw Submit ----
   document.getElementById('submitWithdrawBtn').addEventListener('click', async () => {
