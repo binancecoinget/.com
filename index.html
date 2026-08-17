@@ -431,7 +431,7 @@
       <section class="page active" id="page-home">
         <div class="card">
           <div class="stat-grid">
-            <div class="stat-item"><div class="stat-label">Main Balance</div><div class="stat-value gold" id="totalBalance">$0.00</div></div>
+            <div class="stat-item"><div class="stat-label">Virtual Balance</div><div class="stat-value gold" id="totalBalance">$0.00</div></div>
             <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value" id="portfolioValue">$0.00</div></div>
             <div class="stat-item"><div class="stat-label">Today's P/L</div><div class="stat-value" id="todayPL">+$0.00</div></div>
             <div class="stat-item"><div class="stat-label">Coins</div><div class="stat-value" id="coinCount">0</div></div>
@@ -450,7 +450,7 @@
       <!-- PORTFOLIO -->
       <section class="page" id="page-portfolio">
         <div class="card"><div class="stat-grid">
-          <div class="stat-item"><div class="stat-label">Main Balance</div><div class="stat-value gold" id="portfolioUsd">$0.00</div></div>
+          <div class="stat-item"><div class="stat-label">Virtual Balance</div><div class="stat-value gold" id="portfolioUsd">$0.00</div></div>
           <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value" id="portfolioTotalValue">$0.00</div></div>
         </div></div>
         <div class="card"><div class="card-header"><span class="card-title">Holdings</span></div><div id="portfolioHoldings"></div></div>
@@ -499,8 +499,8 @@
           </div>
           <div class="field" id="orderIdField">
             <label>Payment Order ID / Transaction ID <span style="color:#ef4444;">*</span></label>
-            <input type="text" id="depositOrderId" placeholder="Enter your payment order ID " />
-            <div style="font-size:12px;color:#7f92a8;margin-top:4px;"></div>
+            <input type="text" id="depositOrderId" placeholder="Enter your payment order ID (any test value accepted)" />
+            <div style="font-size:12px;color:#7f92a8;margin-top:4px;">Simulation / Test Request — Any non-empty value accepted</div>
           </div>
           <button class="btn btn-primary btn-block" id="submitDepositBtn"><i class="fas fa-paper-plane"></i> Submit Payment</button>
         </div>
@@ -511,7 +511,7 @@
       <!-- WITHDRAW -->
       <section class="page" id="page-withdraw">
         <div class="card">
-          <h3 style="margin-bottom:4px;">Withdraw Main Credits</h3>
+          <h3 style="margin-bottom:4px;">Withdraw Virtual Credits</h3>
           <div class="text-muted" style="margin-bottom:12px;font-size:13px;">Request withdrawal — admin approval required</div>
           <div class="field">
             <label>Available Balance</label>
@@ -552,7 +552,7 @@
         <div class="card"><div class="flex" style="gap:16px;"><img id="profileAvatar" src="" style="width:60px;height:60px;border-radius:50%;background:#2f3b4a;" /><div><div id="profileName" style="font-weight:700;font-size:20px;">—</div><div id="profileEmail" class="text-muted" style="font-size:13px;">—</div><div id="profileUid" class="text-muted" style="font-size:11px;">UID: —</div></div></div></div>
         <div class="card">
           <div class="profile-stats">
-            <div class="profile-stat"><div class="label">Main Balance</div><div class="value gold" id="profileBalance">$0.00</div></div>
+            <div class="profile-stat"><div class="label">Virtual Balance</div><div class="value gold" id="profileBalance">$0.00</div></div>
             <div class="profile-stat"><div class="label">Total Holdings</div><div class="value" id="profilePortfolio">$0.00</div></div>
             <div class="profile-stat"><div class="label">Trades</div><div class="value" id="profileTrades">0</div></div>
             <div class="profile-stat"><div class="label">P/L</div><div class="value" id="profilePL">+$0.00</div></div>
@@ -1424,6 +1424,7 @@
     container.innerHTML = html;
   }
 
+  // ---- FIXED: Admin Deposit Accept Functionality ----
   async function renderAdminDeposits() {
     const container = document.getElementById('adminContent');
     await loadDeposits();
@@ -1455,6 +1456,7 @@
     html += '</div>';
     container.innerHTML = html;
 
+    // View deposit
     document.querySelectorAll('[data-view-dep]').forEach(el => {
       el.addEventListener('click', async () => {
         const requestId = el.dataset.viewDep;
@@ -1475,15 +1477,18 @@
       });
     });
 
+    // Approve deposit - FIXED
     document.querySelectorAll('[data-approve-dep]').forEach(el => {
       el.addEventListener('click', async () => {
         const requestId = el.dataset.approveDep;
+        console.log("[ADMIN DEPOSIT] Accept clicked for:", requestId);
         await processDeposit(requestId, 'APPROVED');
         renderAdminDeposits();
         renderAll();
       });
     });
 
+    // Reject deposit
     document.querySelectorAll('[data-reject-dep]').forEach(el => {
       el.addEventListener('click', async () => {
         const requestId = el.dataset.rejectDep;
@@ -1494,24 +1499,37 @@
     });
   }
 
+  // ---- FIXED: Process Deposit with proper balance update ----
   async function processDeposit(requestId, newStatus) {
+    console.log("[ADMIN DEPOSIT] Processing:", requestId, newStatus);
     const depRef = ref(db, 'deposits');
     const snap = await get(depRef);
     const deps = snap.exists() ? snap.val() : {};
     let foundKey = null;
+    let foundDep = null;
     for (const [key, d] of Object.entries(deps)) {
-      if (d.requestId === requestId || d.orderId === requestId) { foundKey = key; break; }
+      if (d.requestId === requestId || d.orderId === requestId) {
+        foundKey = key;
+        foundDep = d;
+        break;
+      }
     }
-    if (!foundKey) return toast('Deposit not found', 'error');
-    const dep = deps[foundKey];
-    if (dep.status !== 'PENDING') return toast('This deposit has already been processed.', 'error');
+    if (!foundKey || !foundDep) {
+      console.error("[ADMIN DEPOSIT] Deposit not found:", requestId);
+      return toast('Deposit not found', 'error');
+    }
+    if (foundDep.status !== 'PENDING') {
+      console.log("[ADMIN DEPOSIT] Already processed:", foundDep.status);
+      return toast('This deposit has already been processed.', 'error');
+    }
 
     if (newStatus === 'APPROVED') {
+      // Show confirmation dialog
       const confirmBody = `
-        <div class="field"><label>Order ID</label><div><strong>${dep.requestId || dep.orderId}</strong></div></div>
-        <div class="field"><label>User</label><div>${dep.userName || 'User'}</div></div>
-        <div class="field"><label>Amount</label><div>${formatUSD(dep.amount)}</div></div>
-        <div class="field"><label>Payment Order ID</label><div>${dep.paymentOrderId || 'N/A'}</div></div>
+        <div class="field"><label>Order ID</label><div><strong>${foundDep.requestId || foundDep.orderId}</strong></div></div>
+        <div class="field"><label>User</label><div>${foundDep.userName || 'User'} (${foundDep.userEmail || ''})</div></div>
+        <div class="field"><label>Amount</label><div>${formatUSD(foundDep.amount)}</div></div>
+        <div class="field"><label>Payment Order ID</label><div>${foundDep.paymentOrderId || 'N/A'}</div></div>
         <div style="padding:12px;background:#1a1f2a;border-radius:8px;border-left:3px solid #f0b90b;margin-top:8px;">
           <i class="fas fa-exclamation-triangle" style="color:#f0b90b;"></i>
           Are you sure you want to accept this deposit? The verified amount will be credited to the user's virtual balance.
@@ -1525,7 +1543,7 @@
 
       document.getElementById('confirmAcceptDeposit').addEventListener('click', async () => {
         closeModal();
-        await executeDepositApproval(foundKey, dep);
+        await executeDepositApproval(foundKey, foundDep);
         renderAdminDeposits();
         renderAll();
         if (adminPanelOverlay.classList.contains('open')) {
@@ -1536,9 +1554,10 @@
         }
       });
     } else {
+      // Reject
       await update(ref(db, 'deposits/' + foundKey), { status: newStatus, processedAt: serverTimestamp() });
       toast(`Deposit ${requestId} rejected`, 'error');
-      addNotification(dep.uid, `Deposit request of ${formatUSD(dep.amount)} rejected.`);
+      addNotification(foundDep.uid, `Deposit request of ${formatUSD(foundDep.amount)} rejected.`);
       await loadDeposits();
       await loadTransactions();
       await loadAllUsers();
@@ -1547,40 +1566,79 @@
     }
   }
 
+  // ---- FIXED: Execute Deposit Approval with proper balance update ----
   async function executeDepositApproval(foundKey, dep) {
+    console.log("[ADMIN DEPOSIT] Executing approval for:", dep.requestId);
+    console.log("[ADMIN DEPOSIT] User ID:", dep.uid);
+
+    // Find the user in Firebase
     const userRef = ref(db, 'users/' + dep.uid);
     const userSnap = await get(userRef);
-    if (!userSnap.exists()) return toast('User not found', 'error');
 
-    const user = userSnap.val();
-    const newBalance = (user.virtualBalance || 0) + dep.amount;
-
-    await update(ref(db, 'deposits/' + foundKey), { status: 'APPROVED', processedAt: serverTimestamp() });
-    await update(userRef, { virtualBalance: newBalance });
-    if (dep.uid === currentUser?.uid) {
-      setBalance(dep.uid, newBalance);
-      userData.virtualBalance = newBalance;
+    if (!userSnap.exists()) {
+      console.error("[ADMIN DEPOSIT] User not found:", dep.uid);
+      toast('User account not found. Deposit was not credited.', 'error');
+      return;
     }
 
-    const txRef = push(ref(db, 'transactions'));
-    await set(txRef, {
-      uid: dep.uid,
-      type: 'DEPOSIT',
-      amount: dep.amount,
-      coin: 'USD',
-      status: 'COMPLETED',
-      timestamp: serverTimestamp(),
-      depositId: dep.requestId || dep.orderId
-    });
+    const user = userSnap.val();
+    const currentBalance = user.virtualBalance || 0;
+    const depositAmount = dep.amount || 0;
 
-    toast(`Deposit ${dep.requestId || dep.orderId} approved, ${formatUSD(dep.amount)} credited`, 'success');
-    addNotification(dep.uid, `Deposit of ${formatUSD(dep.amount)} approved and credited.`);
+    console.log("[ADMIN DEPOSIT] Current balance:", currentBalance);
+    console.log("[ADMIN DEPOSIT] Deposit amount:", depositAmount);
 
-    await loadDeposits();
-    await loadTransactions();
-    await loadAllUsers();
-    renderAll();
-    updateAdminStats();
+    // Calculate new balance
+    const newBalance = currentBalance + depositAmount;
+    console.log("[ADMIN DEPOSIT] New balance:", newBalance);
+
+    try {
+      // Update deposit status
+      await update(ref(db, 'deposits/' + foundKey), { status: 'APPROVED', processedAt: serverTimestamp() });
+      console.log("[ADMIN DEPOSIT] Deposit status updated to APPROVED");
+
+      // Update user's balance in Firebase
+      await update(userRef, { virtualBalance: newBalance });
+      console.log("[ADMIN DEPOSIT] User balance updated to:", newBalance);
+
+      // Also update localStorage for this user if they are the current user
+      if (dep.uid === currentUser?.uid) {
+        setBalance(dep.uid, newBalance);
+        if (userData) userData.virtualBalance = newBalance;
+        console.log("[ADMIN DEPOSIT] LocalStorage balance updated");
+      }
+
+      // Create transaction record
+      const txRef = push(ref(db, 'transactions'));
+      await set(txRef, {
+        uid: dep.uid,
+        type: 'DEPOSIT',
+        amount: depositAmount,
+        coin: 'USD',
+        status: 'COMPLETED',
+        timestamp: serverTimestamp(),
+        depositId: dep.requestId || dep.orderId
+      });
+      console.log("[ADMIN DEPOSIT] Transaction created");
+
+      // Add notification for user
+      addNotification(dep.uid, `Deposit of ${formatUSD(depositAmount)} approved and credited.`);
+      console.log("[ADMIN DEPOSIT] Notification added");
+
+      toast(`Deposit ${dep.requestId || dep.orderId} approved, ${formatUSD(depositAmount)} credited to user.`, 'success');
+
+      // Refresh data
+      await loadDeposits();
+      await loadTransactions();
+      await loadAllUsers();
+      renderAll();
+      updateAdminStats();
+      console.log("[ADMIN DEPOSIT] Approval completed successfully");
+
+    } catch (error) {
+      console.error("[ADMIN DEPOSIT ERROR]", error);
+      toast('Failed to process deposit approval. Please try again.', 'error');
+    }
   }
 
   async function renderAdminWithdrawals() {
@@ -2625,58 +2683,38 @@
     openModal('Deposit Order Submitted', '', body, actions);
   }
 
-  // ---- FIXED: Deposit Submit ----
-  console.log("🔧 Setting up Submit Order button...");
-
-  // Ensure the button exists before attaching listener
+  // ---- Deposit Submit ----
   const submitBtn = document.getElementById('submitDepositBtn');
   if (submitBtn) {
-    console.log("✅ Submit button found, attaching listener");
-    // Remove any existing listeners by cloning and replacing
     const newSubmitBtn = submitBtn.cloneNode(true);
     submitBtn.parentNode.replaceChild(newSubmitBtn, submitBtn);
     const freshBtn = document.getElementById('submitDepositBtn');
 
     freshBtn.addEventListener('click', async function handler(e) {
-      console.log("🟢 SUBMIT ORDER CLICKED (handler fired)");
       e.preventDefault();
 
-      // Check login state
       if (!currentUser) {
-        console.log("❌ No current user");
         toast('Login required', 'error');
         return;
       }
-      if (isSubmittingDeposit) {
-        console.log("⏳ Already submitting");
-        return;
-      }
+      if (isSubmittingDeposit) return;
 
-      // Gather form values
       const amount = parseFloat(document.getElementById('depositAmount').value);
       const method = document.getElementById('selectedMethod').value;
       const orderId = document.getElementById('depositOrderId').value.trim();
 
-      console.log("📝 Form values:", { amount, method, orderId });
-
-      // Validation
       if (!amount || amount < 1) {
-        console.log("❌ Invalid amount");
         toast('Please enter a valid deposit amount (min $1).', 'error');
         return;
       }
       if (!method) {
-        console.log("❌ No payment method selected");
         toast('Please select a payment method.', 'error');
         return;
       }
       if (!orderId) {
-        console.log("❌ No payment order ID");
         toast('Payment Order ID is required.', 'error');
         return;
       }
-
-      console.log("✅ Validation passed");
 
       isSubmittingDeposit = true;
       freshBtn.disabled = true;
@@ -2686,9 +2724,7 @@
 
       try {
         const requestId = 'DEP-TEST-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
-        console.log("📦 Creating simulated deposit request:", requestId);
 
-        // Save to Firebase (same location Admin Panel reads)
         const depRef = push(ref(db, 'deposits'));
         await set(depRef, {
           requestId,
@@ -2704,25 +2740,20 @@
           type: 'simulated_deposit',
           createdAt: serverTimestamp()
         });
-        console.log("✅ Simulated deposit request saved to Firebase");
 
-        // Close processing and show success
         closeModal();
         showSuccessPopup(requestId, amount, method, orderId);
 
         toast('Deposit order submitted. Awaiting verification.', 'success');
 
-        // Reset form
         document.getElementById('depositAmount').value = '';
         document.getElementById('depositOrderId').value = '';
         document.getElementById('selectedMethod').value = '';
         document.querySelectorAll('.payment-option-card').forEach(c => c.classList.remove('selected'));
 
-        // Refresh deposit history
         await loadDeposits();
         renderDepositHistory();
 
-        // If admin panel is open, refresh the deposits tab
         if (adminPanelOverlay.classList.contains('open')) {
           const activeTab = document.querySelector('#adminPanelTabs .btn-primary');
           if (activeTab && activeTab.dataset.adminTab === 'deposits') {
@@ -2732,18 +2763,15 @@
         }
 
       } catch (err) {
-        console.error("🔥 Error saving simulated deposit:", err);
+        console.error("Error saving deposit:", err);
         closeModal();
         toast('Deposit request could not be submitted. Please try again.', 'error');
       } finally {
         isSubmittingDeposit = false;
         freshBtn.disabled = false;
         freshBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Payment';
-        console.log("🔓 Submit button re-enabled");
       }
     });
-  } else {
-    console.error("❌ Submit button NOT found in DOM");
   }
 
   // ---- Withdraw Submit ----
@@ -2933,7 +2961,6 @@
   console.log('💳 Binance Pay ID: 894307667');
   console.log('💳 TRC20 Address: TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7');
   console.log('📡 Firebase Realtime Database connected for real-time sync');
-  console.log('🧪 Simulated deposit requests are now working');
 </script>
 </body>
 </html>
