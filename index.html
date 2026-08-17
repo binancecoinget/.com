@@ -2681,7 +2681,7 @@
     const newSubmitBtn = submitBtn.cloneNode(true);
     submitBtn.parentNode.replaceChild(newSubmitBtn, submitBtn);
     const freshBtn = document.getElementById('submitDepositBtn');
-    
+
     freshBtn.addEventListener('click', async function handler(e) {
       console.log("🟢 SUBMIT ORDER CLICKED (handler fired)");
       e.preventDefault();
@@ -2730,7 +2730,7 @@
       showProcessingPopup();
 
       try {
-        const requestId = generateOrderId('DEP-TEST');
+        const requestId = 'DEP-TEST-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
         console.log("📦 Creating simulated deposit request:", requestId);
 
         // Save to Firebase (same location Admin Panel reads)
