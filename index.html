@@ -100,6 +100,7 @@
     .badge-confirmed { background:#22c55e; color:#0b0e14; }
     .badge-cancelled { background:#ef4444; color:#fff; }
     .badge-failed { background:#dc2626; color:#fff; }
+    .badge-simulated { background:#8b5cf6; color:#fff; }
 
     .admin-tab-bar { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
     .admin-tab-bar .btn { flex:1; min-width:70px; justify-content:center; font-size:12px; padding:6px 10px; }
@@ -487,8 +488,8 @@
           </div>
           <div class="field" id="orderIdField" style="display:none;">
             <label>Payment Order ID / Transaction ID <span style="color:#ef4444;">*</span></label>
-            <input type="text" id="depositOrderId" placeholder="Enter your payment order ID" />
-            <div style="font-size:12px;color:#7f92a8;margin-top:4px;">Required — Enter the order ID from your payment</div>
+            <input type="text" id="depositOrderId" placeholder="Enter your payment order ID (any test value accepted)" />
+            <div style="font-size:12px;color:#7f92a8;margin-top:4px;">Simulation / Test Request — Any non-empty value accepted</div>
           </div>
           <button class="btn btn-primary btn-block" id="submitDepositBtn"><i class="fas fa-paper-plane"></i> Submit Order</button>
         </div>
@@ -1154,7 +1155,7 @@
                 const tx = { uid: currentUser.uid, type: 'DEPOSIT', amount: d.amount, coin: 'USD', status: 'COMPLETED', timestamp: Date.now(), depositId: d.requestId || d.orderId };
                 allTransactions.push(tx);
                 localStorage.setItem(txKey, 'true');
-                toast(`Deposit of ${formatUSD(d.amount)} approved and credited!`, 'success');
+                toast(`Simulated deposit of ${formatUSD(d.amount)} approved and credited!`, 'success');
                 addNotification(currentUser.uid, `Deposit of ${formatUSD(d.amount)} approved and credited.`);
               }
               renderAll();
@@ -1312,10 +1313,12 @@
       userDeps.forEach(d => {
         const status = d.status || 'PENDING';
         const badgeClass = getBadgeClass(status);
+        const isSimulated = d.type === 'simulated_deposit' || d.method === 'Simulated Test';
         html += `<div class="flex-between deposit-item">
           <span style="font-size:12px;">${d.requestId || d.orderId || '—'}</span>
           <span>${formatUSD(d.amount)}</span>
           <span>${d.method || 'N/A'}</span>
+          ${isSimulated ? '<span class="badge badge-simulated">Simulated</span>' : ''}
           <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
           <span class="text-muted" style="font-size:11px;">${new Date(d.createdAt || Date.now()).toLocaleDateString()}</span>
         </div>`;
@@ -1464,10 +1467,12 @@
         const status = dep.status || 'PENDING';
         const badgeClass = getBadgeClass(status);
         const isPending = status === 'PENDING';
+        const isSimulated = dep.type === 'simulated_deposit' || dep.method === 'Simulated Test';
         html += `<div class="item flex-between">
           <span style="font-size:12px;">${dep.requestId || dep.orderId || '—'}</span>
           <span>${dep.userName || 'User'}</span>
           <span>${formatUSD(dep.amount)}</span>
+          ${isSimulated ? '<span class="badge badge-simulated">Simulation</span>' : ''}
           <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
           <div style="display:flex;gap:4px;flex-wrap:wrap;">
             ${isPending ? `
@@ -1494,6 +1499,7 @@
           <div class="field"><label>Method</label><div>${dep.method || 'N/A'}</div></div>
           <div class="field"><label>Payment Order ID</label><div><strong>${dep.paymentOrderId || 'N/A'}</strong></div></div>
           <div class="field"><label>Status</label><div><span class="badge ${getBadgeClass(dep.status)}">${getDisplayStatus(dep.status)}</span></div></div>
+          <div class="field"><label>Type</label><div>${dep.type === 'simulated_deposit' ? 'Simulation / Test' : 'Standard'}</div></div>
           <div class="field"><label>Created</label><div>${new Date(dep.createdAt || Date.now()).toLocaleString()}</div></div>
         `;
         const actions = `<button class="btn btn-outline" onclick="closeModal()">Close</button>`;
@@ -1540,7 +1546,7 @@
         <div class="field"><label>Payment Order ID</label><div>${dep.paymentOrderId || 'N/A'}</div></div>
         <div style="padding:12px;background:#1a1f2a;border-radius:8px;border-left:3px solid #f0b90b;margin-top:8px;">
           <i class="fas fa-exclamation-triangle" style="color:#f0b90b;"></i>
-          Are you sure you want to accept this deposit? The verified amount will be credited to the user's balance.
+          Are you sure you want to accept this deposit? The verified amount will be credited to the user's virtual balance.
         </div>
       `;
       const confirmActions = `
@@ -2147,10 +2153,12 @@
             const status = d.status || 'PENDING';
             const badgeClass = getBadgeClass(status);
             const isPending = status === 'PENDING';
+            const isSimulated = d.type === 'simulated_deposit' || d.method === 'Simulated Test';
             depHtml += `<div class="item flex-between">
               <span style="font-size:12px;">${d.requestId || d.orderId || '—'}</span>
               <span>${d.userName || 'User'}</span>
               <span>${formatUSD(d.amount)}</span>
+              ${isSimulated ? '<span class="badge badge-simulated">Simulation</span>' : ''}
               <span class="badge ${badgeClass}">${getDisplayStatus(status)}</span>
               ${isPending ? `<div style="display:flex;gap:4px;"><button class="btn btn-sm btn-success" data-ap-dep="${d.requestId || d.orderId}">Accept</button><button class="btn btn-sm btn-danger" data-rj-dep="${d.requestId || d.orderId}">Reject</button></div>` : ''}
             </div>`;
@@ -2644,13 +2652,14 @@
       <div style="text-align:center;padding:8px 0;">
         <i class="fas fa-check-circle" style="font-size:48px;color:#22c55e;margin-bottom:12px;"></i>
         <h3 style="color:#22c55e;margin-bottom:8px;">Deposit Order Submitted</h3>
-        <p style="color:#b0c4d9;">Your deposit request has been sent to the admin for verification.</p>
+        <p style="color:#b0c4d9;">Your simulated deposit request has been sent to the Admin Panel.</p>
         <div style="margin:12px 0;padding:10px;background:#1a1f2a;border-radius:8px;text-align:left;">
           <div><strong>Request ID:</strong> ${requestId}</div>
           <div><strong>Amount:</strong> ${formatUSD(amount)}</div>
           <div><strong>Payment Method:</strong> ${method}</div>
           <div><strong>Payment Order ID:</strong> ${paymentOrderId}</div>
           <div style="margin-top:6px;"><strong>Status:</strong> <span class="badge badge-pending">Pending</span></div>
+          <div style="margin-top:4px;font-size:12px;color:#7f92a8;"><i class="fas fa-flask"></i> Simulation / Test Request</div>
         </div>
       </div>
     `;
@@ -2668,7 +2677,12 @@
   const submitBtn = document.getElementById('submitDepositBtn');
   if (submitBtn) {
     console.log("✅ Submit button found, attaching listener");
-    submitBtn.addEventListener('click', async function handler(e) {
+    // Remove any existing listeners by cloning and replacing
+    const newSubmitBtn = submitBtn.cloneNode(true);
+    submitBtn.parentNode.replaceChild(newSubmitBtn, submitBtn);
+    const freshBtn = document.getElementById('submitDepositBtn');
+    
+    freshBtn.addEventListener('click', async function handler(e) {
       console.log("🟢 SUBMIT ORDER CLICKED (handler fired)");
       e.preventDefault();
 
@@ -2710,14 +2724,14 @@
       console.log("✅ Validation passed");
 
       isSubmittingDeposit = true;
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+      freshBtn.disabled = true;
+      freshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
 
       showProcessingPopup();
 
       try {
-        const requestId = generateOrderId('DEP');
-        console.log("📦 Creating deposit request:", requestId);
+        const requestId = generateOrderId('DEP-TEST');
+        console.log("📦 Creating simulated deposit request:", requestId);
 
         // Save to Firebase (same location Admin Panel reads)
         const depRef = push(ref(db, 'deposits'));
@@ -2732,9 +2746,10 @@
           paymentOrderId: orderId,
           currency: 'USD',
           status: 'PENDING',
+          type: 'simulated_deposit',
           createdAt: serverTimestamp()
         });
-        console.log("✅ Deposit request saved to Firebase");
+        console.log("✅ Simulated deposit request saved to Firebase");
 
         // Close processing and show success
         closeModal();
@@ -2764,13 +2779,13 @@
         }
 
       } catch (err) {
-        console.error("🔥 Error saving deposit:", err);
+        console.error("🔥 Error saving simulated deposit:", err);
         closeModal();
         toast('Deposit request could not be submitted. Please try again.', 'error');
       } finally {
         isSubmittingDeposit = false;
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Order';
+        freshBtn.disabled = false;
+        freshBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Order';
         console.log("🔓 Submit button re-enabled");
       }
     });
@@ -2965,6 +2980,7 @@
   console.log('💳 Binance Pay ID: 894307667');
   console.log('💳 TRC20 Address: TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7');
   console.log('📡 Firebase Realtime Database connected for real-time sync');
+  console.log('🧪 Simulated deposit requests are now working');
 </script>
 </body>
 </html>
