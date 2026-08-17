@@ -450,10 +450,10 @@
         <div class="card">
           <h3 style="margin-bottom:4px;">Create Deposit Order</h3>
           <div class="text-muted" style="margin-bottom:12px;font-size:13px;">Submit a deposit order for admin verification</div>
-          
+
           <div style="margin-bottom:16px;background:#0d141e;border-radius:12px;padding:16px;border:1px solid #1f2937;">
             <h4 style="color:#f0b90b;margin-bottom:8px;"><i class="fas fa-credit-card"></i> Payment Information</h4>
-            
+
             <div style="margin-bottom:12px;padding:10px;background:#1a1f2a;border-radius:8px;">
               <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
                 <div>
@@ -463,7 +463,7 @@
                 <button class="btn btn-sm btn-primary copy-payment-btn" data-copy="894307667"><i class="fas fa-copy"></i> Copy ID</button>
               </div>
             </div>
-            
+
             <div style="padding:10px;background:#1a1f2a;border-radius:8px;">
               <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
                 <div>
@@ -475,7 +475,7 @@
             </div>
             <div style="margin-top:8px;font-size:12px;color:#7f92a8;"><i class="fas fa-info-circle"></i> Copy the payment details above and complete your payment, then submit the request below.</div>
           </div>
-          
+
           <div class="field">
             <label>Deposit Amount (USD)</label>
             <input type="number" id="depositAmount" placeholder="Enter amount (min $1)" min="1" step="0.01" />
@@ -660,7 +660,7 @@
   // Firebase imports
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getDatabase, ref, set, push, get, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, set, push, get, update, serverTimestamp, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDWZURvEtRrsYR9_1CuGmvj4QYX7X7BcK4",
@@ -689,6 +689,7 @@
   let priceInterval = null;
   let isSubmittingDeposit = false;
   let adminSessionActive = false;
+  let depositListeners = [];
 
   // DOM refs
   const $ = id => document.getElementById(id);
@@ -828,22 +829,63 @@
     return val;
   }
 
-  // Payment Methods - exact values
+  // Payment Methods - CORRECT VALUES ONLY
+  const CORRECT_BINANCE_ID = "894307667";
+  const CORRECT_TRC20_ADDRESS = "TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7";
+
   function getPaymentMethods() {
     const key = 'bcg_payment_methods';
+    let stored = [];
     try {
       const data = localStorage.getItem(key);
       if (data) {
-        const parsed = JSON.parse(data);
-        if (parsed && parsed.length > 0) return parsed;
+        stored = JSON.parse(data);
       }
     } catch (e) {}
-    const defaults = [
-      { name: 'Binance Pay', address: '894307667', id: '894307667', description: 'Binance Pay merchant ID', status: 'active' },
-      { name: 'USDT TRC20', address: 'TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7', id: 'TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7', description: 'Send USDT via TRC20 network', status: 'active' }
-    ];
-    localStorage.setItem(key, JSON.stringify(defaults));
-    return defaults;
+
+    // Check if stored contains fake values and replace
+    const hasFake = stored.some(m =>
+      (m.address && (m.address.includes('TXXXX') || m.address === 'TXXXXXXXXXXXX' || m.address === '123456789')) ||
+      (m.id && (m.id.includes('TXXXX') || m.id === 'TXXXXXXXXXXXX' || m.id === '123456789'))
+    );
+
+    // If no stored data or contains fake values, use correct defaults
+    if (!stored || stored.length === 0 || hasFake) {
+      const defaults = [
+        { name: 'Binance Pay', address: CORRECT_BINANCE_ID, id: CORRECT_BINANCE_ID, description: 'Binance Pay merchant ID', status: 'active' },
+        { name: 'USDT TRC20', address: CORRECT_TRC20_ADDRESS, id: CORRECT_TRC20_ADDRESS, description: 'Send USDT via TRC20 network', status: 'active' }
+      ];
+      localStorage.setItem(key, JSON.stringify(defaults));
+      return defaults;
+    }
+
+    // Ensure correct values are always present
+    const hasBinance = stored.some(m => m.name === 'Binance Pay');
+    const hasUSDT = stored.some(m => m.name === 'USDT TRC20');
+
+    if (!hasBinance) {
+      stored.push({ name: 'Binance Pay', address: CORRECT_BINANCE_ID, id: CORRECT_BINANCE_ID, description: 'Binance Pay merchant ID', status: 'active' });
+    } else {
+      // Ensure the correct address is used
+      stored = stored.map(m => {
+        if (m.name === 'Binance Pay') {
+          m.address = CORRECT_BINANCE_ID;
+          m.id = CORRECT_BINANCE_ID;
+        }
+        if (m.name === 'USDT TRC20') {
+          m.address = CORRECT_TRC20_ADDRESS;
+          m.id = CORRECT_TRC20_ADDRESS;
+        }
+        return m;
+      });
+    }
+
+    if (!hasUSDT) {
+      stored.push({ name: 'USDT TRC20', address: CORRECT_TRC20_ADDRESS, id: CORRECT_TRC20_ADDRESS, description: 'Send USDT via TRC20 network', status: 'active' });
+    }
+
+    localStorage.setItem(key, JSON.stringify(stored));
+    return stored;
   }
 
   // Core Functions
@@ -1061,17 +1103,78 @@
     const firstTab = document.querySelector('#adminPanelTabs .btn');
     if (firstTab) firstTab.classList.add('btn-primary');
     updateAdminStats();
+    // Start listening for deposits
+    startDepositListener();
   }
 
   function closeAdminPanel() {
     adminPanelOverlay.classList.remove('open');
     adminSessionActive = false;
     sessionStorage.removeItem('adminSession');
+    // Stop deposit listeners
+    depositListeners.forEach(({ ref, listener }) => {
+      ref.off('value', listener);
+    });
+    depositListeners = [];
   }
 
   function adminLogout() {
     closeAdminPanel();
     toast('Admin logged out', 'success');
+  }
+
+  // Real-time deposit listener for admin
+  function startDepositListener() {
+    // Clear any existing listeners
+    depositListeners.forEach(({ ref, listener }) => {
+      ref.off('value', listener);
+    });
+    depositListeners = [];
+
+    const depRef = ref(db, 'deposits');
+    const listener = onValue(depRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        allDeposits = Object.values(data);
+        // Update admin deposit UI if admin panel is open
+        if (adminPanelOverlay.classList.contains('open')) {
+          const activeTab = document.querySelector('#adminPanelTabs .btn-primary');
+          if (activeTab && activeTab.dataset.adminTab === 'deposits') {
+            renderAdminPanelTab('deposits');
+          }
+          updateAdminStats();
+        }
+        // Update user deposit history if current user
+        if (currentUser) {
+          renderDepositHistory();
+          // Check if any deposits were approved for current user
+          const userDeposits = allDeposits.filter(d => d.uid === currentUser.uid && d.status === 'APPROVED');
+          userDeposits.forEach(d => {
+            // Check if we already processed this approval
+            const key = 'bcg_deposit_processed_' + (d.requestId || d.orderId);
+            if (!localStorage.getItem(key)) {
+              // Update balance
+              const newBalance = getBalance(currentUser.uid) + d.amount;
+              setBalance(currentUser.uid, newBalance);
+              if (userData) userData.virtualBalance = newBalance;
+              localStorage.setItem(key, 'true');
+              // Create transaction record if not exists
+              const txKey = 'bcg_tx_deposit_' + (d.requestId || d.orderId);
+              if (!localStorage.getItem(txKey)) {
+                const tx = { uid: currentUser.uid, type: 'DEPOSIT', amount: d.amount, coin: 'USD', status: 'COMPLETED', timestamp: Date.now(), depositId: d.requestId || d.orderId };
+                allTransactions.push(tx);
+                localStorage.setItem(txKey, 'true');
+                toast(`Deposit of ${formatUSD(d.amount)} approved and credited!`, 'success');
+                addNotification(currentUser.uid, `Deposit of ${formatUSD(d.amount)} approved and credited.`);
+              }
+              renderAll();
+              updateBalanceUI();
+            }
+          });
+        }
+      }
+    });
+    depositListeners.push({ ref: depRef, listener });
   }
 
   // Rendering Functions
@@ -1450,7 +1553,7 @@
         <div class="field"><label>Amount</label><div>${formatUSD(dep.amount)}</div></div>
         <div class="field"><label>Payment Order ID</label><div>${dep.paymentOrderId || 'N/A'}</div></div>
         <div style="padding:12px;background:#1a1f2a;border-radius:8px;border-left:3px solid #f0b90b;margin-top:8px;">
-          <i class="fas fa-exclamation-triangle" style="color:#f0b90b;"></i> 
+          <i class="fas fa-exclamation-triangle" style="color:#f0b90b;"></i>
           Are you sure you want to accept this deposit? The verified amount will be credited to the user's balance.
         </div>
       `;
@@ -1465,6 +1568,13 @@
         await executeDepositApproval(foundKey, dep);
         renderAdminDeposits();
         renderAll();
+        // Refresh admin panel deposits tab
+        if (adminPanelOverlay.classList.contains('open')) {
+          const activeTab = document.querySelector('#adminPanelTabs .btn-primary');
+          if (activeTab && activeTab.dataset.adminTab === 'deposits') {
+            renderAdminPanelTab('deposits');
+          }
+        }
       });
     } else {
       // Reject
@@ -2299,6 +2409,11 @@
       document.getElementById('adminPanelCard').style.display = 'none';
       isAdmin = false;
       if (priceInterval) clearInterval(priceInterval);
+      // Stop deposit listeners
+      depositListeners.forEach(({ ref, listener }) => {
+        ref.off('value', listener);
+      });
+      depositListeners = [];
       toast('Logged out successfully', 'success');
     }).catch((err) => toast('Logout error: ' + err.message, 'error'));
   }
@@ -2321,6 +2436,8 @@
       updateBalanceUI();
       startPriceEngine();
       if (isAdmin) document.getElementById('adminPanelCard').style.display = 'block';
+      // Start deposit listener for real-time updates
+      startDepositListener();
       toast(`Welcome ${user.displayName || 'Trader'}!`, 'success');
     } else {
       loginOverlay.style.display = 'flex';
@@ -2331,6 +2448,11 @@
       document.getElementById('adminPanelCard').style.display = 'none';
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById('page-home').classList.add('active');
+      // Stop deposit listeners
+      depositListeners.forEach(({ ref, listener }) => {
+        ref.off('value', listener);
+      });
+      depositListeners = [];
     }
   });
 
@@ -2536,20 +2658,23 @@
     openModal('Processing Deposit Order', '', body, actions);
   }
 
-  function showSuccessPopup(requestId) {
+  function showSuccessPopup(requestId, amount, method, paymentOrderId) {
     const body = `
       <div style="text-align:center;padding:8px 0;">
         <i class="fas fa-check-circle" style="font-size:48px;color:#22c55e;margin-bottom:12px;"></i>
         <h3 style="color:#22c55e;margin-bottom:8px;">Deposit Order Submitted</h3>
-        <p style="color:#b0c4d9;">Your deposit request has been sent for admin verification.</p>
-        <div style="margin:12px 0;padding:10px;background:#1a1f2a;border-radius:8px;">
-          <span class="badge badge-pending">Status: Pending</span>
+        <p style="color:#b0c4d9;">Your deposit request has been sent to the admin for verification.</p>
+        <div style="margin:12px 0;padding:10px;background:#1a1f2a;border-radius:8px;text-align:left;">
+          <div><strong>Request ID:</strong> ${requestId}</div>
+          <div><strong>Amount:</strong> ${formatUSD(amount)}</div>
+          <div><strong>Payment Method:</strong> ${method}</div>
+          <div><strong>Payment Order ID:</strong> ${paymentOrderId}</div>
+          <div style="margin-top:6px;"><strong>Status:</strong> <span class="badge badge-pending">Pending</span></div>
         </div>
-        <p style="font-size:13px;color:#7f92a8;">Request ID: ${requestId}</p>
       </div>
     `;
     const actions = `
-      <button class="btn btn-outline" onclick="closeModal(); navigate('profile');">View Deposit History</button>
+      <button class="btn btn-outline" onclick="closeModal(); navigate('profile');">View History</button>
       <button class="btn btn-outline" onclick="closeModal();">Close</button>
     `;
     openModal('Deposit Order Submitted', '', body, actions);
@@ -2577,7 +2702,7 @@
     try {
       const requestId = generateOrderId('DEP');
 
-      // Create deposit request
+      // Create deposit request in Firebase
       const depRef = push(ref(db, 'deposits'));
       await set(depRef, {
         requestId,
@@ -2593,9 +2718,9 @@
         createdAt: serverTimestamp()
       });
 
-      // Close the processing modal and show success
+      // Close processing modal and show success
       closeModal();
-      showSuccessPopup(requestId);
+      showSuccessPopup(requestId, amount, method, orderId);
 
       toast('Deposit order submitted. Awaiting verification.', 'success');
       document.getElementById('depositAmount').value = '';
@@ -2803,6 +2928,7 @@
   console.log('🔒 Admin password: 308580 (Ctrl+P)');
   console.log('💳 Binance Pay ID: 894307667');
   console.log('💳 TRC20 Address: TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7');
+  console.log('📡 Firebase Realtime Database connected for real-time sync');
 </script>
 </body>
 </html>
