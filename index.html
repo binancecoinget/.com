@@ -431,7 +431,7 @@
       <section class="page active" id="page-home">
         <div class="card">
           <div class="stat-grid">
-            <div class="stat-item"><div class="stat-label">Virtual Balance</div><div class="stat-value gold" id="totalBalance">$0.00</div></div>
+            <div class="stat-item"><div class="stat-label">Main Balance</div><div class="stat-value gold" id="totalBalance">$0.00</div></div>
             <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value" id="portfolioValue">$0.00</div></div>
             <div class="stat-item"><div class="stat-label">Today's P/L</div><div class="stat-value" id="todayPL">+$0.00</div></div>
             <div class="stat-item"><div class="stat-label">Coins</div><div class="stat-value" id="coinCount">0</div></div>
@@ -450,7 +450,7 @@
       <!-- PORTFOLIO -->
       <section class="page" id="page-portfolio">
         <div class="card"><div class="stat-grid">
-          <div class="stat-item"><div class="stat-label">Virtual Balance</div><div class="stat-value gold" id="portfolioUsd">$0.00</div></div>
+          <div class="stat-item"><div class="stat-label">Main Balance</div><div class="stat-value gold" id="portfolioUsd">$0.00</div></div>
           <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value" id="portfolioTotalValue">$0.00</div></div>
         </div></div>
         <div class="card"><div class="card-header"><span class="card-title">Holdings</span></div><div id="portfolioHoldings"></div></div>
@@ -499,8 +499,8 @@
           </div>
           <div class="field" id="orderIdField">
             <label>Payment Order ID / Transaction ID <span style="color:#ef4444;">*</span></label>
-            <input type="text" id="depositOrderId" placeholder="Enter your payment order ID (any test value accepted)" />
-            <div style="font-size:12px;color:#7f92a8;margin-top:4px;">Simulation / Test Request — Any non-empty value accepted</div>
+            <input type="text" id="depositOrderId" placeholder="Enter your payment order ID " />
+            <div style="font-size:12px;color:#7f92a8;margin-top:4px;"></div>
           </div>
           <button class="btn btn-primary btn-block" id="submitDepositBtn"><i class="fas fa-paper-plane"></i> Submit Payment</button>
         </div>
@@ -511,7 +511,7 @@
       <!-- WITHDRAW -->
       <section class="page" id="page-withdraw">
         <div class="card">
-          <h3 style="margin-bottom:4px;">Withdraw Virtual Credits</h3>
+          <h3 style="margin-bottom:4px;">Withdraw Main Credits</h3>
           <div class="text-muted" style="margin-bottom:12px;font-size:13px;">Request withdrawal — admin approval required</div>
           <div class="field">
             <label>Available Balance</label>
@@ -552,7 +552,7 @@
         <div class="card"><div class="flex" style="gap:16px;"><img id="profileAvatar" src="" style="width:60px;height:60px;border-radius:50%;background:#2f3b4a;" /><div><div id="profileName" style="font-weight:700;font-size:20px;">—</div><div id="profileEmail" class="text-muted" style="font-size:13px;">—</div><div id="profileUid" class="text-muted" style="font-size:11px;">UID: —</div></div></div></div>
         <div class="card">
           <div class="profile-stats">
-            <div class="profile-stat"><div class="label">Virtual Balance</div><div class="value gold" id="profileBalance">$0.00</div></div>
+            <div class="profile-stat"><div class="label">Main Balance</div><div class="value gold" id="profileBalance">$0.00</div></div>
             <div class="profile-stat"><div class="label">Total Holdings</div><div class="value" id="profilePortfolio">$0.00</div></div>
             <div class="profile-stat"><div class="label">Trades</div><div class="value" id="profileTrades">0</div></div>
             <div class="profile-stat"><div class="label">P/L</div><div class="value" id="profilePL">+$0.00</div></div>
