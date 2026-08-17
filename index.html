@@ -270,6 +270,17 @@
 
     .processing-spinner { border:4px solid #1f2937; border-top:4px solid #f0b90b; border-radius:50%; width:48px; height:48px; animation:spin 1s linear infinite; margin:0 auto 16px; }
     @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
+
+    .payment-option-card {
+      background:#0d141e; border:2px solid #2a3440; border-radius:12px; padding:16px; margin-bottom:10px; cursor:pointer; transition:0.3s; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;
+    }
+    .payment-option-card:hover { border-color:#f0b90b; }
+    .payment-option-card.selected { border-color:#f0b90b; background:#1a1f2a; }
+    .payment-option-card .info { display:flex; flex-direction:column; gap:4px; }
+    .payment-option-card .info .name { font-weight:600; font-size:15px; }
+    .payment-option-card .info .detail { font-size:13px; color:#7f92a8; font-family:monospace; }
+    .payment-option-card .badge-selected { display:none; color:#22c55e; font-weight:600; }
+    .payment-option-card.selected .badge-selected { display:block; }
   </style>
 </head>
 <body>
@@ -450,48 +461,48 @@
       <section class="page" id="page-deposit">
         <div class="card">
           <h3 style="margin-bottom:4px;">Create Deposit Order</h3>
-          <div class="text-muted" style="margin-bottom:12px;font-size:13px;">Submit a deposit order for admin verification</div>
+          <div class="text-muted" style="margin-bottom:12px;font-size:13px;">Select a payment method and submit your order</div>
 
-          <div style="margin-bottom:16px;background:#0d141e;border-radius:12px;padding:16px;border:1px solid #1f2937;">
-            <h4 style="color:#f0b90b;margin-bottom:8px;"><i class="fas fa-credit-card"></i> Payment Information</h4>
-
-            <div style="margin-bottom:12px;padding:10px;background:#1a1f2a;border-radius:8px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
-                <div>
-                  <div style="font-weight:600;font-size:14px;">Binance Pay ID</div>
-                  <div style="font-family:monospace;font-size:15px;color:#b0c4d9;">894307667</div>
+          <!-- Payment Methods -->
+          <div style="margin-bottom:16px;">
+            <label style="display:block;font-weight:500;font-size:13px;margin-bottom:8px;color:#b0c4d9;">Payment Method</label>
+            <div id="paymentMethodContainer">
+              <!-- Binance Pay -->
+              <div class="payment-option-card" data-method="Binance Pay" onclick="selectPaymentMethod(this)">
+                <div class="info">
+                  <div class="name"><i class="fab fa-bitcoin" style="color:#f0b90b;margin-right:8px;"></i>Binance Pay</div>
+                  <div class="detail">ID: 894307667</div>
                 </div>
-                <button class="btn btn-sm btn-primary copy-payment-btn" data-copy="894307667"><i class="fas fa-copy"></i> Copy ID</button>
+                <div>
+                  <button class="btn btn-sm btn-primary copy-payment-btn" data-copy="894307667" onclick="event.stopPropagation();"><i class="fas fa-copy"></i> Copy ID</button>
+                  <span class="badge-selected"><i class="fas fa-check-circle"></i> Selected</span>
+                </div>
+              </div>
+              <!-- USDT TRC20 -->
+              <div class="payment-option-card" data-method="USDT TRC20" onclick="selectPaymentMethod(this)">
+                <div class="info">
+                  <div class="name"><i class="fas fa-coins" style="color:#22c55e;margin-right:8px;"></i>USDT TRC20</div>
+                  <div class="detail">TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7</div>
+                </div>
+                <div>
+                  <button class="btn btn-sm btn-primary copy-payment-btn" data-copy="TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7" onclick="event.stopPropagation();"><i class="fas fa-copy"></i> Copy Address</button>
+                  <span class="badge-selected"><i class="fas fa-check-circle"></i> Selected</span>
+                </div>
               </div>
             </div>
-
-            <div style="padding:10px;background:#1a1f2a;border-radius:8px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
-                <div>
-                  <div style="font-weight:600;font-size:14px;">USDT (TRC20)</div>
-                  <div style="font-family:monospace;font-size:15px;color:#b0c4d9;word-break:break-all;">TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7</div>
-                </div>
-                <button class="btn btn-sm btn-primary copy-payment-btn" data-copy="TVRyTuXdKm7y6Kub3mbPGBxfZ2CJn8DEW7"><i class="fas fa-copy"></i> Copy Address</button>
-              </div>
-            </div>
-            <div style="margin-top:8px;font-size:12px;color:#7f92a8;"><i class="fas fa-info-circle"></i> Copy the payment details above and complete your payment, then submit the request below.</div>
+            <input type="hidden" id="selectedMethod" value="" />
           </div>
 
           <div class="field">
             <label>Deposit Amount (USD)</label>
             <input type="number" id="depositAmount" placeholder="Enter amount (min $1)" min="1" step="0.01" />
           </div>
-          <div class="field" id="methodSelector" style="display:none;">
-            <label>Payment Method</label>
-            <div id="depositPaymentMethods"></div>
-            <input type="hidden" id="selectedMethod" value="" />
-          </div>
-          <div class="field" id="orderIdField" style="display:none;">
+          <div class="field" id="orderIdField">
             <label>Payment Order ID / Transaction ID <span style="color:#ef4444;">*</span></label>
             <input type="text" id="depositOrderId" placeholder="Enter your payment order ID (any test value accepted)" />
             <div style="font-size:12px;color:#7f92a8;margin-top:4px;">Simulation / Test Request — Any non-empty value accepted</div>
           </div>
-          <button class="btn btn-primary btn-block" id="submitDepositBtn"><i class="fas fa-paper-plane"></i> Submit Order</button>
+          <button class="btn btn-primary btn-block" id="submitDepositBtn"><i class="fas fa-paper-plane"></i> Submit Payment</button>
         </div>
         <div class="card"><div class="card-header"><span class="card-title">Deposit History</span></div><div id="depositHistoryList"></div></div>
         <div style="display:flex;justify-content:center;margin:16px 0 8px;" class="mobile-logout-wrap"><button class="btn-logout" id="mobileLogoutBtn4"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
@@ -1177,7 +1188,6 @@
     renderDepositHistory();
     renderWithdrawHistory();
     renderNotifications();
-    renderPaymentMethods();
     if (isAdmin) {
       const activeTab = document.querySelector('[data-admin-tab].btn-primary');
       if (activeTab) {
@@ -1364,48 +1374,6 @@
       </div>`;
     });
     container.innerHTML = html;
-  }
-
-  function renderPaymentMethods() {
-    const container = document.getElementById('depositPaymentMethods');
-    if (!container) return;
-    const methods = getPaymentMethods();
-    const activeMethods = methods.filter(m => m.status !== 'disabled');
-    if (activeMethods.length === 0) {
-      container.innerHTML = '<div class="text-muted">No active payment methods</div>';
-      return;
-    }
-    let html = '';
-    activeMethods.forEach(m => {
-      const address = m.address || m.id || '';
-      const label = m.name.includes('Binance') ? 'Copy ID' : 'Copy Address';
-      html += `<div class="payment-method-card" data-method="${m.name}">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <strong>${m.name}</strong>
-          <span class="badge badge-confirmed">Active</span>
-        </div>
-        ${address ? `<div class="address">${address}</div>` : ''}
-        ${address ? `<button class="copy-btn" data-copy="${address}"><i class="fas fa-copy"></i> ${label}</button>` : ''}
-        <div style="margin-top:6px;font-size:12px;color:#7f92a8;">${m.description || ''}</div>
-      </div>`;
-    });
-    container.innerHTML = html;
-    container.querySelectorAll('.copy-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const text = btn.dataset.copy;
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(() => toast('Copied successfully', 'success'));
-        } else {
-          const ta = document.createElement('textarea');
-          ta.value = text;
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand('copy');
-          ta.remove();
-          toast('Copied successfully', 'success');
-        }
-      });
-    });
   }
 
   // Admin Render Functions
@@ -2485,25 +2453,18 @@
     btn.addEventListener('click', performLogout);
   });
 
-  // ---- Deposit Amount Change ----
-  document.getElementById('depositAmount').addEventListener('input', function() {
-    const val = parseFloat(this.value);
-    const methodSelector = document.getElementById('methodSelector');
-    const orderIdField = document.getElementById('orderIdField');
-    if (val && val >= 1) {
-      methodSelector.style.display = 'block';
-      orderIdField.style.display = 'block';
-    } else {
-      methodSelector.style.display = 'none';
-      orderIdField.style.display = 'none';
-      document.getElementById('selectedMethod').value = '';
-      document.querySelectorAll('.method-option').forEach(m => m.classList.remove('selected'));
-    }
-  });
+  // ---- Payment Method Selection ----
+  window.selectPaymentMethod = function(el) {
+    document.querySelectorAll('.payment-option-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('selectedMethod').value = el.dataset.method;
+    toast('Payment method selected: ' + el.dataset.method, 'success');
+  };
 
   // ---- Copy Payment Buttons ----
   document.querySelectorAll('.copy-payment-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const text = btn.dataset.copy;
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(() => toast('Copied successfully', 'success'));
@@ -2624,13 +2585,7 @@
     });
   }
 
-  // ---- Method Selectors ----
-  window.selectMethod = function(el) {
-    document.querySelectorAll('.method-option').forEach(m => m.classList.remove('selected'));
-    el.classList.add('selected');
-    document.getElementById('selectedMethod').value = el.dataset.method;
-  };
-
+  // ---- Method Selectors for Withdraw ----
   window.selectWithdrawMethod = function(el) {
     document.querySelectorAll('.withdraw-method-item').forEach(m => m.classList.remove('selected'));
     el.classList.add('selected');
@@ -2760,10 +2715,8 @@
         // Reset form
         document.getElementById('depositAmount').value = '';
         document.getElementById('depositOrderId').value = '';
-        document.getElementById('methodSelector').style.display = 'none';
-        document.getElementById('orderIdField').style.display = 'none';
-        document.querySelectorAll('.method-option').forEach(m => m.classList.remove('selected'));
         document.getElementById('selectedMethod').value = '';
+        document.querySelectorAll('.payment-option-card').forEach(c => c.classList.remove('selected'));
 
         // Refresh deposit history
         await loadDeposits();
@@ -2785,7 +2738,7 @@
       } finally {
         isSubmittingDeposit = false;
         freshBtn.disabled = false;
-        freshBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Order';
+        freshBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Payment';
         console.log("🔓 Submit button re-enabled");
       }
     });
