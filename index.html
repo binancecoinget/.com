@@ -447,9 +447,9 @@
           <div class="card">
             <div class="stat-grid">
               <div class="stat-item"><div class="stat-label">Main Balance</div><div class="stat-value gold" id="mainBalance">$0.00</div></div>
-              <div class="stat-item"><div class="stat-label">Total Holdings</div><div class="stat-value" id="totalHoldings">$0.00</div></div>
-              <div class="stat-item"><div class="stat-label">Total Portfolio</div><div class="stat-value" id="totalPortfolio">$0.00</div></div>
-              <div class="stat-item"><div class="stat-label">Total P&L</div><div class="stat-value" id="totalPL">$0.00</div></div>
+              <div class="stat-item"><div class="stat-label">Total P/L</div><div class="stat-value" id="totalPL">$0.00</div></div>
+              <div class="stat-item"><div class="stat-label">Available Balance</div><div class="stat-value gold" id="availableBalance">$0.00</div></div>
+              <div class="stat-item"><div class="stat-label">Portfolio Value</div><div class="stat-value" id="portfolioValue">$0.00</div></div>
             </div>
           </div>
           <div class="card"><div class="card-header"><span class="card-title">Markets</span></div><div id="homeCoinList"></div></div>
@@ -960,7 +960,8 @@
       const portfolio = calculatePortfolio(currentUser.uid);
       const totalHoldings = portfolio.totalHoldings;
       const totalPL = portfolio.totalPL;
-      const totalPortfolio = mainBalance + totalHoldings;
+      const availableBalance = mainBalance; // Available balance is the main balance
+      const portfolioValue = totalHoldings;
 
       // Update Main Balance displays
       const balanceEls = ['mainBalance', 'portfolioMainBalance', 'profileMainBalance', 'withdrawBalanceDisplay'];
@@ -969,16 +970,20 @@
         if (el) el.textContent = formatUSD(mainBalance);
       });
 
+      // Update Available Balance
+      const availEl = document.getElementById('availableBalance');
+      if (availEl) availEl.textContent = formatUSD(availableBalance);
+
+      // Update Portfolio Value
+      const portValEl = document.getElementById('portfolioValue');
+      if (portValEl) portValEl.textContent = formatUSD(portfolioValue);
+
       // Update Total Holdings displays
       const holdingsEls = ['totalHoldings', 'portfolioTotalHoldings', 'profileTotalHoldings'];
       holdingsEls.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = formatUSD(totalHoldings);
       });
-
-      // Total Portfolio
-      const portfolioEl = document.getElementById('totalPortfolio');
-      if (portfolioEl) portfolioEl.textContent = formatUSD(totalPortfolio);
 
       // Total P&L
       const plEl = document.getElementById('totalPL');
@@ -1308,12 +1313,14 @@
       const mainBalance = getMainBalance(currentUser?.uid || '');
       const portfolio = calculatePortfolio(currentUser?.uid || '');
       const totalHoldings = portfolio.totalHoldings;
-      const totalPortfolio = mainBalance + totalHoldings;
-      document.getElementById('mainBalance').textContent = formatUSD(mainBalance);
-      document.getElementById('totalHoldings').textContent = formatUSD(totalHoldings);
-      document.getElementById('totalPortfolio').textContent = formatUSD(totalPortfolio);
-
       const totalPL = portfolio.totalPL;
+      const availableBalance = mainBalance;
+      const portfolioValue = totalHoldings;
+
+      document.getElementById('mainBalance').textContent = formatUSD(mainBalance);
+      document.getElementById('availableBalance').textContent = formatUSD(availableBalance);
+      document.getElementById('portfolioValue').textContent = formatUSD(portfolioValue);
+
       const plEl = document.getElementById('totalPL');
       if (plEl) {
         plEl.textContent = (totalPL >= 0 ? '+' : '') + formatUSD(totalPL);
@@ -1322,7 +1329,6 @@
         else if (totalPL < 0) plEl.classList.add('red');
         else plEl.classList.add('white');
       }
-      document.getElementById('coinCount').textContent = Object.keys(coinsData).length;
 
       let html = '';
       // SHOW ALL ACTIVE COINS - no slice limit
